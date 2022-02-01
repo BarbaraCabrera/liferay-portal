@@ -12,17 +12,18 @@
  * details.
  */
 
-import ClayAlert from '@clayui/alert';
+import ClayEmptyState from '@clayui/empty-state';
 import React from 'react';
 
 export default function NoPageContents() {
 	return (
-		<ClayAlert
-			className="m-3"
-			displayType="info"
-			title={Liferay.Language.get('info')}
-		>
-			{Liferay.Language.get('there-is-no-content-on-this-page')}
-		</ClayAlert>
+		<ClayEmptyState
+			className="p-4 page-editor__fragments-widgets__search-result-panel__empty-result"
+			description={Liferay.Language.get(
+				'try-again-with-a-different-search'
+			)}
+			imgSrc={`${themeDisplay.getPathThemeImages()}/states/empty_state.gif`}
+			title={Liferay.Language.get('no-results-found')}
+		/>
 	);
 }
