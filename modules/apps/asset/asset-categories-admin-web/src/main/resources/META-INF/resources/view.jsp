@@ -68,7 +68,7 @@
 												</c:if>
 											</li>
 											<li>
-												<liferay-portlet:actionURL copyCurrentRenderParameters="<%= false %>" name="/asset_categories_admin/delete_vocabulary" var="deleteVocabulariesURL">
+												<liferay-portlet:actionURL copyCurrentRenderParameters="<%= false %>" name="/asset_categories_admin/delete_asset_vocabulary" var="deleteVocabulariesURL">
 													<portlet:param name="redirect" value="<%= assetCategoriesDisplayContext.getDefaultRedirect() %>" />
 												</liferay-portlet:actionURL>
 
