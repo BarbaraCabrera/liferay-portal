@@ -167,7 +167,7 @@ public class AssetCategoriesManagementToolbarDisplayContext
 					PortletURLBuilder.createRenderURL(
 						liferayPortletResponse
 					).setMVCPath(
-						"/edit_category.jsp"
+						"/edit_asset_category.jsp"
 					).setParameter(
 						"parentCategoryId",
 						() -> {
