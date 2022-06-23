@@ -82,6 +82,16 @@ public class AssetEntryItemSelectorView
 		PortletURL portletURL, String itemSelectedEventName, boolean search)
 		throws IOException, ServletException {
 
+		HttpServletRequest httpServletRequest =
+			(HttpServletRequest)servletRequest;
+
+		RenderRequest renderRequest =
+			(RenderRequest)httpServletRequest.getAttribute(
+				JavaConstants.JAVAX_PORTLET_REQUEST);
+		RenderResponse renderResponse =
+			(RenderResponse)httpServletRequest.getAttribute(
+				JavaConstants.JAVAX_PORTLET_RESPONSE);
+
 		_itemSelectorViewDescriptorRenderer.renderHTML(
 			servletRequest, servletResponse,
 			itemSelectorCriterion, portletURL,
@@ -89,7 +99,9 @@ public class AssetEntryItemSelectorView
 			new AssetEntryItemSelectorViewDescriptor(
 				itemSelectorCriterion,
 				(HttpServletRequest)servletRequest, portletURL,
-				_assetBrowserDisplayContext));
+				new AssetBrowserDisplayContext(
+					_assetHelper, httpServletRequest,
+					portletURL, renderRequest, renderResponse)));
 
 	}
 
@@ -177,7 +189,4 @@ public class AssetEntryItemSelectorView
 	private ItemSelectorViewDescriptorRenderer
 		<AssetEntryItemSelectorCriterion>
 		_itemSelectorViewDescriptorRenderer;
-
-	@Reference
-	private AssetBrowserDisplayContext _assetBrowserDisplayContext;
 }
