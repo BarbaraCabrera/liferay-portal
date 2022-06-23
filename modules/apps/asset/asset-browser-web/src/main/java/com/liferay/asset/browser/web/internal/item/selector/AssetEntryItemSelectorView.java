@@ -93,7 +93,13 @@ public class AssetEntryItemSelectorView
 				JavaConstants.JAVAX_PORTLET_RESPONSE);
 
 		_itemSelectorViewDescriptorRenderer.renderHTML(
-			servletRequest, servletResponse,
+			new DynamicServletRequest(
+				(HttpServletRequest) servletRequest,
+			HashMapBuilder.put(
+				"multipleSelection",
+				_toStringArray(
+					!itemSelectorCriterion.isSingleSelect())
+			).build()), servletResponse,
 			itemSelectorCriterion, portletURL,
 			itemSelectedEventName, search,
 			new AssetEntryItemSelectorViewDescriptor(
