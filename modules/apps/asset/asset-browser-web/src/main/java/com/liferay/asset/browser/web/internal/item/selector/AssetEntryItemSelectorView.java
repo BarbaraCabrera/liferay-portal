@@ -82,8 +82,8 @@ public class AssetEntryItemSelectorView
 		PortletURL portletURL, String itemSelectedEventName, boolean search)
 		throws IOException, ServletException {
 
-		HttpServletRequest httpServletRequest =
-			(HttpServletRequest)servletRequest;
+		HttpServletRequest httpServletRequest = _getDynamicServletRequest(
+			itemSelectorCriterion, servletRequest);
 
 		RenderRequest renderRequest =
 			(RenderRequest)httpServletRequest.getAttribute(
