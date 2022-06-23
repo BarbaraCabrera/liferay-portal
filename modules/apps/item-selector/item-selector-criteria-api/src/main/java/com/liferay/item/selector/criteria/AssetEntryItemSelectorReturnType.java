@@ -22,6 +22,9 @@ import com.liferay.item.selector.ItemSelectorReturnType;
  *
  * <ul>
  * <li>
+ * <code>assetEntryId</code>: The entryId of the selected asset entry
+ * </li>
+ * <li>
  * <code>className</code>: The class name of the selected info item
  * </li>
  * <li>

@@ -65,6 +65,8 @@ public class AssetEntryItemDescriptor
 
 	public String getPayload() {
 		return JSONUtil.put(
+			"assetEntryId", String.valueOf(_assetEntry.getEntryId())
+		).put(
 			"className", _assetEntry.getClassName()
 		).put(
 			"classNameId", _assetEntry.getClassNameId()
