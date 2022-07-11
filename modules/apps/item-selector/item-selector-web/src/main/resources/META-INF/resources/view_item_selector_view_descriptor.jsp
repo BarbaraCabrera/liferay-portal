@@ -141,6 +141,12 @@ SearchContainer<Object> searchContainer = itemSelectorViewDescriptorRendererDisp
 						<p class="h6 text-default">
 							<%= itemDescriptor.getSubtitle(locale) %>
 						</p>
+
+						<c:if test="<%= itemDescriptor.getStatus() != null %>">
+							<span class="text-default">
+								<aui:workflow-status markupView="lexicon" showIcon="<%= false %>" showLabel="<%= false %>" status="<%= itemDescriptor.getStatus() %>" />
+							</span>
+						</c:if>
 					</liferay-ui:search-container-column-text>
 				</c:when>
 				<c:otherwise>
@@ -158,6 +164,14 @@ SearchContainer<Object> searchContainer = itemSelectorViewDescriptorRendererDisp
 						name="user"
 						value="<%= itemDescriptor.getUserName() %>"
 					/>
+
+					<c:if test="<%= itemDescriptor.getStatus() != null %>">
+						<liferay-ui:search-container-column-status
+							cssClass="table-cell-expand-smaller"
+							name="status"
+							status="<%= itemDescriptor.getStatus() %>"
+						/>
+					</c:if>
 
 					<liferay-ui:search-container-column-text
 						cssClass="table-cell-expand-smaller table-cell-minw-150"
