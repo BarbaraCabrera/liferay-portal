@@ -61,6 +61,8 @@ public class AssetEntryItemDescriptor
 				WebKeys.THEME_DISPLAY);
 
 		return JSONUtil.put(
+			"assetEntryId", String.valueOf(_assetEntry.getEntryId())
+		).put(
 			"className", _assetEntry.getClassName()
 		).put(
 			"classNameId", _assetEntry.getClassNameId()
