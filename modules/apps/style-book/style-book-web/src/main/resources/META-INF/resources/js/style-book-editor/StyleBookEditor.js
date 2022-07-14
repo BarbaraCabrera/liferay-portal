@@ -57,6 +57,7 @@ const StyleBookEditor = React.memo(() => {
 });
 
 export default function ({
+	featureFlagLps142363,
 	fragmentCollectionPreviewURL = '',
 	frontendTokenDefinition = [],
 	frontendTokensValues = {},
@@ -70,6 +71,7 @@ export default function ({
 	themeName,
 } = {}) {
 	initializeConfig({
+		featureFlagLps142363,
 		fragmentCollectionPreviewURL,
 		frontendTokenDefinition,
 		frontendTokens: getFrontendTokens(frontendTokenDefinition),
