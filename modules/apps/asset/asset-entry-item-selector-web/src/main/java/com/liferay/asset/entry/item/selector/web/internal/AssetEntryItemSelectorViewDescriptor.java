@@ -21,13 +21,17 @@ import com.liferay.depot.model.DepotEntry;
 import com.liferay.depot.service.DepotEntryServiceUtil;
 import com.liferay.item.selector.ItemSelectorReturnType;
 import com.liferay.item.selector.ItemSelectorViewDescriptor;
+import com.liferay.item.selector.constants.ItemSelectorPortletKeys;
 import com.liferay.item.selector.criteria.AssetEntryItemSelectorReturnType;
 import com.liferay.item.selector.criteria.asset.criterion.AssetEntryItemSelectorCriterion;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.portlet.SearchOrderByUtil;
+import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Hits;
+import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -40,6 +44,8 @@ import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+
+import java.util.Objects;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
@@ -78,6 +84,35 @@ public class AssetEntryItemSelectorViewDescriptor
 		return new AssetEntryItemSelectorReturnType();
 	}
 
+	public String getOrderByCol() {
+		if (Validator.isNotNull(_orderByCol)) {
+			return _orderByCol;
+		}
+
+		_orderByCol = SearchOrderByUtil.getOrderByCol(
+			_httpServletRequest, ItemSelectorPortletKeys.ITEM_SELECTOR,
+			"select-asset-entry-order-by-col", "modified-date");
+
+		return _orderByCol;
+	}
+
+	@Override
+	public String[] getOrderByKeys() {
+		return new String[] {"title", "modified-date"};
+	}
+
+	public String getOrderByType() {
+		if (Validator.isNotNull(_orderByType)) {
+			return _orderByType;
+		}
+
+		_orderByType = SearchOrderByUtil.getOrderByType(
+			_httpServletRequest, ItemSelectorPortletKeys.ITEM_SELECTOR,
+			"select-asset-entry-order-by-type", "asc");
+
+		return _orderByType;
+	}
+
 	@Override
 	public SearchContainer<AssetEntry> getSearchContainer()
 		throws PortalException {
@@ -90,6 +125,9 @@ public class AssetEntryItemSelectorViewDescriptor
 			(PortletRequest)_httpServletRequest.getAttribute(
 				JavaConstants.JAVAX_PORTLET_REQUEST),
 			_portletURL, null, "there-are-no-results");
+
+		searchContainer.setOrderByCol(getOrderByCol());
+		searchContainer.setOrderByType(getOrderByType());
 
 		if (GetterUtil.getBoolean(
 				PropsUtil.get(PropsKeys.ASSET_BROWSER_SEARCH_WITH_DATABASE))) {
@@ -106,7 +144,7 @@ public class AssetEntryItemSelectorViewDescriptor
 					_getKeywords(), _getKeywords(), _getKeywords(),
 					_getKeywords(), null, false, false, QueryUtil.ALL_POS,
 					QueryUtil.ALL_POS, "modifiedDate", StringPool.BLANK,
-					StringPool.BLANK, StringPool.BLANK),
+					getOrderByType(), StringPool.BLANK),
 				AssetEntryLocalServiceUtil.getEntriesCount(
 					_getFilterGroupIds(), _getClassNameIds(), classTypeIds,
 					_getKeywords(), _getKeywords(), _getKeywords(),
@@ -117,13 +155,33 @@ public class AssetEntryItemSelectorViewDescriptor
 				(ThemeDisplay)_httpServletRequest.getAttribute(
 					WebKeys.THEME_DISPLAY);
 
+			Sort sort = null;
+
+			boolean orderByAsc = false;
+
+			if (Objects.equals(getOrderByType(), "asc")) {
+				orderByAsc = true;
+			}
+
+			if (Objects.equals(getOrderByCol(), "modified-date")) {
+				sort = new Sort(
+					Field.MODIFIED_DATE, Sort.LONG_TYPE, !orderByAsc);
+			}
+			else if (Objects.equals(getOrderByCol(), "title")) {
+				sort = new Sort(
+					Field.getSortableFieldName(
+						"localized_title_".concat(
+							themeDisplay.getLanguageId())),
+					Sort.STRING_TYPE, !orderByAsc);
+			}
+
 			Hits hits = AssetEntryLocalServiceUtil.search(
 				themeDisplay.getCompanyId(), _getFilterGroupIds(),
 				themeDisplay.getUserId(), _getClassNameIds(),
 				_assetEntryItemSelectorCriterion.getSubtypeSelectionId(),
 				_getKeywords(),
 				_assetEntryItemSelectorCriterion.isShowNonindexable(),
-				_getStatuses(), QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+				_getStatuses(), QueryUtil.ALL_POS, QueryUtil.ALL_POS, sort);
 
 			searchContainer.setResultsAndTotal(
 				() -> _assetHelper.getAssetEntries(hits), hits.getLength());
@@ -221,6 +279,8 @@ public class AssetEntryItemSelectorViewDescriptor
 	private long[] _filterGroupIds;
 	private final HttpServletRequest _httpServletRequest;
 	private String _keywords;
+	private String _orderByCol;
+	private String _orderByType;
 	private final PortletURL _portletURL;
 	private SearchContainer<AssetEntry> _searchContainer;
 
