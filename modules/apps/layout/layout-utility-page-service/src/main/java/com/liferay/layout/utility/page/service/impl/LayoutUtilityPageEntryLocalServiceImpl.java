@@ -141,6 +141,15 @@ public class LayoutUtilityPageEntryLocalServiceImpl
 	}
 
 	@Override
+	public LayoutUtilityPageEntry fetchDefaultLayoutUtilityPageEntry(
+		long groupId, int type) {
+
+		return layoutUtilityPageEntryPersistence.fetchByG_D_T_First(
+				layoutUtilityPageEntry.getGroupId(), true,
+				layoutUtilityPageEntry.getType(), null);
+	}
+
+	@Override
 	public LayoutUtilityPageEntry setDefaultLayoutUtilityPageEntry(
 			long layoutUtilityPageEntryId)
 		throws PortalException {
