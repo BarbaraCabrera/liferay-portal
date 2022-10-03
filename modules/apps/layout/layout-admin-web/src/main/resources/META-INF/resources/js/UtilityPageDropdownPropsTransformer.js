@@ -19,28 +19,28 @@ import {
 
 const ACTIONS = {
 
-	markAsDefaultUtilityPageEntry({markAsDefaultUtilityPageEntryURL, message}) {
+	markAsDefaultLayoutUtilityPageEntry({markAsDefaultLayoutUtilityPageEntryURL, message}) {
 		if (message !== '') {
 			openConfirmModal({
 				message: Liferay.Language.get(message),
 				onConfirm: (isConfirmed) => {
 					if (isConfirmed) {
-						send(markAsDefaultUtilityPageEntryURL);
+						send(markAsDefaultLayoutUtilityPageEntryURL);
 					}
 				},
 			});
 		}
 		else {
-			send(markAsDefaultUtilityPageEntryURL);
+			send(markAsDefaultLayoutUtilityPageEntryURL);
 		}
 	},
 
-	unmarkAsDefaultUtilityPageEntry({unmarkAsDefaultUtilityPageEntryURL}) {
+	unmarkAsDefaultLayoutUtilityPageEntry({unmarkAsDefaultLayoutUtilityPageEntryURL}) {
 		openConfirmModal({
 			message: Liferay.Language.get('unmark-default-confirmation'),
 			onConfirm: (isConfirmed) => {
 				if (isConfirmed) {
-					send(unmarkAsDefaultUtilityPageEntryURL);
+					send(unmarkAsDefaultLayoutUtilityPageEntryURL);
 				}
 			},
 		});

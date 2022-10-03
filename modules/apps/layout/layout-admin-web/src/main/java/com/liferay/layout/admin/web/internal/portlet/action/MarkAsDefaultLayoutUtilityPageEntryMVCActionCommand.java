@@ -15,20 +15,17 @@
 package com.liferay.layout.admin.web.internal.portlet.action;
 
 import com.liferay.layout.admin.constants.LayoutAdminPortletKeys;
-import com.liferay.portal.kernel.model.Layout;
+import com.liferay.layout.utility.page.model.LayoutUtilityPageEntry;
+import com.liferay.layout.utility.page.service.LayoutUtilityPageEntryLocalService;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
-import com.liferay.layout.utility.page.service.LayoutUtilityPageEntryLocalService;
-import com.liferay.layout.utility.page.model.LayoutUtilityPageEntry;
-import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.kernel.workflow.WorkflowConstants;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Bárbara Cabrera
@@ -37,11 +34,11 @@ import javax.portlet.ActionResponse;
 	immediate = true,
 	property = {
 		"javax.portlet.name=" + LayoutAdminPortletKeys.GROUP_PAGES,
-		"mvc.command.name=/layout_page_template_admin/mark_as_default_utility_page_entry"
+		"mvc.command.name=/layout_admin/mark_as_default_layout_utility_page_entry"
 	},
 	service = MVCActionCommand.class
 )
-public class MarkAsDefaultUtilityPageEntryMVCActionCommand
+public class MarkAsDefaultLayoutUtilityPageEntryMVCActionCommand
 	extends BaseMVCActionCommand {
 
 	@Override
@@ -49,12 +46,14 @@ public class MarkAsDefaultUtilityPageEntryMVCActionCommand
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		long layoutUtilityPageEntryId = ParamUtil.getLong(actionRequest, "layoutUtilityPageEntryId");
+		long layoutUtilityPageEntryId = ParamUtil.getLong(
+			actionRequest, "layoutUtilityPageEntryId");
 
-		LayoutUtilityPageEntry layoutUtilityPageEntry = _layoutUtilityPageEntryLocalService.getLayoutUtilityPageEntry(layoutUtilityPageEntryId);
+		LayoutUtilityPageEntry layoutUtilityPageEntry =
+			_layoutUtilityPageEntryLocalService.getLayoutUtilityPageEntry(
+				layoutUtilityPageEntryId);
 
-		if(layoutUtilityPageEntry.isDefaultLayoutUtilityPageEntry()){
-
+		if (layoutUtilityPageEntry.isDefaultLayoutUtilityPageEntry()) {
 			_layoutUtilityPageEntry.setDefaultLayoutUtilityPageEntry(false);
 			_layoutUtilityPageEntryLocalService.updateLayoutUtilityPageEntry(
 				layoutUtilityPageEntry);
@@ -69,13 +68,13 @@ public class MarkAsDefaultUtilityPageEntryMVCActionCommand
 			layoutUtilityPageEntry);
 
 		sendRedirect(actionRequest, actionResponse);
-
 	}
 
 	@Reference
-	private LayoutUtilityPageEntryLocalService _layoutUtilityPageEntryLocalService;
+	private LayoutUtilityPageEntry _layoutUtilityPageEntry;
 
 	@Reference
-	private LayoutUtilityPageEntry _layoutUtilityPageEntry;
+	private LayoutUtilityPageEntryLocalService
+		_layoutUtilityPageEntryLocalService;
 
 }
