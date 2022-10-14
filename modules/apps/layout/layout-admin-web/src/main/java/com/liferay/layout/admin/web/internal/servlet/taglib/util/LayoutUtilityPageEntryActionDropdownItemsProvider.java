@@ -69,6 +69,8 @@ public class LayoutUtilityPageEntryActionDropdownItemsProvider {
 				dropdownGroupItem.setDropdownItems(
 					DropdownItemListBuilder.add(
 						_getEditLayoutUtilityPageEntryActionUnsafeConsumer()
+					).add(
+						_getViewLayoutUtilityPageEntryActionUnsafeConsumer()
 					).build());
 				dropdownGroupItem.setSeparator(true);
 			}
@@ -86,7 +88,7 @@ public class LayoutUtilityPageEntryActionDropdownItemsProvider {
 			dropdownGroupItem -> {
 				dropdownGroupItem.setDropdownItems(
 					DropdownItemListBuilder.add(
-						_getDeleteLayoutUtilityPageEntryActionUnsafeConsumer()
+						_getPermissionsLayoutUtilityPageEntryActionUnsafeConsumer()
 					).build());
 				dropdownGroupItem.setSeparator(true);
 			}
@@ -94,9 +96,7 @@ public class LayoutUtilityPageEntryActionDropdownItemsProvider {
 			dropdownGroupItem -> {
 				dropdownGroupItem.setDropdownItems(
 					DropdownItemListBuilder.add(
-						_getPermissionsLayoutUtilityPageEntryActionUnsafeConsumer()
-					).add(
-						_getViewLayoutUtilityPageEntryActionUnsafeConsumer()
+						_getDeleteLayoutUtilityPageEntryActionUnsafeConsumer()
 					).build());
 				dropdownGroupItem.setSeparator(true);
 			}
@@ -272,10 +272,10 @@ public class LayoutUtilityPageEntryActionDropdownItemsProvider {
 		return dropdownItem -> {
 			dropdownItem.setHref(
 				finalLayoutFullURL);
-			dropdownItem.setIcon("view");
+			dropdownItem.setIcon("shortcut");
 
 			String label = LanguageUtil.get(
-				_httpServletRequest, "view");
+				_httpServletRequest, "Preview");
 
 			if (layout.isDenied() || layout.isPending()) {
 				label = LanguageUtil.get(
