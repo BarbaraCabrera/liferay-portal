@@ -225,6 +225,12 @@ public class LayoutUtilityPageEntryLocalServiceUtil {
 		return getService().dynamicQueryCount(dynamicQuery, projection);
 	}
 
+	public static LayoutUtilityPageEntry fetchByG_N_T(
+		long groupId, String name, int type) {
+
+		return getService().fetchByG_N_T(groupId, name, type);
+	}
+
 	public static LayoutUtilityPageEntry fetchDefaultLayoutUtilityPageEntry(
 		long groupId, int type) {
 
