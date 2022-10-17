@@ -96,6 +96,51 @@ public class LayoutUtilityPageEntryServiceHttp {
 	}
 
 	public static com.liferay.layout.utility.page.model.LayoutUtilityPageEntry
+			copyLayoutUtilityPageEntry(
+				HttpPrincipal httpPrincipal, long groupId,
+				long layoutUtilityPageEntryId,
+				com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		try {
+			MethodKey methodKey = new MethodKey(
+				LayoutUtilityPageEntryServiceUtil.class,
+				"copyLayoutUtilityPageEntry",
+				_copyLayoutUtilityPageEntryParameterTypes1);
+
+			MethodHandler methodHandler = new MethodHandler(
+				methodKey, groupId, layoutUtilityPageEntryId, serviceContext);
+
+			Object returnObj = null;
+
+			try {
+				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
+			}
+			catch (Exception exception) {
+				if (exception instanceof
+						com.liferay.portal.kernel.exception.PortalException) {
+
+					throw (com.liferay.portal.kernel.exception.PortalException)
+						exception;
+				}
+
+				throw new com.liferay.portal.kernel.exception.SystemException(
+					exception);
+			}
+
+			return (com.liferay.layout.utility.page.model.
+				LayoutUtilityPageEntry)returnObj;
+		}
+		catch (com.liferay.portal.kernel.exception.SystemException
+					systemException) {
+
+			_log.error(systemException, systemException);
+
+			throw systemException;
+		}
+	}
+
+	public static com.liferay.layout.utility.page.model.LayoutUtilityPageEntry
 			deleteLayoutUtilityPageEntry(
 				HttpPrincipal httpPrincipal, long layoutUtilityPageEntryId)
 		throws com.liferay.portal.kernel.exception.PortalException {
@@ -458,6 +503,11 @@ public class LayoutUtilityPageEntryServiceHttp {
 	private static final Class<?>[] _addLayoutUtilityPageEntryParameterTypes0 =
 		new Class[] {
 			String.class, long.class, String.class, int.class, long.class
+		};
+	private static final Class<?>[] _copyLayoutUtilityPageEntryParameterTypes1 =
+		new Class[] {
+			long.class, long.class,
+			com.liferay.portal.kernel.service.ServiceContext.class
 		};
 	private static final Class<?>[]
 		_deleteLayoutUtilityPageEntryParameterTypes2 = new Class[] {long.class};
