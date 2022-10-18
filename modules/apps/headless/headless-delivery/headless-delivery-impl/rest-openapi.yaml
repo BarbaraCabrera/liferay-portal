@@ -5037,7 +5037,7 @@ components:
                             description:
                                 The content type's class name.
                             type: string
-                    type: enum
+                    type: object
             type: object
         WidgetInstance:
             # @review
