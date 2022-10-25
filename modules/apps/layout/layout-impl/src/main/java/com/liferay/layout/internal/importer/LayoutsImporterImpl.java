@@ -15,7 +15,6 @@
 package com.liferay.layout.internal.importer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.liferay.fragment.model.FragmentEntryLink;
 import com.liferay.fragment.service.FragmentEntryLinkLocalService;
 import com.liferay.headless.delivery.dto.v1_0.ContentSubtype;
@@ -32,6 +31,8 @@ import com.liferay.info.item.InfoItemFormVariation;
 import com.liferay.info.item.InfoItemServiceTracker;
 import com.liferay.info.item.provider.InfoItemFormVariationsProvider;
 import com.liferay.layout.admin.constants.LayoutAdminPortletKeys;
+import com.liferay.layout.exception.DisplayPageTemplateValidatorException;
+import com.liferay.layout.exception.MasterPageValidatorException;
 import com.liferay.layout.importer.LayoutsImporter;
 import com.liferay.layout.importer.LayoutsImporterResultEntry;
 import com.liferay.layout.internal.exception.DropzoneLayoutStructureItemException;
@@ -40,8 +41,6 @@ import com.liferay.layout.internal.headless.delivery.dto.v1_0.structure.importer
 import com.liferay.layout.internal.headless.delivery.dto.v1_0.structure.importer.LayoutStructureItemImporterTracker;
 import com.liferay.layout.page.template.constants.LayoutPageTemplateEntryTypeConstants;
 import com.liferay.layout.page.template.constants.LayoutPageTemplateExportImportConstants;
-import com.liferay.layout.page.template.exception.DisplayPageTemplateValidatorException;
-import com.liferay.layout.page.template.exception.MasterPageValidatorException;
 import com.liferay.layout.page.template.model.LayoutPageTemplateCollection;
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
 import com.liferay.layout.page.template.model.LayoutPageTemplateStructure;
@@ -50,16 +49,16 @@ import com.liferay.layout.page.template.service.LayoutPageTemplateCollectionServ
 import com.liferay.layout.page.template.service.LayoutPageTemplateEntryLocalService;
 import com.liferay.layout.page.template.service.LayoutPageTemplateEntryService;
 import com.liferay.layout.page.template.service.LayoutPageTemplateStructureLocalService;
-import com.liferay.layout.page.template.validator.DisplayPageTemplateValidator;
-import com.liferay.layout.page.template.validator.MasterPageValidator;
-import com.liferay.layout.page.template.validator.PageDefinitionValidator;
-import com.liferay.layout.page.template.validator.PageTemplateCollectionValidator;
-import com.liferay.layout.page.template.validator.PageTemplateValidator;
 import com.liferay.layout.util.LayoutCopyHelper;
 import com.liferay.layout.util.constants.LayoutStructureConstants;
 import com.liferay.layout.util.structure.FragmentStyledLayoutStructureItem;
 import com.liferay.layout.util.structure.LayoutStructure;
 import com.liferay.layout.util.structure.LayoutStructureItem;
+import com.liferay.layout.validator.DisplayPageTemplateValidator;
+import com.liferay.layout.validator.MasterPageValidator;
+import com.liferay.layout.validator.PageDefinitionValidator;
+import com.liferay.layout.validator.PageTemplateCollectionValidator;
+import com.liferay.layout.validator.PageTemplateValidator;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -95,11 +94,12 @@ import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.segments.service.SegmentsExperienceLocalService;
 import com.liferay.style.book.model.StyleBookEntry;
 import com.liferay.style.book.service.StyleBookEntryLocalService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -113,9 +113,6 @@ import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Jürgen Kappler
@@ -158,6 +155,13 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 		}
 
 		return _layoutPageTemplatesImporterResultEntries;
+	}
+
+	@Override
+	public List<LayoutsImporterResultEntry> importLayoutUtilityPageEntry(
+		long userId, long groupId, File file, boolean overwrite)
+		throws Exception {
+		return null;
 	}
 
 	@Override
