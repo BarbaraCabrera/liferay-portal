@@ -26,12 +26,28 @@ public class LayoutsImporterResultEntry {
 	}
 
 	public LayoutsImporterResultEntry(
+		String name, Status status, String errorMessage) {
+
+		_name = name;
+		_status = status;
+		_errorMessage = errorMessage;
+	}
+
+	public LayoutsImporterResultEntry(
 		String name, int type, Status status, String errorMessage) {
 
 		_name = name;
 		_type = type;
 		_status = status;
 		_errorMessage = errorMessage;
+	}
+
+	public LayoutsImporterResultEntry(
+		String name, Status status, String[] warningMessages) {
+
+		_name = name;
+		_status = status;
+		_warningMessages = warningMessages;
 	}
 
 	public LayoutsImporterResultEntry(
@@ -82,7 +98,7 @@ public class LayoutsImporterResultEntry {
 	private String _errorMessage;
 	private final String _name;
 	private final Status _status;
-	private final int _type;
+	private int _type = -1;
 	private String[] _warningMessages;
 
 }
