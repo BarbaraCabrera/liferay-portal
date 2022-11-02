@@ -14,17 +14,32 @@
 
 package com.liferay.layout.admin.web.internal.portlet;
 
+import com.liferay.item.selector.ItemSelector;
+import com.liferay.layout.admin.web.internal.configuration.LayoutUtilityPageAdminWebConfiguration;
 import com.liferay.layout.prototype.constants.LayoutPrototypePortletKeys;
+import com.liferay.layout.utility.page.constants.LayoutUtilityPageActionKeys;
+import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 
-import javax.portlet.Portlet;
+import java.io.IOException;
 
+import java.util.Map;
+
+import javax.portlet.Portlet;
+import javax.portlet.PortletException;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Pavel Savinov
  */
 @Component(
+	configurationPid = "com.liferay.layout.admin.web.internal.configuration.LayoutUtilityPageAdminWebConfiguration",
 	property = {
 		"com.liferay.portlet.display-category=category.hidden",
 		"javax.portlet.name=" + LayoutPrototypePortletKeys.LAYOUT_PROTOTYPE,
@@ -34,4 +49,33 @@ import org.osgi.service.component.annotations.Component;
 	service = Portlet.class
 )
 public class LayoutPrototypePortlet extends MVCPortlet {
+
+	@Activate
+	@Modified
+	protected void activate(Map<String, Object> properties) {
+		_layoutUtilityPageAdminWebConfiguration =
+			ConfigurableUtil.createConfigurable(
+				LayoutUtilityPageAdminWebConfiguration.class, properties);
+	}
+
+	@Override
+	protected void doDispatch(
+			RenderRequest renderRequest, RenderResponse renderResponse)
+		throws IOException, PortletException {
+
+		renderRequest.setAttribute(
+			LayoutUtilityPageAdminWebConfiguration.class.getName(),
+			_layoutUtilityPageAdminWebConfiguration);
+		renderRequest.setAttribute(
+			LayoutUtilityPageActionKeys.ITEM_SELECTOR, _itemSelector);
+
+		super.doDispatch(renderRequest, renderResponse);
+	}
+
+	@Reference
+	private ItemSelector _itemSelector;
+
+	private volatile LayoutUtilityPageAdminWebConfiguration
+		_layoutUtilityPageAdminWebConfiguration;
+
 }

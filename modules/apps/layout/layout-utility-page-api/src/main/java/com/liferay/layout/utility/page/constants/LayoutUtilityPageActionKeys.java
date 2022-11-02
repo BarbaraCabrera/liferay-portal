@@ -15,11 +15,13 @@
 package com.liferay.layout.utility.page.constants;
 
 /**
- * @author Jürgen Kappler
+ * @author Bárbara Cabrera
  */
 public class LayoutUtilityPageActionKeys {
 
 	public static final String ADD_LAYOUT_UTILITY_PAGE_ENTRY =
 		"ADD_LAYOUT_UTILITY_PAGE_ENTRY";
+
+	public static final String ITEM_SELECTOR = "ITEM_SELECTOR";
 
 }
