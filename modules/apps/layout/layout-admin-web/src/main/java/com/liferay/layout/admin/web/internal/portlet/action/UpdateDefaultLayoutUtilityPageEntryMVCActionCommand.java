@@ -15,11 +15,14 @@
 package com.liferay.layout.admin.web.internal.portlet.action;
 
 import com.liferay.layout.admin.constants.LayoutAdminPortletKeys;
+import com.liferay.layout.utility.page.constants.LayoutUtilityPageEntryConstants;
 import com.liferay.layout.utility.page.model.LayoutUtilityPageEntry;
 import com.liferay.layout.utility.page.service.LayoutUtilityPageEntryLocalService;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.util.ParamUtil;
+
+import java.util.Objects;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -63,12 +66,59 @@ public class UpdateDefaultLayoutUtilityPageEntryMVCActionCommand
 			return;
 		}
 
-		layoutUtilityPageEntry.setDefaultLayoutUtilityPageEntry(true);
+		LayoutUtilityPageEntry termsOfUseDefaultLayoutUtilityPageEntry =
+			_layoutUtilityPageEntryLocalService.
+				fetchDefaultLayoutUtilityPageEntry(
+					layoutUtilityPageEntry.getGroupId(),
+					LayoutUtilityPageEntryConstants.Type.TERMS_OF_USE.
+						getType());
 
-		_layoutUtilityPageEntryLocalService.updateLayoutUtilityPageEntry(
-			layoutUtilityPageEntry);
+		_checkDefaultLayoutUtilityPageEntry(
+			actionRequest, actionResponse, layoutUtilityPageEntry,
+			termsOfUseDefaultLayoutUtilityPageEntry,
+			LayoutUtilityPageEntryConstants.Type.TERMS_OF_USE.getType());
 
-		sendRedirect(actionRequest, actionResponse);
+		LayoutUtilityPageEntry errorDefaultLayoutUtilityPageEntry =
+			_layoutUtilityPageEntryLocalService.
+				fetchDefaultLayoutUtilityPageEntry(
+					layoutUtilityPageEntry.getGroupId(),
+					LayoutUtilityPageEntryConstants.Type.ERROR_404.getType());
+
+		_checkDefaultLayoutUtilityPageEntry(
+			actionRequest, actionResponse, layoutUtilityPageEntry,
+			errorDefaultLayoutUtilityPageEntry,
+			LayoutUtilityPageEntryConstants.Type.ERROR_404.getType());
+	}
+
+	private void _checkDefaultLayoutUtilityPageEntry(
+			ActionRequest actionRequest, ActionResponse actionResponse,
+			LayoutUtilityPageEntry layoutUtilityPageEntry,
+			LayoutUtilityPageEntry defaultLayoutUtilityPageEntry, int type)
+		throws Exception {
+
+		if (Objects.equals(layoutUtilityPageEntry.getType(), type)) {
+			if (defaultLayoutUtilityPageEntry == null) {
+				layoutUtilityPageEntry.setDefaultLayoutUtilityPageEntry(true);
+
+				_layoutUtilityPageEntryLocalService.
+					updateLayoutUtilityPageEntry(layoutUtilityPageEntry);
+
+				sendRedirect(actionRequest, actionResponse);
+
+				return;
+			}
+
+			layoutUtilityPageEntry.setDefaultLayoutUtilityPageEntry(true);
+			defaultLayoutUtilityPageEntry.setDefaultLayoutUtilityPageEntry(
+				false);
+
+			_layoutUtilityPageEntryLocalService.updateLayoutUtilityPageEntry(
+				layoutUtilityPageEntry);
+			_layoutUtilityPageEntryLocalService.updateLayoutUtilityPageEntry(
+				defaultLayoutUtilityPageEntry);
+
+			sendRedirect(actionRequest, actionResponse);
+		}
 	}
 
 	@Reference
