@@ -34,6 +34,7 @@ import com.liferay.asset.list.asset.entry.provider.AssetListAssetEntryProvider;
 import com.liferay.asset.list.model.AssetListEntry;
 import com.liferay.asset.list.service.AssetListEntryServiceUtil;
 import com.liferay.asset.publisher.constants.AssetPublisherPortletKeys;
+import com.liferay.asset.publisher.constants.AssetPublisherWebKeys;
 import com.liferay.asset.publisher.util.AssetEntryResult;
 import com.liferay.asset.publisher.util.AssetPublisherHelper;
 import com.liferay.asset.publisher.web.internal.action.AssetEntryActionRegistry;
@@ -48,6 +49,8 @@ import com.liferay.asset.util.AssetPublisherAddItemHolder;
 import com.liferay.asset.util.LinkedAssetEntryIdsUtil;
 import com.liferay.document.library.kernel.document.conversion.DocumentConversionUtil;
 import com.liferay.document.library.kernel.model.DLFileEntry;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemList;
 import com.liferay.info.collection.provider.CollectionQuery;
 import com.liferay.info.collection.provider.InfoCollectionProvider;
 import com.liferay.info.collection.provider.item.selector.criterion.InfoCollectionProviderItemSelectorCriterion;
@@ -55,7 +58,9 @@ import com.liferay.info.item.InfoItemServiceRegistry;
 import com.liferay.info.list.provider.item.selector.criterion.InfoListProviderItemSelectorReturnType;
 import com.liferay.info.pagination.InfoPage;
 import com.liferay.item.selector.ItemSelector;
+import com.liferay.item.selector.criteria.GroupItemSelectorReturnType;
 import com.liferay.item.selector.criteria.InfoListItemSelectorReturnType;
+import com.liferay.item.selector.criteria.group.criterion.GroupItemSelectorCriterion;
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
 import com.liferay.layout.page.template.service.LayoutPageTemplateEntryLocalServiceUtil;
 import com.liferay.petra.string.CharPool;
@@ -66,8 +71,10 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.module.configuration.ConfigurationException;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
@@ -77,6 +84,7 @@ import com.liferay.portal.kernel.portlet.PortletIdCodec;
 import com.liferay.portal.kernel.portlet.PortletProvider;
 import com.liferay.portal.kernel.portlet.PortletProviderUtil;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactoryUtil;
+import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.IndexerRegistryUtil;
@@ -113,6 +121,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -846,6 +855,86 @@ public class AssetPublisherDisplayContext {
 
 	public String[] getDisplayStyles() {
 		return _assetPublisherPortletInstanceConfiguration.displayStyles();
+	}
+
+	public List<DropdownItem> getDropdownItems(
+		PortletURL addScopeURL, Set<Group> availableGroups) {
+
+		return new DropdownItemList() {
+			{
+				HttpServletRequest httpServletRequest =
+					PortalUtil.getHttpServletRequest(_portletRequest);
+
+				for (Group group : availableGroups) {
+					if (ArrayUtil.contains(getGroupIds(), group.getGroupId())) {
+						continue;
+					}
+
+					add(
+						dropdownItem -> {
+							dropdownItem.putData("action", "addScope");
+							dropdownItem.putData(
+								"url",
+								PortletURLBuilder.create(
+									addScopeURL
+								).setParameter(
+									"groupId", group.getGroupId()
+								).setParameter(
+									"title",
+									group.getScopeDescriptiveName(_themeDisplay)
+								).buildString());
+							dropdownItem.setLabel(
+								group.getScopeDescriptiveName(_themeDisplay));
+						});
+				}
+
+				Layout layout = _themeDisplay.getLayout();
+
+				GroupItemSelectorCriterion groupItemSelectorCriterion =
+					new GroupItemSelectorCriterion(layout.isPrivateLayout());
+
+				groupItemSelectorCriterion.setDesiredItemSelectorReturnTypes(
+					new GroupItemSelectorReturnType());
+				groupItemSelectorCriterion.setIncludeChildSites(true);
+				groupItemSelectorCriterion.setIncludeLayoutScopes(true);
+				groupItemSelectorCriterion.setIncludeMySites(false);
+				groupItemSelectorCriterion.setIncludeParentSites(true);
+				groupItemSelectorCriterion.setIncludeRecentSites(false);
+				groupItemSelectorCriterion.setIncludeSitesThatIAdminister(true);
+
+				ItemSelector itemSelector =
+					(ItemSelector)httpServletRequest.getAttribute(
+						AssetPublisherWebKeys.ITEM_SELECTOR);
+
+				String label = LanguageUtil.get(
+					_httpServletRequest, "other-site-or-asset-library");
+
+				String itemSelectorEventName =
+					StringPool.UNDERLINE +
+						HtmlUtil.escapeJS(getPortletResource()) + "_selectSite";
+
+				add(
+					dropdownItem -> {
+						dropdownItem.putData("action", "openScopeSelector");
+						dropdownItem.putData(
+							"url",
+							PortletURLBuilder.create(
+								itemSelector.getItemSelectorURL(
+									RequestBackedPortletURLFactoryUtil.create(
+										_portletRequest),
+									itemSelectorEventName,
+									groupItemSelectorCriterion)
+							).setPortletResource(
+								getPortletResource()
+							).setParameter(
+								"groupId", layout.getGroupId()
+							).setParameter(
+								"plid", layout.getPlid()
+							).buildString());
+						dropdownItem.setLabel(label + StringPool.TRIPLE_PERIOD);
+					});
+			}
+		};
 	}
 
 	public LocalizedValuesMap getEmailAssetEntryAddedBody() {
