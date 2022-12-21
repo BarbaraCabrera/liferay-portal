@@ -11,7 +11,6 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
-
 package com.liferay.layout.utility.page.portlet.action.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
@@ -19,9 +18,12 @@ import com.liferay.layout.importer.LayoutsImporter;
 import com.liferay.layout.importer.LayoutsImporterResultEntry;
 import com.liferay.layout.page.template.model.LayoutPageTemplateStructure;
 import com.liferay.layout.page.template.service.LayoutPageTemplateStructureLocalService;
+import com.liferay.layout.test.util.ContentLayoutTestUtil;
 import com.liferay.layout.util.structure.DropZoneLayoutStructureItem;
 import com.liferay.layout.util.structure.LayoutStructure;
 import com.liferay.layout.util.structure.LayoutStructureItem;
+import com.liferay.layout.utility.page.constants.LayoutUtilityPageActionKeys;
+import com.liferay.layout.utility.page.constants.LayoutUtilityPageConstants;
 import com.liferay.layout.utility.page.model.LayoutUtilityPageEntry;
 import com.liferay.layout.utility.page.service.LayoutUtilityPageEntryLocalService;
 import com.liferay.portal.kernel.model.Group;
@@ -48,6 +50,7 @@ import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 import com.liferay.segments.service.SegmentsExperienceLocalService;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -82,44 +85,31 @@ public class ExportImportLayoutUtilityPageTest {
 			_group1, TestPropsValues.getUserId());
 		_serviceContext2 = ServiceContextTestUtil.getServiceContext(
 			_group2, TestPropsValues.getUserId());
+
+		ServiceContextThreadLocal.pushServiceContext(_serviceContext1);
+	}
+	@After
+	public void tearDown() {
+		ServiceContextThreadLocal.popServiceContext();
 	}
 
 	@Test
 	public void testExportImportLayoutUtilityPageEntryDropZoneAllowNewFragmentEntries()
 		throws Exception {
 
-		String type = StringUtil.randomString();
+		String externalReferenceCode = RandomTestUtil.randomString();
+
+		String type = "LAYOUT";
 
 		LayoutUtilityPageEntry layoutUtilityPageEntry1 =
-			_layoutUtilityPageEntryLocalService.addLayoutUtilityPageEntry(StringUtil.randomString(),
+			_layoutUtilityPageEntryLocalService.addLayoutUtilityPageEntry(externalReferenceCode,
 				_serviceContext1.getUserId(),
 				_serviceContext1.getScopeGroupId(), 0,
 				0, false, StringUtil.randomString(),
 				type, 0);
 
-		Layout layout1 = _layoutLocalService.fetchLayout(
-			layoutUtilityPageEntry1.getPlid());
-
-		Repository repository = PortletFileRepositoryUtil.addPortletRepository(
-			_group1.getGroupId(), RandomTestUtil.randomString(),
-			_serviceContext1);
-
-		Class<?> clazz = getClass();
-
-		FileEntry fileEntry = PortletFileRepositoryUtil.addPortletFileEntry(
-			null, _group1.getGroupId(), TestPropsValues.getUserId(),
-			LayoutUtilityPageEntry.class.getName(),
-			layoutUtilityPageEntry1.getLayoutUtilityPageEntryId(),
-			RandomTestUtil.randomString(), repository.getDlFolderId(),
-			clazz.getResourceAsStream("dependencies/thumbnail.png"),
-			RandomTestUtil.randomString(), ContentTypes.IMAGE_PNG, false);
-
-		_layoutUtilityPageEntryLocalService.updateLayoutUtilityPageEntry(
-			layoutUtilityPageEntry1.getLayoutUtilityPageEntryId(),
-			fileEntry.getFileEntryId());
-
 		File file = ReflectionTestUtil.invoke(
-			_mvcResourceCommand, "getFile", new Class<?>[] {long[].class},
+			_mvcResourceCommand, "_getFile", new Class<?>[] {long[].class},
 			new long[] {
 				layoutUtilityPageEntry1.getLayoutUtilityPageEntryId()
 			});
@@ -151,8 +141,8 @@ public class ExportImportLayoutUtilityPageTest {
 			layoutUtilityPageImportEntry.getStatus());
 
 		LayoutUtilityPageEntry layoutUtilityPageEntry2 =
-			_layoutUtilityPageEntryLocalService.fetchDefaultLayoutUtilityPageEntry(
-				_group2.getGroupId(), _group2.getTypeLabel());
+			_layoutUtilityPageEntryLocalService.fetchLayoutUtilityPageEntryByExternalReferenceCode(externalReferenceCode,
+				_group2.getGroupId());
 
 		Assert.assertNotNull(layoutUtilityPageEntry2);
 
@@ -161,8 +151,7 @@ public class ExportImportLayoutUtilityPageTest {
 
 		Assert.assertNotNull(layout2);
 
-		Assert.assertEquals(
-			layout1.getMasterLayoutPlid(), layout2.getMasterLayoutPlid());
+		Assert.assertEquals(0, layout2.getMasterLayoutPlid());
 
 		Assert.assertEquals(
 			layoutUtilityPageEntry1.getName(),
@@ -170,95 +159,6 @@ public class ExportImportLayoutUtilityPageTest {
 		Assert.assertEquals(
 			layoutUtilityPageEntry1.getType(),
 			layoutUtilityPageEntry2.getType());
-
-		LayoutPageTemplateStructure layoutPageTemplateStructure1 =
-			_layoutPageTemplateStructureLocalService.
-				fetchLayoutPageTemplateStructure(
-					layoutUtilityPageEntry1.getGroupId(),
-					layoutUtilityPageEntry1.getPlid());
-		LayoutPageTemplateStructure layoutPageTemplateStructure2 =
-			_layoutPageTemplateStructureLocalService.
-				fetchLayoutPageTemplateStructure(
-					layoutUtilityPageEntry2.getGroupId(),
-					layoutUtilityPageEntry2.getPlid());
-
-		LayoutStructure layoutStructure1 = LayoutStructure.of(
-			layoutPageTemplateStructure1.getDefaultSegmentsExperienceData());
-		LayoutStructure layoutStructure2 = LayoutStructure.of(
-			layoutPageTemplateStructure2.getDefaultSegmentsExperienceData());
-
-		DropZoneLayoutStructureItem dropZoneLayoutStructureItem1 =
-			_getDropZoneLayoutStructureItem(layoutStructure1);
-		DropZoneLayoutStructureItem dropZoneLayoutStructureItem2 =
-			_getDropZoneLayoutStructureItem(layoutStructure2);
-
-		_validateDropZoneLayoutStructureItem(
-			dropZoneLayoutStructureItem1, dropZoneLayoutStructureItem2);
-	}
-
-	private DropZoneLayoutStructureItem _getDropZoneLayoutStructureItem(
-		LayoutStructure layoutStructure) {
-
-		LayoutStructureItem layoutStructureItem =
-			_getMainChildLayoutStructureItem(layoutStructure);
-
-		Assert.assertTrue(
-			layoutStructureItem instanceof DropZoneLayoutStructureItem);
-
-		return (DropZoneLayoutStructureItem)layoutStructureItem;
-	}
-
-	private LayoutStructureItem _getMainChildLayoutStructureItem(
-		LayoutStructure layoutStructure) {
-
-		LayoutStructureItem mainLayoutStructureItem =
-			layoutStructure.getMainLayoutStructureItem();
-
-		List<String> childrenItemIds =
-			mainLayoutStructureItem.getChildrenItemIds();
-
-		Assert.assertEquals(
-			childrenItemIds.toString(), 1, childrenItemIds.size());
-
-		String childItemId = childrenItemIds.get(0);
-
-		return layoutStructure.getLayoutStructureItem(childItemId);
-	}
-
-	private String _read(String fileName) throws Exception {
-		return new String(
-			FileUtil.getBytes(getClass(), "dependencies/" + fileName));
-	}
-
-	private List<String> _removeNonfragmentEntryKeys(
-		List<String> importedFragmentEntryKeys) {
-
-		List<String> filteredFragmentEntryKeys = new ArrayList<>();
-
-		ListUtil.filter(
-			importedFragmentEntryKeys, filteredFragmentEntryKeys,
-			fragmentEntryKey -> !fragmentEntryKey.equals(
-				"lfr-all-fragments-id"));
-
-		return Collections.unmodifiableList(filteredFragmentEntryKeys);
-	}
-
-	private void _validateDropZoneLayoutStructureItem(
-		DropZoneLayoutStructureItem expectedDropZoneLayoutStructureItem,
-		DropZoneLayoutStructureItem actualDropZoneLayoutStructureItem) {
-
-		Assert.assertEquals(
-			expectedDropZoneLayoutStructureItem.isAllowNewFragmentEntries(),
-			actualDropZoneLayoutStructureItem.isAllowNewFragmentEntries());
-
-		Assert.assertEquals(
-			ListUtil.sort(
-				_removeNonfragmentEntryKeys(
-					expectedDropZoneLayoutStructureItem.
-						getFragmentEntryKeys())),
-			ListUtil.sort(
-				_removeNonfragmentEntryKeys(
-					actualDropZoneLayoutStructureItem.getFragmentEntryKeys())));
 	}
 
 	@DeleteAfterTestRun
