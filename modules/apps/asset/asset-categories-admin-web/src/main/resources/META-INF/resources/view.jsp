@@ -283,7 +283,9 @@
 					<c:if test="<%= assetCategoriesDisplayContext.isAssetCategoriesLimitExceeded() %>">
 						<div class="alert alert-warning">
 							<span class="alert-indicator">
-								<aui:icon image="warning" markupView="lexicon" />
+								<clay:icon
+									symbol="warning"
+								/>
 							</span>
 
 							<liferay-ui:message arguments="<%= assetCategoriesDisplayContext.getMaximumNumberOfCategoriesPerVocabulary() %>" key="you-have-reached-the-limit-of-x-categories-for-this-vocabulary" />
