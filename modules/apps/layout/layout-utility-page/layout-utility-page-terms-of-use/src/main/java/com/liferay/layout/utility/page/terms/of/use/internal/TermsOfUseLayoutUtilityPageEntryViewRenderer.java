@@ -59,7 +59,7 @@ public class TermsOfUseLayoutUtilityPageEntryViewRenderer
 		throws IOException, ServletException {
 
 		RequestDispatcher requestDispatcher =
-			_servletContext.getRequestDispatcher("/terms_of_use.jsp");
+			_servletContext.getRequestDispatcher("/terms_of_touluse.jsp");
 
 		requestDispatcher.include(httpServletRequest, httpServletResponse);
 	}
