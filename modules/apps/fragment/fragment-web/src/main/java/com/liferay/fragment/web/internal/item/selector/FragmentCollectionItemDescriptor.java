@@ -61,6 +61,11 @@ public class FragmentCollectionItemDescriptor
 		return _fragmentCollection.getName();
 	}
 
+	@Override
+	public boolean isCompact() {
+		return true;
+	}
+
 	private final FragmentCollection _fragmentCollection;
 
 }
