@@ -15,13 +15,18 @@
 package com.liferay.fragment.web.internal.display.context;
 
 import com.liferay.fragment.constants.FragmentActionKeys;
+import com.liferay.fragment.web.internal.constants.FragmentWebKeys;
+import com.liferay.fragment.web.internal.item.selector.FragmentCollectionItemSelectorCriterion;
 import com.liferay.fragment.web.internal.security.permission.resource.FragmentPermission;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemListBuilder;
+import com.liferay.item.selector.ItemSelector;
+import com.liferay.item.selector.criteria.UUIDItemSelectorReturnType;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
-import com.liferay.portal.kernel.portlet.LiferayWindowState;
+import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactory;
+import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactoryUtil;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
@@ -51,6 +56,9 @@ public class InheritedFragmentManagementToolbarDisplayContext
 			httpServletRequest, liferayPortletRequest, liferayPortletResponse,
 			fragmentDisplayContext.getFragmentEntriesSearchContainer(),
 			fragmentDisplayContext);
+
+		_itemSelector = (ItemSelector)httpServletRequest.getAttribute(
+			FragmentWebKeys.ITEM_SELECTOR);
 	}
 
 	@Override
@@ -117,14 +125,29 @@ public class InheritedFragmentManagementToolbarDisplayContext
 			ParamUtil.getLong(liferayPortletRequest, "fragmentCollectionId")
 		).put(
 			"selectFragmentCollectionURL",
-			() -> PortletURLBuilder.createActionURL(
-				liferayPortletResponse
-			).setMVCRenderCommandName(
-				"/fragment/select_fragment_collection"
-			).setWindowState(
-				LiferayWindowState.POP_UP
-			).buildString()
+			() -> {
+				FragmentCollectionItemSelectorCriterion
+					fragmentCollectionItemSelectorCriterion =
+						new FragmentCollectionItemSelectorCriterion();
+
+				fragmentCollectionItemSelectorCriterion.
+					setDesiredItemSelectorReturnTypes(
+						new UUIDItemSelectorReturnType());
+
+				RequestBackedPortletURLFactory requestBackedPortletURLFactory =
+					RequestBackedPortletURLFactoryUtil.create(
+						httpServletRequest);
+
+				return String.valueOf(
+					_itemSelector.getItemSelectorURL(
+						requestBackedPortletURLFactory,
+						liferayPortletResponse.getNamespace() +
+							"selectFragmentCollection",
+						fragmentCollectionItemSelectorCriterion));
+			}
 		).build();
 	}
+
+	private final ItemSelector _itemSelector;
 
 }
