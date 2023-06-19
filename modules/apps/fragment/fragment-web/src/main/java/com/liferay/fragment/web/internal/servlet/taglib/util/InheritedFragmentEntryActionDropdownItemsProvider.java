@@ -16,13 +16,18 @@ package com.liferay.fragment.web.internal.servlet.taglib.util;
 
 import com.liferay.fragment.constants.FragmentActionKeys;
 import com.liferay.fragment.model.FragmentEntry;
+import com.liferay.fragment.web.internal.constants.FragmentWebKeys;
+import com.liferay.fragment.web.internal.item.selector.FragmentCollectionItemSelectorCriterion;
 import com.liferay.fragment.web.internal.security.permission.resource.FragmentPermission;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemListBuilder;
+import com.liferay.item.selector.ItemSelector;
+import com.liferay.item.selector.criteria.UUIDItemSelectorReturnType;
 import com.liferay.petra.function.UnsafeConsumer;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletURL;
-import com.liferay.portal.kernel.portlet.LiferayWindowState;
+import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactory;
+import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactoryUtil;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.PortalUtil;
@@ -50,6 +55,8 @@ public class InheritedFragmentEntryActionDropdownItemsProvider {
 
 		_httpServletRequest = PortalUtil.getHttpServletRequest(renderRequest);
 
+		_itemSelector = (ItemSelector)_httpServletRequest.getAttribute(
+			FragmentWebKeys.ITEM_SELECTOR);
 		_themeDisplay = (ThemeDisplay)_httpServletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 	}
@@ -93,15 +100,27 @@ public class InheritedFragmentEntryActionDropdownItemsProvider {
 			dropdownItem.putData(
 				"fragmentEntryId",
 				String.valueOf(_fragmentEntry.getFragmentEntryId()));
+
+			FragmentCollectionItemSelectorCriterion
+				fragmentCollectionItemSelectorCriterion =
+					new FragmentCollectionItemSelectorCriterion();
+
+			fragmentCollectionItemSelectorCriterion.
+				setDesiredItemSelectorReturnTypes(
+					new UUIDItemSelectorReturnType());
+
+			RequestBackedPortletURLFactory requestBackedPortletURLFactory =
+				RequestBackedPortletURLFactoryUtil.create(_httpServletRequest);
+
 			dropdownItem.putData(
 				"selectFragmentCollectionURL",
-				PortletURLBuilder.createRenderURL(
-					_renderResponse
-				).setMVCRenderCommandName(
-					"/fragment/select_fragment_collection"
-				).setWindowState(
-					LiferayWindowState.POP_UP
-				).buildString());
+				String.valueOf(
+					_itemSelector.getItemSelectorURL(
+						requestBackedPortletURLFactory,
+						_renderResponse.getNamespace() +
+							"selectFragmentCollection",
+						fragmentCollectionItemSelectorCriterion)));
+
 			dropdownItem.setIcon("copy");
 			dropdownItem.setLabel(
 				LanguageUtil.get(_httpServletRequest, "copy-to"));
@@ -130,6 +149,7 @@ public class InheritedFragmentEntryActionDropdownItemsProvider {
 
 	private final FragmentEntry _fragmentEntry;
 	private final HttpServletRequest _httpServletRequest;
+	private final ItemSelector _itemSelector;
 	private final RenderResponse _renderResponse;
 	private final ThemeDisplay _themeDisplay;
 
