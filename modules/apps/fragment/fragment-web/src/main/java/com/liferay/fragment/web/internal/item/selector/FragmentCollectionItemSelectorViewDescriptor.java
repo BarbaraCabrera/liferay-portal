@@ -48,8 +48,12 @@ public class FragmentCollectionItemSelectorViewDescriptor
 	implements ItemSelectorViewDescriptor<FragmentCollection> {
 
 	public FragmentCollectionItemSelectorViewDescriptor(
+		FragmentCollectionItemSelectorCriterion
+			fragmentCollectionItemSelectorCriterion,
 		HttpServletRequest httpServletRequest, PortletURL portletURL) {
 
+		_fragmentCollectionItemSelectorCriterion =
+			fragmentCollectionItemSelectorCriterion;
 		_httpServletRequest = httpServletRequest;
 		_portletURL = portletURL;
 
@@ -117,7 +121,9 @@ public class FragmentCollectionItemSelectorViewDescriptor
 
 		long[] groupIds = {themeDisplay.getScopeGroupId()};
 
-		if (_isIncludeGlobalFragmentCollections()) {
+		if (_fragmentCollectionItemSelectorCriterion.
+				getIsIncludeGlobalFragmentCollections()) {
+
 			groupIds = new long[] {
 				themeDisplay.getScopeGroupId(), themeDisplay.getCompanyGroupId()
 			};
@@ -193,17 +199,6 @@ public class FragmentCollectionItemSelectorViewDescriptor
 		return _orderByCol;
 	}
 
-	private boolean _isIncludeGlobalFragmentCollections() {
-		if (_includeGlobalFragmentCollections != null) {
-			return _includeGlobalFragmentCollections;
-		}
-
-		_includeGlobalFragmentCollections = ParamUtil.getBoolean(
-			_httpServletRequest, "includeGlobalFragmentCollections");
-
-		return _includeGlobalFragmentCollections;
-	}
-
 	private boolean _isSearch() {
 		if (Validator.isNotNull(_getKeywords())) {
 			return true;
@@ -212,8 +207,9 @@ public class FragmentCollectionItemSelectorViewDescriptor
 		return false;
 	}
 
+	private final FragmentCollectionItemSelectorCriterion
+		_fragmentCollectionItemSelectorCriterion;
 	private final HttpServletRequest _httpServletRequest;
-	private Boolean _includeGlobalFragmentCollections;
 	private String _keywords;
 	private String _orderByCol;
 	private String _orderByType;

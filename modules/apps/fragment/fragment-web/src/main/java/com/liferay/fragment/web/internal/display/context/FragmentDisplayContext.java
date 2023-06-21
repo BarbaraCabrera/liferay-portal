@@ -27,6 +27,7 @@ import com.liferay.fragment.util.comparator.FragmentCollectionContributorNameCom
 import com.liferay.fragment.util.comparator.FragmentCompositionFragmentEntryNameComparator;
 import com.liferay.fragment.web.internal.constants.FragmentTypeConstants;
 import com.liferay.fragment.web.internal.constants.FragmentWebKeys;
+import com.liferay.fragment.web.internal.item.selector.FragmentCollectionItemSelectorCriterion;
 import com.liferay.fragment.web.internal.security.permission.resource.FragmentPermission;
 import com.liferay.fragment.web.internal.util.FragmentPortletUtil;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
@@ -378,6 +379,13 @@ public class FragmentDisplayContext {
 	public Map<String, Object> getFragmentCollectionsViewContext()
 		throws Exception {
 
+		FragmentCollectionItemSelectorCriterion
+			fragmentCollectionItemSelectorCriterion =
+				new FragmentCollectionItemSelectorCriterion();
+
+		fragmentCollectionItemSelectorCriterion.
+			setIsIncludeGlobalFragmentCollections(true);
+
 		return HashMapBuilder.<String, Object>put(
 			"deleteFragmentCollectionURL",
 			() -> {
@@ -436,8 +444,6 @@ public class FragmentDisplayContext {
 				_renderResponse
 			).setMVCRenderCommandName(
 				"/fragment/view_fragment_collections"
-			).setParameter(
-				"includeGlobalFragmentCollections", true
 			).setWindowState(
 				LiferayWindowState.POP_UP
 			).buildString()
