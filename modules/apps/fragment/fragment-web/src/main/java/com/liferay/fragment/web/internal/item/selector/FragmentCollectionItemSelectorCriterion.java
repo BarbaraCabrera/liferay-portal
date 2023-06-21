@@ -21,4 +21,17 @@ import com.liferay.item.selector.BaseItemSelectorCriterion;
  */
 public class FragmentCollectionItemSelectorCriterion
 	extends BaseItemSelectorCriterion {
+
+	public boolean getIsIncludeGlobalFragmentCollections() {
+		return _includeGlobalFragmentCollections;
+	}
+
+	public void setIsIncludeGlobalFragmentCollections(
+		boolean includeGlobalFragmentCollections) {
+
+		_includeGlobalFragmentCollections = includeGlobalFragmentCollections;
+	}
+
+	private boolean _includeGlobalFragmentCollections;
+
 }
