@@ -72,9 +72,24 @@ editDDMStructureURL.setParameter("structureKey", String.valueOf(ddmStructureKey)
 				</li>
 				<li class="tbar-item">
 					<div class="journal-article-button-row tbar-section text-right">
-						<aui:button cssClass="btn-sm c-mr-3" href="<%= redirect %>" type="cancel" />
+						<clay:link
+							borderless="<%= true %>"
+							cssClass="mr-3"
+							displayType="secondary"
+							href="<%= redirect %>"
+							label="cancel"
+							small="<%= true %>"
+							type="button"
+						/>
 
-						<aui:button cssClass="btn-sm c-mr-3" id="submitButton" type="submit" value="save" />
+						<clay:button
+							cssClass="mr-3"
+							displayType="primary"
+							id="<%= liferayPortletResponse.getNamespace() + "submitButton" %>"
+							label="save"
+							small="<%= true %>"
+							type="submit"
+						/>
 					</div>
 				</li>
 			</ul>
