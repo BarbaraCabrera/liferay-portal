@@ -58,9 +58,30 @@ renderResponse.setTitle(journalEditDDMTemplateDisplayContext.getTitle());
 				</li>
 				<li class="tbar-item">
 					<div class="journal-article-button-row tbar-section text-right">
-						<aui:button cssClass="btn-sm mr-3" href="<%= journalEditDDMTemplateDisplayContext.getRedirect() %>" type="cancel" />
-						<aui:button cssClass="btn-sm mr-3 save-and-continue-button" primary="<%= false %>" type="submit" value="save-and-continue" />
-						<aui:button cssClass="btn-sm mr-3 save-button" type="submit" value="save" />
+						<clay:link
+							cssClass="border-0 mr-3"
+							displayType="secondary"
+							href="<%= journalEditDDMTemplateDisplayContext.getRedirect() %>"
+							label="cancel"
+							small="<%= true %>"
+							type="button"
+						/>
+
+						<clay:button
+							cssClass="mr-3 save-and-continue-button"
+							displayType="secondary"
+							label="save-and-continue"
+							small="<%= true %>"
+							type="submit"
+						/>
+
+						<clay:button
+							cssClass="mr-3 save-button"
+							displayType="primary"
+							label="save"
+							small="<%= true %>"
+							type="submit"
+						/>
 					</div>
 				</li>
 			</ul>
