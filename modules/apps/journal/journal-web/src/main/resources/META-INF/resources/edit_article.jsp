@@ -85,7 +85,15 @@ JournalEditArticleDisplayContext journalEditArticleDisplayContext = new JournalE
 								</div>
 							</c:when>
 							<c:otherwise>
-								<aui:button cssClass="btn-outline-borderless btn-outline-secondary btn-sm mr-3" href="<%= journalEditArticleDisplayContext.getRedirect() %>" type="cancel" />
+								<clay:link
+									cssClass="mr-3"
+									displayType="secondary"
+									href="<%= journalEditArticleDisplayContext.getRedirect() %>"
+									label="cancel"
+									small="<%= true %>"
+									borderless="<%= true %>"
+									type="button"
+								/>
 							</c:otherwise>
 						</c:choose>
 
@@ -98,15 +106,37 @@ JournalEditArticleDisplayContext journalEditArticleDisplayContext = new JournalE
 								<portlet:param name="ddmStructureId" value="<%= String.valueOf(ddmStructure.getStructureId()) %>" />
 							</portlet:actionURL>
 
-							<aui:button cssClass="btn-sm mr-3" data-url="<%= resetValuesDDMStructureURL %>" name="resetValuesButton" value="reset-values" />
+							<clay:button
+								cssClass="mr-3"
+								displayType="secondary"
+								data-url="<%= resetValuesDDMStructureURL %>"
+								id="<%= liferayPortletResponse.getNamespace() + "resetValuesButton" %>"
+								label="reset-values"
+								small="<%= true %>"
+							/>
 						</c:if>
 
 						<c:if test="<%= journalEditArticleDisplayContext.hasSavePermission() %>">
 							<c:if test="<%= !journalEditArticleDisplayContext.isJournalArticleAutoSaveDraftEnabled() && (journalEditArticleDisplayContext.getClassNameId() == JournalArticleConstants.CLASS_NAME_ID_DEFAULT) %>">
-								<aui:button cssClass="btn-sm mr-3" data-actionname='<%= ((article == null) || Validator.isNull(article.getArticleId())) ? "/journal/add_article" : "/journal/update_article" %>' name="saveButton" primary="<%= false %>" type="submit" value="<%= journalEditArticleDisplayContext.getSaveButtonLabel() %>" />
+								<clay:button
+									cssClass="mr-3"
+									displayType="secondary"
+									id="<%= liferayPortletResponse.getNamespace() + "saveButton" %>"
+									label="<%= journalEditArticleDisplayContext.getSaveButtonLabel() %>"
+									small="<%= true %>"
+									type="submit"
+								/>
 							</c:if>
 
-							<aui:button cssClass="btn-sm mr-3" data-actionname="<%= Constants.PUBLISH %>" disabled="<%= journalEditArticleDisplayContext.isPending() %>" name="publishButton" type="submit" value="<%= journalEditArticleDisplayContext.getPublishButtonLabel() %>" />
+							<clay:button
+								cssClass="mr-3"
+								data-actionname="<%= Constants.PUBLISH %>"
+								displayType="primary"
+								id="<%= liferayPortletResponse.getNamespace() + "publishButton" %>"
+								label="<%= journalEditArticleDisplayContext.getPublishButtonLabel() %>"
+								small="<%= true %>"
+								type="submit"
+							/>
 						</c:if>
 
 						<div role="tablist">
