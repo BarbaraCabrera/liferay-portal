@@ -280,11 +280,45 @@ renderResponse.setTitle(title);
 							/>
 						</liferay-ui:search-container>
 
+						<liferay-util:buffer
+							var="workflowDefinitionsBuffer"
+						>
+							<c:if test="<%= workflowEnabled %>">
+								<aui:select label="" name="LIFERAY_WORKFLOW_DEFINITION_DDM_STRUCTURE" title="workflow-definition" wrapperCssClass="mb-0">
+									<aui:option label="no-workflow" value="" />
+
+									<%
+									for (WorkflowDefinition workflowDefinition : workflowDefinitions) {
+									%>
+
+										<aui:option label="<%= HtmlUtil.escape(workflowDefinition.getTitle(languageId)) %>" value="<%= HtmlUtil.escapeAttribute(workflowDefinition.getName()) + StringPool.AT + workflowDefinition.getVersion() %>" />
+
+									<%
+									}
+									%>
+
+								</aui:select>
+							</c:if>
+						</liferay-util:buffer>
+
 						<clay:button
+							additionalProps='<%=
+								HashMapBuilder.<String, Object>put(
+									"DDMStructureURL", journalDisplayContext.getSelectDDMStructureURL()
+								).put(
+									"removeDDMStructureIcon", removeDDMStructureIcon
+								).put(
+									"workflowDefinitionsBuffer", workflowDefinitionsBuffer
+								).put(
+									"workflowEnabled", workflowEnabled
+								).build()
+							%>'
 							displayType="secondary"
 							id='<%= liferayPortletResponse.getNamespace() + "selectDDMStructure" %>'
 							label="choose-structure"
+							propsTransformer="js/SelectDDMStructureButtonPropsTransformer"
 						/>
+
 					</div>
 				</c:if>
 
@@ -344,91 +378,6 @@ renderResponse.setTitle(title);
 		/>
 	</liferay-frontend:edit-form-footer>
 </liferay-frontend:edit-form>
-
-<liferay-util:buffer
-	var="workflowDefinitionsBuffer"
->
-	<c:if test="<%= workflowEnabled %>">
-		<aui:select label="" name="LIFERAY_WORKFLOW_DEFINITION_DDM_STRUCTURE" title="workflow-definition" wrapperCssClass="mb-0">
-			<aui:option label="no-workflow" value="" />
-
-			<%
-			for (WorkflowDefinition workflowDefinition : workflowDefinitions) {
-			%>
-
-				<aui:option label="<%= HtmlUtil.escape(workflowDefinition.getTitle(languageId)) %>" value="<%= HtmlUtil.escapeAttribute(workflowDefinition.getName()) + StringPool.AT + workflowDefinition.getVersion() %>" />
-
-			<%
-			}
-			%>
-
-		</aui:select>
-	</c:if>
-</liferay-util:buffer>
-
-<aui:script use="liferay-search-container">
-	var searchContainer = Liferay.SearchContainer.get(
-		'<portlet:namespace />ddmStructuresSearchContainer'
-	);
-
-	var selectDDMStructureButton = document.getElementById(
-		'<portlet:namespace />selectDDMStructure'
-	);
-
-	if (selectDDMStructureButton) {
-		selectDDMStructureButton.addEventListener('click', (event) => {
-			Liferay.Util.openSelectionModal({
-				onSelect: function (selectedItem) {
-					const itemValue = JSON.parse(selectedItem.value);
-
-					var ddmStructureLink = `
-							<button aria-label="<%= LanguageUtil.get(request, "remove") %>" class="btn btn-monospaced btn-outline-borderless btn-outline-secondary float-right modify-link" data-rowId="${itemValue.ddmstructureid }" title="<%= LanguageUtil.get(request, "remove") %>">
-								<%= UnicodeFormatter.toString(removeDDMStructureIcon) %></button>`;
-
-					<c:choose>
-						<c:when test="<%= workflowEnabled %>">
-							var workflowDefinitions =
-								'<%= UnicodeFormatter.toString(workflowDefinitionsBuffer) %>';
-
-							workflowDefinitions = workflowDefinitions.replace(
-								/LIFERAY_WORKFLOW_DEFINITION_DDM_STRUCTURE/g,
-								'workflowDefinition' + itemValue.ddmstructureid
-							);
-
-							searchContainer.addRow(
-								[itemValue.name, workflowDefinitions, ddmStructureLink],
-								itemValue.ddmstructureid
-							);
-						</c:when>
-						<c:otherwise>
-							searchContainer.addRow(
-								[itemValue.name, ddmStructureLink],
-								itemValue.ddmstructureid
-							);
-						</c:otherwise>
-					</c:choose>
-
-					searchContainer.updateDataStore();
-				},
-				selectEventName: '<portlet:namespace />selectDDMStructure',
-				title: '<%= UnicodeLanguageUtil.get(request, "structures") %>',
-				url: '<%= journalDisplayContext.getSelectDDMStructureURL() %>>',
-			});
-		});
-	}
-
-	searchContainer.get('contentBox').delegate(
-		'click',
-		(event) => {
-			var link = event.currentTarget;
-
-			var tr = link.ancestor('tr');
-
-			searchContainer.deleteRow(tr, link.attr('data-rowId'));
-		},
-		'.modify-link'
-	);
-</aui:script>
 
 <aui:script>
 	Liferay.Util.toggleRadio('<portlet:namespace />restrictionTypeInherit', '', [
