@@ -8,7 +8,7 @@ import {openSelectionModal} from 'frontend-js-web';
 export default function propsTransformer({
 	 additionalProps: {
 		 DDMStructureURL,
-		 removeDDMStructureIcon,
+		 removeDDMStructureButton,
 		 workflowDefinitionsBuffer,
 		 workflowEnabled},
 	 portletNamespace,
@@ -26,21 +26,15 @@ export default function propsTransformer({
 					if (selectedItem) {
 						const itemValue = JSON.parse(selectedItem.value);
 
-						const ddmStructureLink = `
-								<button 
-									aria-label=${Liferay.Language.get('remove')} 
-									class="btn btn-monospaced btn-outline-borderless btn-outline-secondary float-right modify-link" 
-									data-rowId="${itemValue.ddmstructureid}" 
-									title=${Liferay.Language.get('remove')}
-									>
-									${removeDDMStructureIcon}
-									</button>`;
+						const removeStructureButton = removeDDMStructureButton.replace(
+							/DDM_STRUCTURE_ID_BUTTON/g, itemValue.ddmstructureid);
 
 						if (workflowEnabled) {
+
 							let workflowDefinitions = workflowDefinitionsBuffer;
 
 							workflowDefinitions = workflowDefinitions.replace(
-								/LIFERAY_WORKFLOW_DEFINITION_DDM_STRUCTURE/g,
+								/DDM_STRUCTURE_ID/g,
 								'workflowDefinition' +
 								itemValue.ddmstructureid
 							);
@@ -49,14 +43,14 @@ export default function propsTransformer({
 								[
 									itemValue.name,
 									workflowDefinitions,
-									ddmStructureLink,
+									removeStructureButton,
 								],
 								itemValue.ddmstructureid
 							);
 						}
 						else {
 							searchContainer.addRow(
-								[itemValue.name, ddmStructureLink],
+								[itemValue.name, removeStructureButton],
 								itemValue.ddmstructureid
 							);
 						}
@@ -74,7 +68,7 @@ export default function propsTransformer({
 			);
 
 			const selectDDMStructureButton = document.getElementById(
-				`${portletNamespace}selectDDMStructure`
+				`${portletNamespace}selectDDMStructureButton`
 			);
 
 			if (selectDDMStructureButton) {

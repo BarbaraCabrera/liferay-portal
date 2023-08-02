@@ -53,11 +53,40 @@ renderResponse.setTitle(title);
 </portlet:actionURL>
 
 <liferay-util:buffer
-	var="removeDDMStructureIcon"
+	var="removeDDMStructureButton"
 >
-	<clay:icon
-		symbol="times-circle"
+	<clay:button
+		aria-label = '<%=LanguageUtil.get(request, "remove") %>'
+		borderless="<%= true %>"
+		class="float-right modify-link"
+		data-rowId= "DDM_STRUCTURE_ID_BUTTON"
+		displayType="secondary"
+		monospaced="<%= true %>"
+		title= '<%=LanguageUtil.get(request, "remove") %>'
+		icon = "times-circle"
 	/>
+
+</liferay-util:buffer>
+
+<liferay-util:buffer
+	var="workflowDefinitionsBuffer"
+>
+	<c:if test="<%= workflowEnabled %>">
+		<aui:select label="" name="DDM_STRUCTURE_ID" title="workflow-definition" wrapperCssClass="mb-0">
+			<aui:option label="no-workflow" value="" />
+
+			<%
+				for (WorkflowDefinition workflowDefinition : workflowDefinitions) {
+			%>
+
+			<aui:option label="<%= HtmlUtil.escape(workflowDefinition.getTitle(languageId)) %>" value="<%= HtmlUtil.escapeAttribute(workflowDefinition.getName()) + StringPool.AT + workflowDefinition.getVersion() %>" />
+
+			<%
+				}
+			%>
+
+		</aui:select>
+	</c:if>
 </liferay-util:buffer>
 
 <liferay-frontend:edit-form
@@ -280,33 +309,12 @@ renderResponse.setTitle(title);
 							/>
 						</liferay-ui:search-container>
 
-						<liferay-util:buffer
-							var="workflowDefinitionsBuffer"
-						>
-							<c:if test="<%= workflowEnabled %>">
-								<aui:select label="" name="LIFERAY_WORKFLOW_DEFINITION_DDM_STRUCTURE" title="workflow-definition" wrapperCssClass="mb-0">
-									<aui:option label="no-workflow" value="" />
-
-									<%
-									for (WorkflowDefinition workflowDefinition : workflowDefinitions) {
-									%>
-
-										<aui:option label="<%= HtmlUtil.escape(workflowDefinition.getTitle(languageId)) %>" value="<%= HtmlUtil.escapeAttribute(workflowDefinition.getName()) + StringPool.AT + workflowDefinition.getVersion() %>" />
-
-									<%
-									}
-									%>
-
-								</aui:select>
-							</c:if>
-						</liferay-util:buffer>
-
 						<clay:button
 							additionalProps='<%=
 								HashMapBuilder.<String, Object>put(
 									"DDMStructureURL", journalDisplayContext.getSelectDDMStructureURL()
 								).put(
-									"removeDDMStructureIcon", removeDDMStructureIcon
+									"removeDDMStructureButton", removeDDMStructureButton
 								).put(
 									"workflowDefinitionsBuffer", workflowDefinitionsBuffer
 								).put(
@@ -314,7 +322,7 @@ renderResponse.setTitle(title);
 								).build()
 							%>'
 							displayType="secondary"
-							id='<%= liferayPortletResponse.getNamespace() + "selectDDMStructure" %>'
+							id='<%= liferayPortletResponse.getNamespace() + "selectDDMStructureButton" %>'
 							label="choose-structure"
 							propsTransformer="js/SelectDDMStructureButtonPropsTransformer"
 						/>
