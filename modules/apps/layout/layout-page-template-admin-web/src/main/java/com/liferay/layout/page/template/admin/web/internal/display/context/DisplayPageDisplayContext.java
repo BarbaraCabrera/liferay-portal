@@ -9,12 +9,15 @@ import com.liferay.layout.page.template.admin.constants.LayoutPageTemplateAdminP
 import com.liferay.layout.page.template.admin.web.internal.util.LayoutPageTemplatePortletUtil;
 import com.liferay.layout.page.template.constants.LayoutPageTemplateConstants;
 import com.liferay.layout.page.template.constants.LayoutPageTemplateEntryTypeConstants;
+import com.liferay.layout.page.template.model.LayoutPageTemplateCollection;
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
+import com.liferay.layout.page.template.service.LayoutPageTemplateCollectionServiceUtil;
 import com.liferay.layout.page.template.service.LayoutPageTemplateEntryServiceUtil;
 import com.liferay.layout.page.template.util.comparator.LayoutPageTemplateCollectionLayoutPageTemplateEntryCreateDateComparator;
 import com.liferay.layout.page.template.util.comparator.LayoutPageTemplateCollectionLayoutPageTemplateEntryNameComparator;
 import com.liferay.portal.kernel.dao.search.EmptyOnClickRowChecker;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.portlet.SearchOrderByUtil;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
@@ -164,7 +167,7 @@ public class DisplayPageDisplayContext {
 				LayoutPageTemplateEntryServiceUtil.
 					getLayoutPageCollectionsAndLayoutPageTemplateEntries(
 						_themeDisplay.getScopeGroupId(),
-						_getLayoutPageTemplateCollectionId(),
+						getLayoutPageTemplateCollectionId(),
 						LayoutPageTemplateEntryTypeConstants.TYPE_DISPLAY_PAGE,
 						displayPagesSearchContainer.getStart(),
 						displayPagesSearchContainer.getEnd(),
@@ -172,7 +175,7 @@ public class DisplayPageDisplayContext {
 			LayoutPageTemplateEntryServiceUtil.
 				getLayoutPageCollectionsAndLayoutPageTemplateEntriesCount(
 					_themeDisplay.getScopeGroupId(),
-					_getLayoutPageTemplateCollectionId(),
+					getLayoutPageTemplateCollectionId(),
 					LayoutPageTemplateEntryTypeConstants.TYPE_DISPLAY_PAGE));
 
 		displayPagesSearchContainer.setRowChecker(
@@ -191,6 +194,27 @@ public class DisplayPageDisplayContext {
 		_keywords = ParamUtil.getString(_httpServletRequest, "keywords");
 
 		return _keywords;
+	}
+
+	public LayoutPageTemplateCollection getLayoutPageTemplateCollection()
+		throws PortalException {
+
+		return LayoutPageTemplateCollectionServiceUtil.
+			fetchLayoutPageTemplateCollection(
+				getLayoutPageTemplateCollectionId());
+	}
+
+	public long getLayoutPageTemplateCollectionId() {
+		if (_layoutPageTemplateCollectionId != null) {
+			return _layoutPageTemplateCollectionId;
+		}
+
+		_layoutPageTemplateCollectionId = ParamUtil.getLong(
+			_httpServletRequest, "layoutPageTemplateCollectionId",
+			LayoutPageTemplateConstants.
+				PARENT_LAYOUT_PAGE_TEMPLATE_COLLECTION_ID_DEFAULT);
+
+		return _layoutPageTemplateCollectionId;
 	}
 
 	public long getLayoutPageTemplateEntryId() {
@@ -280,19 +304,6 @@ public class DisplayPageDisplayContext {
 		}
 
 		return false;
-	}
-
-	private long _getLayoutPageTemplateCollectionId() {
-		if (_layoutPageTemplateCollectionId != null) {
-			return _layoutPageTemplateCollectionId;
-		}
-
-		_layoutPageTemplateCollectionId = ParamUtil.getLong(
-			_httpServletRequest, "layoutPageTemplateCollectionId",
-			LayoutPageTemplateConstants.
-				PARENT_LAYOUT_PAGE_TEMPLATE_COLLECTION_ID_DEFAULT);
-
-		return _layoutPageTemplateCollectionId;
 	}
 
 	private OrderByComparator<Object> _getOrderByComparator() {
