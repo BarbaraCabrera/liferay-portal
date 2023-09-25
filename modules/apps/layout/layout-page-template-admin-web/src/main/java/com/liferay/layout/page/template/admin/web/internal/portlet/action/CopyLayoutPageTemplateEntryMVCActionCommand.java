@@ -91,10 +91,13 @@ public class CopyLayoutPageTemplateEntryMVCActionCommand
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
 			actionRequest);
 
+		boolean copyPermissions = ParamUtil.getBoolean(
+			actionRequest, "copyPermissions");
+
 		LayoutPageTemplateEntry layoutPageTemplateEntry =
 			_layoutPageTemplateEntryService.copyLayoutPageTemplateEntry(
 				themeDisplay.getScopeGroupId(), layoutPageTemplateCollectionId,
-				layoutPageTemplateEntryId, serviceContext);
+				layoutPageTemplateEntryId, copyPermissions, serviceContext);
 
 		LayoutPageTemplateEntry sourceLayoutPageTemplateEntry =
 			_layoutPageTemplateEntryLocalService.getLayoutPageTemplateEntry(
