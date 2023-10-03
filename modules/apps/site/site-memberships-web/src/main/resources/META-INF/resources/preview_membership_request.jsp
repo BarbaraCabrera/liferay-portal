@@ -26,6 +26,7 @@ String userName = PortalUtil.getUserName(membershipRequest.getUserId(), StringPo
 
 portletDisplay.setShowBackIcon(true);
 portletDisplay.setURLBack(redirect);
+portletDisplay.setURLBackTitle(LanguageUtil.get(request, "membership-requests"));
 
 renderResponse.setTitle(userName);
 %>
