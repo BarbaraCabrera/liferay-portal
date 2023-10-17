@@ -5,6 +5,7 @@
 
 package com.liferay.journal.web.internal.display.context;
 
+import com.liferay.asset.kernel.model.AssetCategory;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.util.comparator.StructureModifiedDateComparator;
 import com.liferay.dynamic.data.mapping.util.comparator.StructureNameComparator;
@@ -16,6 +17,9 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemList;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemListBuilder;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.LabelItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.LabelItemListBuilder;
+import com.liferay.item.selector.ItemSelector;
+import com.liferay.item.selector.criteria.InfoItemItemSelectorReturnType;
+import com.liferay.item.selector.criteria.info.item.criterion.InfoItemItemSelectorCriterion;
 import com.liferay.journal.constants.JournalPortletKeys;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.web.internal.configuration.JournalWebConfiguration;
@@ -37,6 +41,7 @@ import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.portlet.PortalPreferences;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portal.kernel.portlet.PortletURLUtil;
+import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactory;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactoryUtil;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
@@ -86,11 +91,15 @@ public class JournalManagementToolbarDisplayContext
 		_journalDisplayContext = journalDisplayContext;
 		_trashHelper = trashHelper;
 
+		_itemSelector = (ItemSelector)httpServletRequest.getAttribute(
+			ItemSelector.class.getName());
+
 		_journalWebConfiguration =
 			(JournalWebConfiguration)httpServletRequest.getAttribute(
 				JournalWebConfiguration.class.getName());
 		_themeDisplay = (ThemeDisplay)httpServletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
+
 		_translationURLProvider =
 			(TranslationURLProvider)httpServletRequest.getAttribute(
 				TranslationURLProvider.class.getName());
@@ -213,6 +222,8 @@ public class JournalManagementToolbarDisplayContext
 			).setWindowState(
 				LiferayWindowState.POP_UP
 			).buildString()
+		).put(
+			"selectAssetCategoryURL", _getAssetCategorySelectorURL()
 		).put(
 			"selectEntityURL", _journalDisplayContext.getSelectDDMStructureURL()
 		).put(
@@ -486,6 +497,24 @@ public class JournalManagementToolbarDisplayContext
 				LanguageUtil.get(httpServletRequest, "structures")
 			).build());
 
+		filterNavigationDropdownItems.add(
+			DropdownItemBuilder.putData(
+				"action", "openDDMCategoriesSelector"
+			).setActive(
+				_journalDisplayContext.isNavigationStructure()
+			).setLabel(
+				LanguageUtil.get(httpServletRequest, "categories")
+			).build());
+
+		filterNavigationDropdownItems.add(
+			DropdownItemBuilder.putData(
+				"action", "openDDMTagsSelector"
+			).setActive(
+				_journalDisplayContext.isNavigationStructure()
+			).setLabel(
+				LanguageUtil.get(httpServletRequest, "tags")
+			).build());
+
 		return filterNavigationDropdownItems;
 	}
 
@@ -515,6 +544,27 @@ public class JournalManagementToolbarDisplayContext
 	@Override
 	protected String[] getOrderByKeys() {
 		return _journalDisplayContext.getOrderColumns();
+	}
+
+	private String _getAssetCategorySelectorURL() {
+		RequestBackedPortletURLFactory requestBackedPortletURLFactory =
+			RequestBackedPortletURLFactoryUtil.create(liferayPortletRequest);
+
+		InfoItemItemSelectorCriterion itemSelectorCriterion =
+			new InfoItemItemSelectorCriterion();
+
+		itemSelectorCriterion.setDesiredItemSelectorReturnTypes(
+			new InfoItemItemSelectorReturnType());
+		itemSelectorCriterion.setItemType(AssetCategory.class.getName());
+		itemSelectorCriterion.setMultiSelection(true);
+
+		return PortletURLBuilder.create(
+			_itemSelector.getItemSelectorURL(
+				requestBackedPortletURLFactory, _themeDisplay.getScopeGroup(),
+				_themeDisplay.getScopeGroupId(),
+				liferayPortletResponse.getNamespace() + "selectedAssetCategory",
+				itemSelectorCriterion)
+		).buildString();
 	}
 
 	private CreationMenu _getCreationMenu() throws PortalException {
@@ -771,6 +821,7 @@ public class JournalManagementToolbarDisplayContext
 
 	private String _ddmStructureOrderByCol;
 	private String _ddmStructureOrderByType;
+	private final ItemSelector _itemSelector;
 	private final JournalDisplayContext _journalDisplayContext;
 	private final JournalWebConfiguration _journalWebConfiguration;
 	private final ThemeDisplay _themeDisplay;
