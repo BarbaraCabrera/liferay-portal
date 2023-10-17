@@ -5,7 +5,10 @@
 
 package com.liferay.journal.web.internal.display.context;
 
+import com.liferay.asset.categories.admin.web.internal.display.context.AssetCategoriesDisplayContext;
 import com.liferay.asset.kernel.model.AssetCategory;
+import com.liferay.asset.kernel.model.AssetVocabulary;
+import com.liferay.asset.kernel.service.AssetVocabularyLocalService;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.util.comparator.StructureModifiedDateComparator;
 import com.liferay.dynamic.data.mapping.util.comparator.StructureNameComparator;
@@ -49,6 +52,8 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.HtmlUtil;
+import com.liferay.portal.kernel.util.JavaConstants;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
@@ -68,6 +73,8 @@ import java.util.Objects;
 
 import javax.portlet.PortletURL;
 
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -103,6 +110,11 @@ public class JournalManagementToolbarDisplayContext
 		_translationURLProvider =
 			(TranslationURLProvider)httpServletRequest.getAttribute(
 				TranslationURLProvider.class.getName());
+
+		_renderRequest = (RenderRequest)httpServletRequest.getAttribute(
+			JavaConstants.JAVAX_PORTLET_REQUEST);
+		_renderResponse = (RenderResponse)httpServletRequest.getAttribute(
+			JavaConstants.JAVAX_PORTLET_RESPONSE);
 	}
 
 	@Override
@@ -164,80 +176,85 @@ public class JournalManagementToolbarDisplayContext
 
 	@Override
 	public Map<String, Object> getAdditionalProps() {
-		return HashMapBuilder.<String, Object>put(
-			"addArticleURL",
-			PortletURLBuilder.createRenderURL(
-				liferayPortletResponse
-			).setMVCPath(
-				"/edit_article.jsp"
-			).setRedirect(
-				_themeDisplay.getURLCurrent()
-			).setParameter(
-				"folderId", _journalDisplayContext.getFolderId()
-			).setParameter(
-				"groupId", _themeDisplay.getScopeGroupId()
-			).buildString()
-		).put(
-			"exportTranslationURL",
-			() -> PortletURLBuilder.create(
-				_translationURLProvider.getExportTranslationURL(
-					_themeDisplay.getScopeGroupId(),
-					PortalUtil.getClassNameId(JournalArticle.class.getName()),
-					RequestBackedPortletURLFactoryUtil.create(
-						liferayPortletRequest))
-			).setRedirect(
-				_themeDisplay.getURLCurrent()
-			).buildString()
-		).put(
-			"moveArticlesAndFoldersURL",
-			() -> {
-				String redirect = ParamUtil.getString(
-					liferayPortletRequest, "redirect",
-					_themeDisplay.getURLCurrent());
-
-				String referringPortletResource = ParamUtil.getString(
-					liferayPortletRequest, "referringPortletResource");
-
-				return PortletURLBuilder.createRenderURL(
+		try {
+			return HashMapBuilder.<String, Object>put(
+				"addArticleURL",
+				PortletURLBuilder.createRenderURL(
 					liferayPortletResponse
 				).setMVCPath(
-					"/move_articles_and_folders.jsp"
+					"/edit_article.jsp"
 				).setRedirect(
-					redirect
+					_themeDisplay.getURLCurrent()
 				).setParameter(
-					"referringPortletResource", referringPortletResource
-				).buildString();
-			}
-		).put(
-			"openViewMoreStructuresURL",
-			PortletURLBuilder.createRenderURL(
-				liferayPortletResponse
-			).setMVCPath(
-				"/view_more_menu_items.jsp"
-			).setParameter(
-				"eventName",
-				liferayPortletResponse.getNamespace() + "selectAddMenuItem"
-			).setParameter(
-				"folderId", _journalDisplayContext.getFolderId()
-			).setWindowState(
-				LiferayWindowState.POP_UP
-			).buildString()
-		).put(
-			"selectAssetCategoryURL", _getAssetCategorySelectorURL()
-		).put(
-			"selectEntityURL", _journalDisplayContext.getSelectDDMStructureURL()
-		).put(
-			"trashEnabled", _isTrashEnabled()
-		).put(
-			"viewDDMStructureArticlesURL",
-			PortletURLBuilder.create(
-				getPortletURL()
-			).setNavigation(
-				"structure"
-			).setParameter(
-				"ddmStructureId", (String)null
-			).buildString()
-		).build();
+					"folderId", _journalDisplayContext.getFolderId()
+				).setParameter(
+					"groupId", _themeDisplay.getScopeGroupId()
+				).buildString()
+			).put(
+				"exportTranslationURL",
+				() -> PortletURLBuilder.create(
+					_translationURLProvider.getExportTranslationURL(
+						_themeDisplay.getScopeGroupId(),
+						PortalUtil.getClassNameId(JournalArticle.class.getName()),
+						RequestBackedPortletURLFactoryUtil.create(
+							liferayPortletRequest))
+				).setRedirect(
+					_themeDisplay.getURLCurrent()
+				).buildString()
+			).put(
+				"moveArticlesAndFoldersURL",
+				() -> {
+					String redirect = ParamUtil.getString(
+						liferayPortletRequest, "redirect",
+						_themeDisplay.getURLCurrent());
+
+					String referringPortletResource = ParamUtil.getString(
+						liferayPortletRequest, "referringPortletResource");
+
+					return PortletURLBuilder.createRenderURL(
+						liferayPortletResponse
+					).setMVCPath(
+						"/move_articles_and_folders.jsp"
+					).setRedirect(
+						redirect
+					).setParameter(
+						"referringPortletResource", referringPortletResource
+					).buildString();
+				}
+			).put(
+				"openViewMoreStructuresURL",
+				PortletURLBuilder.createRenderURL(
+					liferayPortletResponse
+				).setMVCPath(
+					"/view_more_menu_items.jsp"
+				).setParameter(
+					"eventName",
+					liferayPortletResponse.getNamespace() + "selectAddMenuItem"
+				).setParameter(
+					"folderId", _journalDisplayContext.getFolderId()
+				).setWindowState(
+					LiferayWindowState.POP_UP
+				).buildString()
+			).put(
+				"selectAssetCategoryURL", _getAssetCategorySelectorURL()
+			).put(
+				"selectEntityURL", _journalDisplayContext.getSelectDDMStructureURL()
+			).put(
+				"trashEnabled", _isTrashEnabled()
+			).put(
+				"viewDDMStructureArticlesURL",
+				PortletURLBuilder.create(
+					getPortletURL()
+				).setNavigation(
+					"structure"
+				).setParameter(
+					"ddmStructureId", (String)null
+				).buildString()
+			).build();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
@@ -546,7 +563,7 @@ public class JournalManagementToolbarDisplayContext
 		return _journalDisplayContext.getOrderColumns();
 	}
 
-	private String _getAssetCategorySelectorURL() {
+	private String _getAssetCategorySelectorURL() throws Exception {
 		RequestBackedPortletURLFactory requestBackedPortletURLFactory =
 			RequestBackedPortletURLFactoryUtil.create(liferayPortletRequest);
 
@@ -558,14 +575,26 @@ public class JournalManagementToolbarDisplayContext
 		itemSelectorCriterion.setItemType(AssetCategory.class.getName());
 		itemSelectorCriterion.setMultiSelection(true);
 
+
+		EditJournalFeedDisplayContext editJournalFeedDisplayContext = new EditJournalFeedDisplayContext(httpServletRequest, liferayPortletResponse);
+		AssetCategoriesDisplayContext assetCategoriesDisplayContext = new AssetCategoriesDisplayContext(httpServletRequest,
+			_renderRequest, _renderResponse);
+
 		return PortletURLBuilder.create(
 			_itemSelector.getItemSelectorURL(
 				requestBackedPortletURLFactory, _themeDisplay.getScopeGroup(),
 				_themeDisplay.getScopeGroupId(),
 				liferayPortletResponse.getNamespace() + "selectedAssetCategory",
 				itemSelectorCriterion)
+		).setParameter(
+			"selectedCategoryIds", editJournalFeedDisplayContext.getAssetCategoryIds()
+		).setParameter(
+		"vocabularyIds",
+			() -> ListUtil.toString(
+				assetCategoriesDisplayContext.getVocabularies(),
+				AssetVocabulary.VOCABULARY_ID_ACCESSOR)
 		).buildString();
-	}
+		}
 
 	private CreationMenu _getCreationMenu() throws PortalException {
 		return new CreationMenu() {
@@ -828,4 +857,6 @@ public class JournalManagementToolbarDisplayContext
 	private final TranslationURLProvider _translationURLProvider;
 	private final TrashHelper _trashHelper;
 
+	private final RenderRequest _renderRequest;
+	private final RenderResponse _renderResponse;
 }
