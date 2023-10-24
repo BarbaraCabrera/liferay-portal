@@ -73,6 +73,7 @@ import com.liferay.portal.kernel.portlet.PortletRequestModel;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactory;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactoryUtil;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
+import com.liferay.portal.kernel.repository.model.Folder;
 import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Hits;
@@ -90,6 +91,7 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HtmlUtil;
+import com.liferay.portal.kernel.util.HttpComponentsUtil;
 import com.liferay.portal.kernel.util.LinkedHashMapBuilder;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -576,6 +578,19 @@ public class JournalDisplayContext {
 				_trashHelper);
 
 		return folderActionDropdownItems.getActionDropdownItems();
+	}
+
+	public List<BreadcrumbEntry> getFolderBreadcrumbEntries(JournalFolder folder)
+		throws Exception {
+		List<BreadcrumbEntry> breadcrumbEntries = JournalPortletUtil.getPortletBreadcrumbEntries(folder, _httpServletRequest, getPortletURL(null));
+
+		for(BreadcrumbEntry breadcrumbEntry : breadcrumbEntries){
+			String portletURL = breadcrumbEntry.getURL();
+			breadcrumbEntry.setURL(HttpComponentsUtil.setParameter(
+				portletURL, _liferayPortletResponse.getNamespace() + "keywords", StringPool.BLANK));
+		}
+
+		return breadcrumbEntries;
 	}
 
 	public long getFolderId() {
