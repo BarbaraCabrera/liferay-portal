@@ -84,6 +84,7 @@ import com.liferay.portal.kernel.search.SearchContextFactory;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.servlet.taglib.ui.BreadcrumbEntry;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -549,6 +550,61 @@ public class JournalDisplayContext {
 				_trashHelper);
 
 		return folderActionDropdownItems.getActionDropdownItems();
+	}
+
+	public List<BreadcrumbEntry> getFolderBreadcrumbEntries(long folderId) {
+		List<BreadcrumbEntry> breadcrumbEntries = new ArrayList<>();
+
+		breadcrumbEntries.add(_getHomeFolderBreadcrumbEntry());
+
+		if (folderId == JournalFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
+			return breadcrumbEntries;
+		}
+
+		JournalFolder folder = JournalFolderLocalServiceUtil.fetchFolder(
+			folderId);
+
+		if (folder == null) {
+			return Collections.emptyList();
+		}
+
+		try {
+			List<JournalFolder> folders = folder.getAncestors();
+
+			Collections.reverse(folders);
+
+			PermissionChecker permissionChecker =
+				_themeDisplay.getPermissionChecker();
+
+			for (JournalFolder curFolder : folders) {
+				BreadcrumbEntry breadcrumbEntry = new BreadcrumbEntry();
+
+				if (permissionChecker.hasPermission(
+						curFolder.getGroupId(), JournalFolder.class.getName(),
+						curFolder.getFolderId(), ActionKeys.VIEW)) {
+
+					breadcrumbEntry.setTitle(curFolder.getName());
+					breadcrumbEntry.setURL(
+						PortletURLBuilder.createRenderURL(
+							_liferayPortletResponse
+						).setParameter(
+							"folderId", curFolder.getFolderId()
+						).buildString());
+				}
+				else {
+					breadcrumbEntry.setTitle(StringPool.TRIPLE_PERIOD);
+				}
+
+				breadcrumbEntries.add(breadcrumbEntry);
+			}
+		}
+		catch (Exception exception) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(exception);
+			}
+		}
+
+		return breadcrumbEntries;
 	}
 
 	public long getFolderId() {
@@ -1399,6 +1455,21 @@ public class JournalDisplayContext {
 		}
 
 		return jsonArray;
+	}
+
+	private BreadcrumbEntry _getHomeFolderBreadcrumbEntry() {
+		return new BreadcrumbEntry() {
+			{
+				setTitle(LanguageUtil.get(_httpServletRequest, "home"));
+				setURL(
+					PortletURLBuilder.createRenderURL(
+						_liferayPortletResponse
+					).setParameter(
+						"folderId",
+						JournalFolderConstants.DEFAULT_PARENT_FOLDER_ID
+					).buildString());
+			}
+		};
 	}
 
 	private Sort _getSort() {
