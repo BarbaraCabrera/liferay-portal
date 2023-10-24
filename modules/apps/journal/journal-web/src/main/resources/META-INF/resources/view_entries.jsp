@@ -122,9 +122,10 @@ Map<String, Object> componentContext = journalDisplayContext.getComponentContext
 							</span>
 
 							<c:if test="<%= journalDisplayContext.isSearch() && ((curArticle.getFolderId() <= 0) || JournalFolderPermission.contains(permissionChecker, curArticle.getFolder(), ActionKeys.VIEW)) %>">
-								<h5>
-									<%= journalDisplayContext.getAbsolutePath(curArticle.getFolderId()) %>
-								</h5>
+								<liferay-site-navigation:breadcrumb
+									breadcrumbEntries="<%= journalDisplayContext.getFolderBreadcrumbEntries(curArticle.getFolder()) %>"
+									lastElementBrowsable="<%= true %>"
+								/>
 							</c:if>
 
 							<span class="text-default">
@@ -350,9 +351,10 @@ Map<String, Object> componentContext = journalDisplayContext.getComponentContext
 							</span>
 
 							<c:if test="<%= journalDisplayContext.isSearch() && ((curFolder.getParentFolderId() <= 0) || JournalFolderPermission.contains(permissionChecker, curFolder.getParentFolder(), ActionKeys.VIEW)) %>">
-								<h5>
-									<%= journalDisplayContext.getAbsolutePath(curFolder.getParentFolderId()) %>
-								</h5>
+								<liferay-site-navigation:breadcrumb
+									breadcrumbEntries="<%= journalDisplayContext.getFolderBreadcrumbEntries(curFolder) %>"
+									lastElementBrowsable="<%= true %>"
+								/>
 							</c:if>
 						</liferay-ui:search-container-column-text>
 
