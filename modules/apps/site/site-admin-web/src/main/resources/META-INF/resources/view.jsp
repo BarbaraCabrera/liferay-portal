@@ -22,7 +22,15 @@ if (group != null) {
 		).setParameter(
 			"groupId", group.getParentGroupId()
 		).buildString());
-	portletDisplay.setURLBackTitle(portletDisplay.getPortletDisplayName());
+
+	if (Validator.isNull(group.getParentGroup())) {
+		portletDisplay.setURLBackTitle(portletDisplay.getPortletDisplayName());
+	}
+	else {
+		Group parentGroup = group.getParentGroup();
+
+		portletDisplay.setURLBackTitle(parentGroup.getDescriptiveName(locale));
+	}
 
 	renderResponse.setTitle(group.getDescriptiveName(locale));
 }
