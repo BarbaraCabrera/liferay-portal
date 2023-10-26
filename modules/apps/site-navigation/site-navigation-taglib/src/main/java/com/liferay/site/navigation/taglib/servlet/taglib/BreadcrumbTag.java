@@ -25,8 +25,16 @@ public class BreadcrumbTag extends IncludeTag {
 		return _breadcrumbEntries;
 	}
 
+	public boolean isLastElementBrowsable() {
+		return _lastElementBrowsable;
+	}
+
 	public void setBreadcrumbEntries(List<BreadcrumbEntry> breadcrumbEntries) {
 		_breadcrumbEntries = breadcrumbEntries;
+	}
+
+	public void setLastElementBrowsable(boolean lastElementBrowsable) {
+		_lastElementBrowsable = lastElementBrowsable;
 	}
 
 	@Override
@@ -41,6 +49,7 @@ public class BreadcrumbTag extends IncludeTag {
 		super.cleanUp();
 
 		_breadcrumbEntries = new ArrayList<>();
+		_lastElementBrowsable = false;
 	}
 
 	@Override
@@ -54,10 +63,14 @@ public class BreadcrumbTag extends IncludeTag {
 			"liferay-site-navigation:breadcrumb:breadcrumbEntries",
 			BreadcrumbEntryContributorUtil.contribute(
 				_breadcrumbEntries, httpServletRequest));
+		httpServletRequest.setAttribute(
+			"liferay-site-navigation:breadcrumb:lastElementBrowsable",
+			_lastElementBrowsable);
 	}
 
 	private static final String _PAGE = "/breadcrumb/page.jsp";
 
 	private List<BreadcrumbEntry> _breadcrumbEntries = new ArrayList<>();
+	private boolean _lastElementBrowsable;
 
 }
