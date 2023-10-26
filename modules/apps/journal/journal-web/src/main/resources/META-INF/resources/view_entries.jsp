@@ -117,13 +117,14 @@ Map<String, Object> componentContext = journalDisplayContext.getComponentContext
 								</c:choose>
 							</div>
 
-							<span class="text-secondary">
+							<span class="c-pt-1 text-secondary">
 								<liferay-ui:message arguments="<%= new String[] {modifiedDateDescription, HtmlUtil.escape(curArticle.getStatusByUserName())} %>" key="modified-x-ago-by-x" />
 							</span>
 
 							<c:if test="<%= journalDisplayContext.isSearch() && ((curArticle.getFolderId() <= 0) || JournalFolderPermission.contains(permissionChecker, curArticle.getFolder(), ActionKeys.VIEW)) %>">
 								<liferay-site-navigation:breadcrumb
 									breadcrumbEntries="<%= journalDisplayContext.getFolderBreadcrumbEntries(curArticle.getFolder()) %>"
+									cssClass="c-pl-0 c-pt-0"
 									lastElementBrowsable="<%= true %>"
 								/>
 							</c:if>
@@ -346,13 +347,14 @@ Map<String, Object> componentContext = journalDisplayContext.getComponentContext
 								</c:choose>
 							</div>
 
-							<span class="text-secondary">
+							<span class="c-pt-1 text-secondary">
 								<liferay-ui:message arguments="<%= new String[] {createDateDescription, HtmlUtil.escape(curFolder.getUserName())} %>" key="modified-x-ago-by-x" />
 							</span>
 
 							<c:if test="<%= journalDisplayContext.isSearch() && ((curFolder.getParentFolderId() <= 0) || JournalFolderPermission.contains(permissionChecker, curFolder.getParentFolder(), ActionKeys.VIEW)) %>">
 								<liferay-site-navigation:breadcrumb
 									breadcrumbEntries="<%= journalDisplayContext.getFolderBreadcrumbEntries(curFolder) %>"
+									cssClass="c-pl-0 c-pt-0"
 									lastElementBrowsable="<%= true %>"
 								/>
 							</c:if>
