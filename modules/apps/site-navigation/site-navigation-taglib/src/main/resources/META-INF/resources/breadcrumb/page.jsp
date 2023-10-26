@@ -9,6 +9,7 @@
 
 <%
 List<BreadcrumbEntry> breadcrumbEntries = (List<BreadcrumbEntry>)request.getAttribute("liferay-site-navigation:breadcrumb:breadcrumbEntries");
+boolean lastElementBrowsable = (boolean)request.getAttribute("liferay-site-navigation:breadcrumb:lastElementBrowsable");
 %>
 
 <ol class="breadcrumb">
@@ -27,9 +28,20 @@ List<BreadcrumbEntry> breadcrumbEntries = (List<BreadcrumbEntry>)request.getAttr
 				</li>
 			</c:when>
 			<c:otherwise>
-				<li class="active breadcrumb-item">
-					<span class="breadcrumb-text-truncate"><%= HtmlUtil.escape(breadcrumbEntry.getTitle()) %></span>
-				</li>
+				<c:choose>
+					<c:when test="<%= !lastElementBrowsable || Validator.isNull(breadcrumbEntry.getURL()) %>">
+						<li class="active breadcrumb-item">
+							<span class="breadcrumb-text-truncate"><%= HtmlUtil.escape(breadcrumbEntry.getTitle()) %></span>
+						</li>
+					</c:when>
+					<c:otherwise>
+						<li class="breadcrumb-item">
+							<a class="breadcrumb-link" href="<%= breadcrumbEntry.getURL() %>">
+								<span class="breadcrumb-text-truncate"><%= HtmlUtil.escape(breadcrumbEntry.getTitle()) %></span>
+							</a>
+						</li>
+					</c:otherwise>
+				</c:choose>
 			</c:otherwise>
 		</c:choose>
 
