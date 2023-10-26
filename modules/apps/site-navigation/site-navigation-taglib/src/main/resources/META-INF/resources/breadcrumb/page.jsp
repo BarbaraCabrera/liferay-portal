@@ -12,7 +12,7 @@ List<BreadcrumbEntry> breadcrumbEntries = (List<BreadcrumbEntry>)request.getAttr
 boolean lastElementBrowsable = (boolean)request.getAttribute("liferay-site-navigation:breadcrumb:lastElementBrowsable");
 %>
 
-<ol class="breadcrumb">
+<ol class="breadcrumb <%= (String)request.getAttribute("liferay-site-navigation:breadcrumb:cssClass") %>">
 
 	<%
 	for (int i = 0; i < breadcrumbEntries.size(); i++) {
