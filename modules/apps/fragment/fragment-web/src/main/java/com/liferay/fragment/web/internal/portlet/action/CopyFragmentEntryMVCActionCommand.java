@@ -152,7 +152,7 @@ public class CopyFragmentEntryMVCActionCommand extends BaseMVCActionCommand {
 			StringBundler.concat(
 				fragmentComposition.getName(), StringPool.SPACE,
 				StringPool.OPEN_PARENTHESIS,
-				_language.get(LocaleUtil.getMostRelevantLocale(), "copy"),
+				_language.get(LocaleUtil.getSiteDefault(), "copy"),
 				StringPool.CLOSE_PARENTHESIS),
 			null, fragmentComposition.getData(), previewFileEntryId,
 			WorkflowConstants.STATUS_APPROVED, serviceContext);
@@ -180,7 +180,7 @@ public class CopyFragmentEntryMVCActionCommand extends BaseMVCActionCommand {
 			StringBundler.concat(
 				fragmentEntry.getName(), StringPool.SPACE,
 				StringPool.OPEN_PARENTHESIS,
-				_language.get(LocaleUtil.getMostRelevantLocale(), "copy"),
+				_language.get(LocaleUtil.getSiteDefault(), "copy"),
 				StringPool.CLOSE_PARENTHESIS),
 			fragmentEntry.getCss(), fragmentEntry.getHtml(),
 			fragmentEntry.getJs(), fragmentEntry.isCacheable(),
