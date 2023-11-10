@@ -8,6 +8,7 @@ package com.liferay.asset.display.page.item.selector.web.internal;
 import com.liferay.asset.display.page.item.selector.criterion.AssetDisplayPageSelectorCriterion;
 import com.liferay.asset.display.page.item.selector.web.internal.display.context.AssetDisplayPagesItemSelectorViewDisplayContext;
 import com.liferay.asset.display.page.item.selector.web.internal.item.selector.AssetDisplayPageItemSelectorViewDescriptor;
+import com.liferay.info.item.InfoItemServiceRegistry;
 import com.liferay.item.selector.ItemSelectorReturnType;
 import com.liferay.item.selector.ItemSelectorView;
 import com.liferay.item.selector.ItemSelectorViewDescriptorRenderer;
@@ -81,12 +82,16 @@ public class AssetDisplayPagesItemSelectorView
 			new AssetDisplayPageItemSelectorViewDescriptor(
 				new AssetDisplayPagesItemSelectorViewDisplayContext(
 					(HttpServletRequest)servletRequest,
-					assetDisplayPageSelectorCriterion, portletURL)));
+					assetDisplayPageSelectorCriterion, _infoItemServiceRegistry,
+					portletURL)));
 	}
 
 	private static final List<ItemSelectorReturnType>
 		_supportedItemSelectorReturnTypes = Collections.singletonList(
 			new UUIDItemSelectorReturnType());
+
+	@Reference
+	private InfoItemServiceRegistry _infoItemServiceRegistry;
 
 	@Reference
 	private ItemSelectorViewDescriptorRenderer

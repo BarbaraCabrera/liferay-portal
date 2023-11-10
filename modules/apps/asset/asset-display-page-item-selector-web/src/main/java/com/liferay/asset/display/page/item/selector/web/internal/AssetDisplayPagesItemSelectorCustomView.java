@@ -6,14 +6,15 @@
 package com.liferay.asset.display.page.item.selector.web.internal;
 
 import com.liferay.asset.display.page.item.selector.criterion.AssetDisplayPageSelectorCriterion;
-import com.liferay.asset.display.page.item.selector.web.internal.display.context.AssetDisplayPagesItemSelectorViewDisplayContext;
+import com.liferay.asset.display.page.item.selector.web.internal.display.context.AssetDisplayPagesItemSelectorCustomViewDisplayContext;
+import com.liferay.info.item.InfoItemServiceRegistry;
 import com.liferay.item.selector.ItemSelectorReturnType;
 import com.liferay.item.selector.ItemSelectorView;
-import com.liferay.item.selector.ItemSelectorViewDescriptorRenderer;
 import com.liferay.item.selector.criteria.UUIDItemSelectorReturnType;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.JavaConstants;
 
 import java.io.IOException;
 
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.portlet.PortletURL;
+import javax.portlet.RenderResponse;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -85,15 +87,21 @@ public class AssetDisplayPagesItemSelectorCustomView
 		RequestDispatcher requestDispatcher =
 			servletContext.getRequestDispatcher("/navigation_folders.jsp");
 
-		AssetDisplayPagesItemSelectorViewDisplayContext
-			assetDisplayPagesItemSelectorDisplayContext =
-				new AssetDisplayPagesItemSelectorViewDisplayContext(
+		AssetDisplayPagesItemSelectorCustomViewDisplayContext
+			assetDisplayPagesItemSelectorCustomDisplayContext =
+				new AssetDisplayPagesItemSelectorCustomViewDisplayContext(
 					(HttpServletRequest)servletRequest,
-					assetDisplayPageSelectorCriterion, portletURL);
+					assetDisplayPageSelectorCriterion, portletURL,
+					(RenderResponse)servletRequest.getAttribute(
+						JavaConstants.JAVAX_PORTLET_RESPONSE));
 
 		servletRequest.setAttribute(
-			AssetDisplayPagesItemSelectorViewDisplayContext.class.getName(),
-			assetDisplayPagesItemSelectorDisplayContext);
+			AssetDisplayPagesItemSelectorCustomViewDisplayContext.class.
+				getName(),
+			assetDisplayPagesItemSelectorCustomDisplayContext);
+
+		servletRequest.setAttribute(
+			InfoItemServiceRegistry.class.getName(), _infoItemServiceRegistry);
 
 		requestDispatcher.include(servletRequest, servletResponse);
 	}
@@ -103,8 +111,7 @@ public class AssetDisplayPagesItemSelectorCustomView
 			new UUIDItemSelectorReturnType());
 
 	@Reference
-	private ItemSelectorViewDescriptorRenderer
-		<AssetDisplayPageSelectorCriterion> _itemSelectorViewDescriptorRenderer;
+	private InfoItemServiceRegistry _infoItemServiceRegistry;
 
 	@Reference
 	private Language _language;

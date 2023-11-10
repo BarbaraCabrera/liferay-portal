@@ -6,6 +6,7 @@
 package com.liferay.asset.display.page.item.selector.web.internal.display.context;
 
 import com.liferay.asset.display.page.item.selector.criterion.AssetDisplayPageSelectorCriterion;
+import com.liferay.info.item.InfoItemServiceRegistry;
 import com.liferay.layout.page.template.constants.LayoutPageTemplateEntryTypeConstants;
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
 import com.liferay.layout.page.template.service.LayoutPageTemplateEntryServiceUtil;
@@ -38,10 +39,12 @@ public class AssetDisplayPagesItemSelectorViewDisplayContext {
 	public AssetDisplayPagesItemSelectorViewDisplayContext(
 		HttpServletRequest httpServletRequest,
 		AssetDisplayPageSelectorCriterion assetDisplayPageSelectorCriterion,
+		InfoItemServiceRegistry infoItemServiceRegistry,
 		PortletURL portletURL) {
 
 		_httpServletRequest = httpServletRequest;
 		_assetDisplayPageSelectorCriterion = assetDisplayPageSelectorCriterion;
+		_infoItemServiceRegistry = infoItemServiceRegistry;
 		_portletURL = portletURL;
 
 		_portletRequest = (PortletRequest)httpServletRequest.getAttribute(
@@ -208,6 +211,7 @@ public class AssetDisplayPagesItemSelectorViewDisplayContext {
 		_assetDisplayPageSelectorCriterion;
 	private Long _groupId;
 	private final HttpServletRequest _httpServletRequest;
+	private final InfoItemServiceRegistry _infoItemServiceRegistry;
 	private String _keywords;
 	private String _orderByCol;
 	private String _orderByType;
