@@ -217,6 +217,10 @@ public class AssetDisplayPagesItemSelectorCustomViewDisplayContext {
 		return _orderByType;
 	}
 
+	public PortletURL getPortletURL() {
+		return _portletURL;
+	}
+
 	public boolean isSearch() {
 		if (Validator.isNotNull(_getKeywords())) {
 			return true;

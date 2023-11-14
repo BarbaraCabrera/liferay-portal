@@ -5,6 +5,7 @@
 
 package com.liferay.asset.display.page.item.selector.web.internal.frontend.taglib.clay.servlet.taglib;
 
+import com.liferay.asset.display.page.item.selector.web.internal.display.context.AssetDisplayPagesItemSelectorCustomViewDisplayContext;
 import com.liferay.frontend.taglib.clay.servlet.taglib.BaseHorizontalCard;
 import com.liferay.layout.page.template.model.LayoutPageTemplateCollection;
 import com.liferay.portal.kernel.dao.search.RowChecker;
@@ -21,11 +22,15 @@ public class DisplayPageTemplateCollectionHorizontalCard
 	extends BaseHorizontalCard {
 
 	public DisplayPageTemplateCollectionHorizontalCard(
+		AssetDisplayPagesItemSelectorCustomViewDisplayContext
+			assetDisplayPagesItemSelectorCustomViewDisplayContext,
 		BaseModel<?> baseModel, RenderRequest renderRequest,
 		RenderResponse renderResponse, RowChecker rowChecker) {
 
 		super(baseModel, renderRequest, rowChecker);
 
+		_assetDisplayPagesItemSelectorCustomViewDisplayContext =
+			assetDisplayPagesItemSelectorCustomViewDisplayContext;
 		_renderResponse = renderResponse;
 
 		_layoutPageTemplateCollection = (LayoutPageTemplateCollection)baseModel;
@@ -33,8 +38,9 @@ public class DisplayPageTemplateCollectionHorizontalCard
 
 	@Override
 	public String getHref() {
-		return PortletURLBuilder.createRenderURL(
-			_renderResponse
+		return PortletURLBuilder.create(
+			_assetDisplayPagesItemSelectorCustomViewDisplayContext.
+				getPortletURL()
 		).setParameter(
 			"groupId", _layoutPageTemplateCollection.getGroupId()
 		).setParameter(
@@ -58,6 +64,8 @@ public class DisplayPageTemplateCollectionHorizontalCard
 		return false;
 	}
 
+	private final AssetDisplayPagesItemSelectorCustomViewDisplayContext
+		_assetDisplayPagesItemSelectorCustomViewDisplayContext;
 	private final LayoutPageTemplateCollection _layoutPageTemplateCollection;
 	private final RenderResponse _renderResponse;
 
