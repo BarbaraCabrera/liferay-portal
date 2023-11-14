@@ -13,7 +13,6 @@ AssetDisplayPagesItemSelectorCustomViewDisplayContext assetDisplayPagesItemSelec
 
 <clay:management-toolbar
 	managementToolbarDisplayContext="<%= new DisplayPageManagementToolbarDisplayContext(request, liferayPortletRequest, liferayPortletResponse, assetDisplayPagesItemSelectorCustomViewDisplayContext) %>"
-	propsTransformer="js/propsTransformers/DisplayPageManagementToolbarPropsTransformer"
 />
 
 <clay:container-fluid
