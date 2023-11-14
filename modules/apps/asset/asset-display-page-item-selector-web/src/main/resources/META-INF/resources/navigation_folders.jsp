@@ -11,11 +11,17 @@
 AssetDisplayPagesItemSelectorCustomViewDisplayContext assetDisplayPagesItemSelectorCustomViewDisplayContext = (AssetDisplayPagesItemSelectorCustomViewDisplayContext)request.getAttribute(AssetDisplayPagesItemSelectorCustomViewDisplayContext.class.getName());
 %>
 
+<clay:management-toolbar
+	managementToolbarDisplayContext="<%= new DisplayPageManagementToolbarDisplayContext(request, liferayPortletRequest, liferayPortletResponse, assetDisplayPagesItemSelectorCustomViewDisplayContext) %>"
+	propsTransformer="js/propsTransformers/DisplayPageManagementToolbarPropsTransformer"
+/>
+
 <clay:container-fluid
 	cssClass="container-view sidenav-content"
 >
-	<%-- <liferay-site-navigation:breadcrumb--%>
-	<%-- breadcrumbEntries="<%= assetDisplayPagesItemSelectorCustomViewDisplayContext.getLayoutPageTemplateBreadcrumbEntries() %>"--%>
+	<liferay-site-navigation:breadcrumb
+		breadcrumbEntries="<%= assetDisplayPagesItemSelectorCustomViewDisplayContext.getLayoutPageTemplateBreadcrumbEntries() %>"
+	/>
 
 	<liferay-ui:search-container
 		id="displayPages"
