@@ -19,4 +19,7 @@ public class LayoutPageTemplateConstants {
 	public static final String SERVICE_NAME =
 		"com.liferay.layout.page.template";
 
+	public static final long ALL_CLASS_NAME_ID = 0;
+	public static final long ALL_CLASS_TYPE_ID = 0;
+
 }

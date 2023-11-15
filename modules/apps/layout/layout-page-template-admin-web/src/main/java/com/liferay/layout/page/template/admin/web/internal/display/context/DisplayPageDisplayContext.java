@@ -60,6 +60,9 @@ import javax.portlet.RenderResponse;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static com.liferay.layout.page.template.constants.LayoutPageTemplateConstants.ALL_CLASS_TYPE_ID;
+import static com.liferay.layout.page.template.constants.LayoutPageTemplateConstants.ALL_CLASS_NAME_ID;
+
 /**
  * @author Jürgen Kappler
  */
@@ -92,6 +95,12 @@ public class DisplayPageDisplayContext {
 	}
 
 	public SearchContainer<?> getDisplayPagesSearchContainer() {
+		return getDisplayPagesSearchContainer(ALL_CLASS_NAME_ID, ALL_CLASS_TYPE_ID);
+	}
+
+	public SearchContainer<?> getDisplayPagesSearchContainer(
+		long classNameId, long classTypeId) {
+
 		if (_displayPagesSearchContainer != null) {
 			return _displayPagesSearchContainer;
 		}
@@ -201,6 +210,7 @@ public class DisplayPageDisplayContext {
 			() ->
 				LayoutPageTemplateEntryServiceUtil.
 					getLayoutPageCollectionsAndLayoutPageTemplateEntries(
+						classNameId, classTypeId,
 						_themeDisplay.getScopeGroupId(),
 						_getLayoutPageTemplateCollectionId(),
 						LayoutPageTemplateEntryTypeConstants.DISPLAY_PAGE,
@@ -209,7 +219,7 @@ public class DisplayPageDisplayContext {
 						displayPagesSearchContainer.getOrderByComparator()),
 			LayoutPageTemplateEntryServiceUtil.
 				getLayoutPageCollectionsAndLayoutPageTemplateEntriesCount(
-					_themeDisplay.getScopeGroupId(),
+					classNameId, classTypeId, _themeDisplay.getScopeGroupId(),
 					_getLayoutPageTemplateCollectionId(),
 					LayoutPageTemplateEntryTypeConstants.DISPLAY_PAGE));
 
