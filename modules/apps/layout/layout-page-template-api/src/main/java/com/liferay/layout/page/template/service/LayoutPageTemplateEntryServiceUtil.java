@@ -133,12 +133,37 @@ public class LayoutPageTemplateEntryServiceUtil {
 				orderByComparator);
 	}
 
+	public static List<Object>
+		getLayoutPageCollectionsAndLayoutPageTemplateEntries(
+			long classNameId, long classTypeId, long groupId,
+			long layoutPageTemplateCollectionId, int type, int start, int end,
+			OrderByComparator<Object> orderByComparator) {
+
+		return getService().
+			getLayoutPageCollectionsAndLayoutPageTemplateEntries(
+				classNameId, classTypeId, groupId,
+				layoutPageTemplateCollectionId, type, start, end,
+				orderByComparator);
+	}
+
+
 	public static int getLayoutPageCollectionsAndLayoutPageTemplateEntriesCount(
 		long groupId, long layoutPageTemplateCollectionId, int type) {
 
 		return getService().
 			getLayoutPageCollectionsAndLayoutPageTemplateEntriesCount(
-				groupId, layoutPageTemplateCollectionId, type);
+				-1, -1, groupId,
+				layoutPageTemplateCollectionId, type);
+	}
+
+	public static int getLayoutPageCollectionsAndLayoutPageTemplateEntriesCount(
+		long classNameId, long classTypeId, long groupId,
+		long layoutPageTemplateCollectionId, int type) {
+
+		return getService().
+			getLayoutPageCollectionsAndLayoutPageTemplateEntriesCount(
+				classNameId, classTypeId, groupId,
+				layoutPageTemplateCollectionId, type);
 	}
 
 	public static List<LayoutPageTemplateEntry> getLayoutPageTemplateEntries(

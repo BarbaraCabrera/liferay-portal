@@ -146,12 +146,29 @@ public class LayoutPageTemplateEntryServiceWrapper
 	}
 
 	@Override
+	public java.util.List<Object>
+		getLayoutPageCollectionsAndLayoutPageTemplateEntries(
+			long classNameId, long classTypeId, long groupId,
+			long layoutPageTemplateCollectionId, int type, int start, int end,
+			com.liferay.portal.kernel.util.OrderByComparator<Object>
+				orderByComparator) {
+
+		return _layoutPageTemplateEntryService.
+			getLayoutPageCollectionsAndLayoutPageTemplateEntries(
+				classNameId, classTypeId, groupId,
+				layoutPageTemplateCollectionId, type, start, end,
+				orderByComparator);
+	}
+
+	@Override
 	public int getLayoutPageCollectionsAndLayoutPageTemplateEntriesCount(
-		long groupId, long layoutPageTemplateCollectionId, int type) {
+		long classNameId, long classTypeId, long groupId,
+		long layoutPageTemplateCollectionId, int type) {
 
 		return _layoutPageTemplateEntryService.
 			getLayoutPageCollectionsAndLayoutPageTemplateEntriesCount(
-				groupId, layoutPageTemplateCollectionId, type);
+				classNameId, classTypeId, groupId,
+				layoutPageTemplateCollectionId, type);
 	}
 
 	@Override
