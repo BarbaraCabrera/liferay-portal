@@ -180,28 +180,32 @@ public class AssetDisplayPagesItemSelectorCustomViewDisplayContext {
 						fetchLayoutPageTemplateCollection(
 							_getLayoutPageTemplateCollectionId());
 
-				List<LayoutPageTemplateCollection>
-					layoutPageTemplateCollections =
-						layoutPageTemplateCollection.getAncestors();
+				if (layoutPageTemplateCollection != null) {
+					List<LayoutPageTemplateCollection>
+						layoutPageTemplateCollections =
+							layoutPageTemplateCollection.getAncestors();
 
-				Collections.reverse(layoutPageTemplateCollections);
+					Collections.reverse(layoutPageTemplateCollections);
 
-				return TransformUtil.transform(
-					layoutPageTemplateCollections,
-					curLayoutPageTemplateCollection ->
-						BreadcrumbEntryBuilder.setTitle(
-							curLayoutPageTemplateCollection.getName()
-						).setURL(
-							PortletURLBuilder.create(
-								_portletURL
-							).setTabs1(
-								"display-page-templates"
-							).setParameter(
-								"layoutPageTemplateCollectionId",
-								curLayoutPageTemplateCollection.
-									getLayoutPageTemplateCollectionId()
-							).buildString()
-						).build());
+					return TransformUtil.transform(
+						layoutPageTemplateCollections,
+						curLayoutPageTemplateCollection ->
+							BreadcrumbEntryBuilder.setTitle(
+								curLayoutPageTemplateCollection.getName()
+							).setURL(
+								PortletURLBuilder.create(
+									_portletURL
+								).setTabs1(
+									"display-page-templates"
+								).setParameter(
+									"layoutPageTemplateCollectionId",
+									curLayoutPageTemplateCollection.
+										getLayoutPageTemplateCollectionId()
+								).buildString()
+							).build());
+				}
+
+				return Collections.emptyList();
 			}
 		).build();
 	}
