@@ -11,6 +11,10 @@ import com.liferay.portal.kernel.util.OrderByComparator;
 
 import java.util.List;
 
+import static com.liferay.layout.page.template.constants.LayoutPageTemplateConstants.ALL_CLASS_NAME_ID;
+import static com.liferay.layout.page.template.constants.LayoutPageTemplateConstants.ALL_CLASS_TYPE_ID;
+
+
 /**
  * Provides the remote service utility for LayoutPageTemplateEntry. This utility wraps
  * <code>com.liferay.layout.page.template.service.impl.LayoutPageTemplateEntryServiceImpl</code> and is an
@@ -149,10 +153,9 @@ public class LayoutPageTemplateEntryServiceUtil {
 
 	public static int getLayoutPageCollectionsAndLayoutPageTemplateEntriesCount(
 		long groupId, long layoutPageTemplateCollectionId, int type) {
-
 		return getService().
 			getLayoutPageCollectionsAndLayoutPageTemplateEntriesCount(
-				-1, -1, groupId,
+				ALL_CLASS_NAME_ID, ALL_CLASS_TYPE_ID, groupId,
 				layoutPageTemplateCollectionId, type);
 	}
 
