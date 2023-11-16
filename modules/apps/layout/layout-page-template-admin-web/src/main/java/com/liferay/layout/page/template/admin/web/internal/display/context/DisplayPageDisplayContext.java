@@ -260,8 +260,8 @@ public class DisplayPageDisplayContext {
 		).addAll(
 			() ->
 				_getLayoutPageTemplateCollectionId() !=
-					LayoutPageTemplateConstants.
-						PARENT_LAYOUT_PAGE_TEMPLATE_COLLECTION_ID_DEFAULT,
+				LayoutPageTemplateConstants.
+					PARENT_LAYOUT_PAGE_TEMPLATE_COLLECTION_ID_DEFAULT,
 			() -> {
 				LayoutPageTemplateCollection layoutPageTemplateCollection =
 					LayoutPageTemplateCollectionLocalServiceUtil.
@@ -270,26 +270,29 @@ public class DisplayPageDisplayContext {
 
 				List<LayoutPageTemplateCollection>
 					layoutPageTemplateCollections =
-						layoutPageTemplateCollection.getAncestors();
+					layoutPageTemplateCollection.getAncestors();
 
-				Collections.reverse(layoutPageTemplateCollections);
+				if (layoutPageTemplateCollections != null) {
+					Collections.reverse(layoutPageTemplateCollections);
 
-				return TransformUtil.transform(
-					layoutPageTemplateCollections,
-					curLayoutPageTemplateCollection ->
-						BreadcrumbEntryBuilder.setTitle(
-							curLayoutPageTemplateCollection.getName()
-						).setURL(
-							PortletURLBuilder.createRenderURL(
-								_renderResponse
-							).setTabs1(
-								"display-page-templates"
-							).setParameter(
-								"layoutPageTemplateCollectionId",
-								curLayoutPageTemplateCollection.
-									getLayoutPageTemplateCollectionId()
-							).buildString()
-						).build());
+					return TransformUtil.transform(
+						layoutPageTemplateCollections,
+						curLayoutPageTemplateCollection ->
+							BreadcrumbEntryBuilder.setTitle(
+								curLayoutPageTemplateCollection.getName()
+							).setURL(
+								PortletURLBuilder.createRenderURL(
+									_renderResponse
+								).setTabs1(
+									"display-page-templates"
+								).setParameter(
+									"layoutPageTemplateCollectionId",
+									curLayoutPageTemplateCollection.
+										getLayoutPageTemplateCollectionId()
+								).buildString()
+							).build());
+				}
+				return Collections.emptyList();
 			}
 		).build();
 	}

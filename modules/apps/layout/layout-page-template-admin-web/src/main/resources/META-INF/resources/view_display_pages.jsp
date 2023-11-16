@@ -29,7 +29,7 @@ DisplayPageManagementToolbarDisplayContext displayPageManagementToolbarDisplayCo
 
 <c:if test='<%= FeatureFlagManagerUtil.isEnabled("LPS-189856") %>'>
 	<div class="closed sidenav-container sidenav-right" id="<portlet:namespace />infoPanelId">
-		<liferay-portlet:resourceURL copyCurrentRenderParameters="<%= true %>" id="/layout_page_template_admin/info_panel" var="sidebarPanelURL" />
+		<liferay-portlet:resourceURL copyCurrentRenderParameters="<%= true %>" id="/layout_page_template_admin/info_panel" var="sidebarPanelURL"/>
 
 		<liferay-frontend:sidebar-panel
 			resourceURL="<%= sidebarPanelURL %>"

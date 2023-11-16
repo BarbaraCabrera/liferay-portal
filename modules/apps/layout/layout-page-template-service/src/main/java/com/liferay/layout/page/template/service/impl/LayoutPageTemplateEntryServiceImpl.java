@@ -972,7 +972,17 @@ public class LayoutPageTemplateEntryServiceImpl
 					layoutPageTemplateCollectionId,
 				LayoutPageTemplateCollectionTable.INSTANCE.name,
 				LayoutPageTemplateCollectionTable.INSTANCE.createDate,
-				LayoutPageTemplateCollectionTable.INSTANCE.modifiedDate
+				LayoutPageTemplateCollectionTable.INSTANCE.modifiedDate,
+				new Scalar<>(
+					0L
+				).as(
+					"classNameId"
+				),
+				new Scalar<>(
+					0L
+				).as(
+					"classTypeId"
+				)
 			).from(
 				LayoutPageTemplateCollectionTable.INSTANCE
 			).where(

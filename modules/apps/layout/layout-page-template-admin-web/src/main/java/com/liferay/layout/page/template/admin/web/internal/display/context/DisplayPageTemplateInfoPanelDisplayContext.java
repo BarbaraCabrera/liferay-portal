@@ -100,11 +100,9 @@ public class DisplayPageTemplateInfoPanelDisplayContext {
 					getLayoutPageTemplateBreadcrumbEntries(),
 				curLayoutPageTemplateCollection -> HtmlUtil.escape(
 					curLayoutPageTemplateCollection.getTitle()));
+		} else {
+			paths.add(LanguageUtil.get(_httpServletRequest, "home"));
 		}
-
-		paths.add(LanguageUtil.get(_httpServletRequest, "home"));
-
-		Collections.reverse(paths);
 
 		return paths;
 	}
