@@ -22,6 +22,7 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HtmlUtil;
+import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -41,13 +42,9 @@ import javax.servlet.http.HttpServletRequest;
 public class DisplayPageTemplateInfoPanelDisplayContext {
 
 	public DisplayPageTemplateInfoPanelDisplayContext(
-		HttpServletRequest httpServletRequest, RenderRequest renderRequest,
-		RenderResponse renderResponse) {
+		HttpServletRequest httpServletRequest) {
 
 		_httpServletRequest = httpServletRequest;
-		_renderRequest = renderRequest;
-		_renderResponse = renderResponse;
-
 		_infoItemServiceRegistry =
 			(InfoItemServiceRegistry)httpServletRequest.getAttribute(
 				InfoItemServiceRegistry.class.getName());
@@ -91,18 +88,14 @@ public class DisplayPageTemplateInfoPanelDisplayContext {
 		List<String> paths = new ArrayList<>();
 
 		if (layoutPageTemplateCollection != null) {
-			DisplayPageDisplayContext displayPageDisplayContext =
-				new DisplayPageDisplayContext(
-					_httpServletRequest, _renderRequest, _renderResponse);
-
 			paths = TransformUtil.transform(
-				displayPageDisplayContext.
-					getLayoutPageTemplateBreadcrumbEntries(),
+				layoutPageTemplateCollection.getAncestors(),
 				curLayoutPageTemplateCollection -> HtmlUtil.escape(
-					curLayoutPageTemplateCollection.getTitle()));
-		} else {
-			paths.add(LanguageUtil.get(_httpServletRequest, "home"));
+					curLayoutPageTemplateCollection.getName()));
 		}
+			paths.add(LanguageUtil.get(_httpServletRequest, "home"));
+
+		Collections.reverse(paths);
 
 		return paths;
 	}
@@ -198,8 +191,6 @@ public class DisplayPageTemplateInfoPanelDisplayContext {
 	private final HttpServletRequest _httpServletRequest;
 	private final InfoItemServiceRegistry _infoItemServiceRegistry;
 	private List<LayoutPageTemplateEntry> _layoutPageTemplateEntries;
-	private final RenderRequest _renderRequest;
-	private final RenderResponse _renderResponse;
 	private final ThemeDisplay _themeDisplay;
 
 }
