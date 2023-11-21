@@ -268,11 +268,11 @@ public class DisplayPageDisplayContext {
 						fetchLayoutPageTemplateCollection(
 							_getLayoutPageTemplateCollectionId());
 
-				List<LayoutPageTemplateCollection>
-					layoutPageTemplateCollections =
-					layoutPageTemplateCollection.getAncestors();
+				if (layoutPageTemplateCollection != null) {
+					List<LayoutPageTemplateCollection>
+						layoutPageTemplateCollections =
+						layoutPageTemplateCollection.getAncestors();
 
-				if (layoutPageTemplateCollections != null) {
 					Collections.reverse(layoutPageTemplateCollections);
 
 					return TransformUtil.transform(
