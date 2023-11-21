@@ -21,6 +21,7 @@ import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
 import com.liferay.petra.sql.dsl.Table;
 import com.liferay.petra.sql.dsl.base.BaseTable;
 import com.liferay.petra.sql.dsl.query.DSLQuery;
+import com.liferay.petra.sql.dsl.query.GroupByStep;
 import com.liferay.petra.sql.dsl.spi.expression.Scalar;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.dao.orm.custom.sql.CustomSQL;
@@ -290,10 +291,7 @@ public class LayoutPageTemplateEntryServiceImpl
 				layoutPageTemplateCollectionId, type);
 
 		return layoutPageTemplateEntryPersistence.dslQueryCount(
-			DSLQueryFactoryUtil.countDistinct(
-				layoutPageTemplateCollectionAndLayoutPageTemplateEntryTable.
-					getColumn("layoutPageTemplateEntryId")
-			).from(
+			DSLQueryFactoryUtil.count().from(
 				layoutPageTemplateCollectionAndLayoutPageTemplateEntryTable
 			));
 	}
@@ -910,8 +908,8 @@ public class LayoutPageTemplateEntryServiceImpl
 
 	private Table<?>
 		_getLayoutPageTemplateCollectionAndLayoutPageTemplateEntryTable(
-			long classNameId, long classTypeId, long groupId,
-			long layoutPageTemplateCollectionId, int type) {
+		long classNameId, long classTypeId, long groupId,
+		long layoutPageTemplateCollectionId, int type) {
 
 		return DSLQueryFactoryUtil.select(
 			LayoutPageTemplateEntryTable.INSTANCE.layoutPageTemplateEntryId,
@@ -962,49 +960,54 @@ public class LayoutPageTemplateEntryServiceImpl
 				LayoutPageTemplateEntryTable.INSTANCE.type.eq(type)
 			)
 		).unionAll(
-			DSLQueryFactoryUtil.select(
-				new Scalar<>(
-					0L
-				).as(
-					"layoutPageTemplateEntryId"
-				),
-				LayoutPageTemplateCollectionTable.INSTANCE.
-					layoutPageTemplateCollectionId,
-				LayoutPageTemplateCollectionTable.INSTANCE.name,
-				LayoutPageTemplateCollectionTable.INSTANCE.createDate,
-				LayoutPageTemplateCollectionTable.INSTANCE.modifiedDate,
-				new Scalar<>(
-					0L
-				).as(
-					"classNameId"
-				),
-				new Scalar<>(
-					0L
-				).as(
-					"classTypeId"
-				)
-			).from(
-				LayoutPageTemplateCollectionTable.INSTANCE
-			).where(
-				LayoutPageTemplateCollectionTable.INSTANCE.groupId.eq(
-					groupId
-				).and(
-					() -> {
-						if (layoutPageTemplateCollectionId >= 0) {
-							return LayoutPageTemplateCollectionTable.INSTANCE.
-								parentLayoutPageTemplateCollectionId.eq(
-									layoutPageTemplateCollectionId);
-						}
-
-						return null;
-					}
-				).and(
-					LayoutPageTemplateCollectionTable.INSTANCE.type.eq(type)
-				)
-			)
+			collectionsClause(groupId, layoutPageTemplateCollectionId, type)
 		).as(
 			"layoutPageTemplateCollectionAndLayoutPageTemplateEntryTableTable",
 			LayoutPageTemplateCollectionAndLayoutPageTemplateEntryTable.INSTANCE
+		);
+	}
+
+	private GroupByStep collectionsClause(
+		long groupId, long layoutPageTemplateCollectionId, int type) {
+		return DSLQueryFactoryUtil.select(
+			new Scalar<>(
+				0L
+			).as(
+				"layoutPageTemplateEntryId"
+			),
+			LayoutPageTemplateCollectionTable.INSTANCE.
+				layoutPageTemplateCollectionId,
+			LayoutPageTemplateCollectionTable.INSTANCE.name,
+			LayoutPageTemplateCollectionTable.INSTANCE.createDate,
+			LayoutPageTemplateCollectionTable.INSTANCE.modifiedDate,
+			new Scalar<>(
+				0L
+			).as(
+				"classNameId"
+			),
+			new Scalar<>(
+				0L
+			).as(
+				"classTypeId"
+			)
+		).from(
+			LayoutPageTemplateCollectionTable.INSTANCE
+		).where(
+			LayoutPageTemplateCollectionTable.INSTANCE.groupId.eq(
+				groupId
+			).and(
+				() -> {
+					if (layoutPageTemplateCollectionId >= 0) {
+						return LayoutPageTemplateCollectionTable.INSTANCE.
+							parentLayoutPageTemplateCollectionId.eq(
+							layoutPageTemplateCollectionId);
+					}
+
+					return null;
+				}
+			).and(
+				LayoutPageTemplateCollectionTable.INSTANCE.type.eq(type)
+			)
 		);
 	}
 
