@@ -161,12 +161,12 @@ public class LayoutPageTemplateEntryServiceUtil {
 
 	public static int getLayoutPageCollectionsAndLayoutPageTemplateEntriesCount(
 		long classNameId, long classTypeId, long groupId,
-		long layoutPageTemplateCollectionId, int type) {
+		long layoutPageTemplateCollectionId, String name, int type) {
 
 		return getService().
 			getLayoutPageCollectionsAndLayoutPageTemplateEntriesCount(
 				classNameId, classTypeId, groupId,
-				layoutPageTemplateCollectionId, type);
+				layoutPageTemplateCollectionId, name, type);
 	}
 
 	public static List<LayoutPageTemplateEntry> getLayoutPageTemplateEntries(

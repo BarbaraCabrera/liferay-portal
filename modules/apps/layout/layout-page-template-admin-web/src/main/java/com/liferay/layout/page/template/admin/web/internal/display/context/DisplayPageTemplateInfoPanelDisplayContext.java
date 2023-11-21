@@ -55,9 +55,12 @@ public class DisplayPageTemplateInfoPanelDisplayContext {
 	public int getHomeItemsCount(long scopeGroupId) {
 		return LayoutPageTemplateEntryServiceUtil.
 			getLayoutPageCollectionsAndLayoutPageTemplateEntriesCount(
+				LayoutPageTemplateConstants.ALL_CLASS_NAME_ID,
+				LayoutPageTemplateConstants.ALL_CLASS_TYPE_ID,
 				scopeGroupId,
 				LayoutPageTemplateConstants.
 					PARENT_LAYOUT_PAGE_TEMPLATE_COLLECTION_ID_DEFAULT,
+				null,
 				LayoutPageTemplateEntryTypeConstants.DISPLAY_PAGE);
 	}
 
@@ -73,9 +76,12 @@ public class DisplayPageTemplateInfoPanelDisplayContext {
 
 		return LayoutPageTemplateEntryServiceUtil.
 			getLayoutPageCollectionsAndLayoutPageTemplateEntriesCount(
+				LayoutPageTemplateConstants.ALL_CLASS_NAME_ID,
+				LayoutPageTemplateConstants.ALL_CLASS_TYPE_ID,
 				layoutPageTemplateCollection.getGroupId(),
 				layoutPageTemplateCollection.
 					getLayoutPageTemplateCollectionId(),
+				layoutPageTemplateCollection.getName(),
 				layoutPageTemplateCollection.getType());
 	}
 
