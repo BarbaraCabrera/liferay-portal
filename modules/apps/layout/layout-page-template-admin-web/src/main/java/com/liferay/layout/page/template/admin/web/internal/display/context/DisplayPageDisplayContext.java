@@ -162,16 +162,14 @@ public class DisplayPageDisplayContext {
 		}
 
 		if (isSearch()) {
-			SearchContainer<LayoutPageTemplateEntry>
-				displayPagesSearchContainer = new SearchContainer<>(
+			SearchContainer<Object> displayPagesSearchContainer =
+				new SearchContainer<>(
 					_renderRequest, getPortletURL(), null,
 					"there-are-no-display-page-templates");
 
 			displayPagesSearchContainer.setOrderByCol(getOrderByCol());
 			displayPagesSearchContainer.setOrderByComparator(
-				LayoutPageTemplatePortletUtil.
-					getLayoutPageTemplateEntryOrderByComparator(
-						getOrderByCol(), getOrderByType()));
+				_getOrderByComparator());
 			displayPagesSearchContainer.setOrderByType(getOrderByType());
 
 			displayPagesSearchContainer.setResultsAndTotal(

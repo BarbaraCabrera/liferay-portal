@@ -241,7 +241,31 @@ public class LayoutPageTemplateEntryServiceImpl
 
 		Table<?> layoutPageTemplateCollectionAndLayoutPageTemplateEntryTable =
 			_getLayoutPageTemplateCollectionAndLayoutPageTemplateEntryTable(
-				-1, -1, groupId, layoutPageTemplateCollectionId, type);
+				-1, -1, groupId, layoutPageTemplateCollectionId, null, type);
+
+		return _getLayoutPageTemplateCollectionAndLayoutPageTemplateEntries(
+			DSLQueryFactoryUtil.select(
+				layoutPageTemplateCollectionAndLayoutPageTemplateEntryTable
+			).from(
+				layoutPageTemplateCollectionAndLayoutPageTemplateEntryTable
+			).orderBy(
+				layoutPageTemplateCollectionAndLayoutPageTemplateEntryTable,
+				orderByComparator
+			).limit(
+				start, end
+			));
+	}
+
+	@Override
+	public List<Object> getLayoutPageCollectionsAndLayoutPageTemplateEntries(
+		long classNameId, long classTypeId, long groupId, String name,
+		long layoutPageTemplateCollectionId, int type, int start, int end,
+		OrderByComparator<Object> orderByComparator) {
+
+		Table<?> layoutPageTemplateCollectionAndLayoutPageTemplateEntryTable =
+			_getLayoutPageTemplateCollectionAndLayoutPageTemplateEntryTable(
+				classNameId, classTypeId, groupId,
+				layoutPageTemplateCollectionId, name, type);
 
 		return _getLayoutPageTemplateCollectionAndLayoutPageTemplateEntries(
 			DSLQueryFactoryUtil.select(
@@ -259,13 +283,13 @@ public class LayoutPageTemplateEntryServiceImpl
 	@Override
 	public List<Object> getLayoutPageCollectionsAndLayoutPageTemplateEntries(
 		long classNameId, long classTypeId, long groupId,
-		long layoutPageTemplateCollectionId, int type, int start, int end,
+		long layoutPageTemplateCollectionId, String name, int type, int start, int end,
 		OrderByComparator<Object> orderByComparator) {
 
 		Table<?> layoutPageTemplateCollectionAndLayoutPageTemplateEntryTable =
 			_getLayoutPageTemplateCollectionAndLayoutPageTemplateEntryTable(
 				classNameId, classTypeId, groupId,
-				layoutPageTemplateCollectionId, type);
+				layoutPageTemplateCollectionId, name, type);
 
 		return _getLayoutPageTemplateCollectionAndLayoutPageTemplateEntries(
 			DSLQueryFactoryUtil.select(
@@ -283,12 +307,12 @@ public class LayoutPageTemplateEntryServiceImpl
 	@Override
 	public int getLayoutPageCollectionsAndLayoutPageTemplateEntriesCount(
 		long classNameId, long classTypeId, long groupId,
-		long layoutPageTemplateCollectionId, int type) {
+		long layoutPageTemplateCollectionId, String name, int type) {
 
 		Table<?> layoutPageTemplateCollectionAndLayoutPageTemplateEntryTable =
 			_getLayoutPageTemplateCollectionAndLayoutPageTemplateEntryTable(
 				classNameId, classTypeId, groupId,
-				layoutPageTemplateCollectionId, type);
+				layoutPageTemplateCollectionId, name, type);
 
 		return layoutPageTemplateEntryPersistence.dslQueryCount(
 			DSLQueryFactoryUtil.count().from(
@@ -909,7 +933,7 @@ public class LayoutPageTemplateEntryServiceImpl
 	private Table<?>
 		_getLayoutPageTemplateCollectionAndLayoutPageTemplateEntryTable(
 		long classNameId, long classTypeId, long groupId,
-		long layoutPageTemplateCollectionId, int type) {
+		long layoutPageTemplateCollectionId, String name, int type) {
 
 		return DSLQueryFactoryUtil.select(
 			LayoutPageTemplateEntryTable.INSTANCE.layoutPageTemplateEntryId,
@@ -957,10 +981,19 @@ public class LayoutPageTemplateEntryServiceImpl
 					return null;
 				}
 			).and(
+				() -> {
+					if (name != null) {
+						return LayoutPageTemplateEntryTable.INSTANCE.
+							name.like(name);
+					}
+
+			return null;
+		}
+			).and(
 				LayoutPageTemplateEntryTable.INSTANCE.type.eq(type)
 			)
 		).unionAll(
-			collectionsClause(groupId, layoutPageTemplateCollectionId, type)
+			collectionsClause(groupId, layoutPageTemplateCollectionId, name, type)
 		).as(
 			"layoutPageTemplateCollectionAndLayoutPageTemplateEntryTableTable",
 			LayoutPageTemplateCollectionAndLayoutPageTemplateEntryTable.INSTANCE
@@ -968,7 +1001,7 @@ public class LayoutPageTemplateEntryServiceImpl
 	}
 
 	private GroupByStep collectionsClause(
-		long groupId, long layoutPageTemplateCollectionId, int type) {
+		long groupId, long layoutPageTemplateCollectionId, String name, int type) {
 		return DSLQueryFactoryUtil.select(
 			new Scalar<>(
 				0L
@@ -1001,6 +1034,15 @@ public class LayoutPageTemplateEntryServiceImpl
 						return LayoutPageTemplateCollectionTable.INSTANCE.
 							parentLayoutPageTemplateCollectionId.eq(
 							layoutPageTemplateCollectionId);
+					}
+
+					return null;
+				}
+			).and(
+				() -> {
+					if (name != null) {
+						return LayoutPageTemplateEntryTable.INSTANCE.
+							name.like(name);
 					}
 
 					return null;
