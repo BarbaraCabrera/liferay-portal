@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.segments.constants.SegmentsEntryConstants;
@@ -99,6 +100,17 @@ public class AddAssetListEntryVariationMVCActionCommand
 			ParamUtil.getString(actionRequest, "backURL")
 		).setParameter(
 			"assetListEntryId", assetListEntryId
+		).setParameter(
+			"backURLTitle",
+			() -> {
+				ThemeDisplay themeDisplay =
+					(ThemeDisplay)actionRequest.getAttribute(
+						WebKeys.THEME_DISPLAY);
+
+				return ResourceBundleUtil.getString(
+					_portal.getResourceBundle(themeDisplay.getLocale()),
+					"collections");
+			}
 		).setParameter(
 			"segmentsEntryId", segmentsEntryId
 		).buildString();
