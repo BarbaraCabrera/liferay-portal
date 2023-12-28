@@ -76,7 +76,7 @@ public class StatusStrutsAction implements StrutsAction {
 		PortalMessages.clear(httpServletRequest);
 		SessionMessages.clear(httpServletRequest);
 
-		Element contentElement = document.getElementById("content");
+		Element contentElement = document.getElementById("main-content");
 
 		contentElement.html(unsyncStringWriter.toString());
 

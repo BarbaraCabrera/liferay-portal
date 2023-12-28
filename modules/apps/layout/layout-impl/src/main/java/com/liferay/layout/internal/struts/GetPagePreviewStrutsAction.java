@@ -176,7 +176,7 @@ public class GetPagePreviewStrutsAction implements StrutsAction {
 					servletContext, httpServletRequest, httpServletResponse,
 					"portal_normal.ftl", layoutSet.getTheme(), false));
 
-			Element contentElement = document.getElementById("content");
+			Element contentElement = document.getElementById("main-content");
 
 			StringBundler sb = (StringBundler)httpServletRequest.getAttribute(
 				WebKeys.LAYOUT_CONTENT);

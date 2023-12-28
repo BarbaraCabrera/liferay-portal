@@ -73,7 +73,7 @@ public class TermsOfUseStrutsAction implements StrutsAction {
 				httpServletResponse, "portal_normal.ftl", layoutSet.getTheme(),
 				false));
 
-		Element contentElement = document.getElementById("content");
+		Element contentElement = document.getElementById("main-content");
 
 		contentElement.html(unsyncStringWriter.toString());
 
