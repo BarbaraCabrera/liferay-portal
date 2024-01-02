@@ -105,8 +105,6 @@ public class FragmentEntryProcessorHelperImpl
 		Object object = null;
 
 		if (isMapped(editableValueJSONObject)) {
-			String className = _portal.getClassName(
-				editableValueJSONObject.getLong("classNameId"));
 			String externalReferenceCode = editableValueJSONObject.getString(
 				"externalReferenceCode");
 
@@ -114,16 +112,16 @@ public class FragmentEntryProcessorHelperImpl
 
 			InfoItemIdentifier infoItemIdentifier = null;
 
+			long classPK = editableValueJSONObject.getLong("classPK");
+
 			if (Validator.isNotNull(externalReferenceCode)) {
 				infoItemIdentifier = new ERCInfoItemIdentifier(
 					externalReferenceCode);
 			}
-			else {
-				infoItemIdentifier = new ClassPKInfoItemIdentifier(
-					editableValueJSONObject.getLong("classPK"));
+			else if (classPK > 0) {
+				infoItemIdentifier = new ClassPKInfoItemIdentifier(classPK);
 			}
-
-			if (fragmentEntryProcessorContext.getPreviewClassPK() > 0) {
+			else if (fragmentEntryProcessorContext.getPreviewClassPK() > 0) {
 				infoItemIdentifier = new ClassPKInfoItemIdentifier(
 					fragmentEntryProcessorContext.getPreviewClassPK());
 
@@ -135,10 +133,14 @@ public class FragmentEntryProcessorHelperImpl
 				}
 			}
 
-			infoItemReference = new InfoItemReference(
-				className, infoItemIdentifier);
+			if (infoItemIdentifier != null) {
+				infoItemReference = new InfoItemReference(
+					_portal.getClassName(
+						editableValueJSONObject.getLong("classNameId")),
+					infoItemIdentifier);
 
-			object = _getInfoItem(infoItemReference);
+				object = _getInfoItem(infoItemReference);
+			}
 		}
 		else if (isMappedCollection(editableValueJSONObject)) {
 			infoItemReference =
