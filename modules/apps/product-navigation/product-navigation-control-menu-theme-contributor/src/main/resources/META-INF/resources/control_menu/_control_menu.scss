@@ -16,6 +16,10 @@ html#{$cadmin-selector} {
 			position: sticky;
 			top: 0;
 			z-index: $control-menu-zindex;
+
+			@include media-breakpoint-down(xs) {
+				position: unset;
+			}
 		}
 
 		.control-menu-level-1 {

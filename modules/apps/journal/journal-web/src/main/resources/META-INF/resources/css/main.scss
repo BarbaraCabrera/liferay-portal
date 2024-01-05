@@ -58,6 +58,10 @@ $productMenuWidth: 320px;
 			width: 100%;
 			z-index: $toolbarZIndex;
 
+			@include media-breakpoint-down(xs) {
+				position: unset;
+			}
+
 			body.open & {
 				left: $productMenuWidth;
 				width: calc(100% - #{$productMenuWidth});
@@ -156,6 +160,9 @@ $productMenuWidth: 320px;
 			.ddm-form-builder-app {
 				@include media-breakpoint-down(md) {
 					margin-top: $toolbarHeight;
+				}
+				@include media-breakpoint-down(xs) {
+					margin-top: 0;
 				}
 			}
 		}
