@@ -14,7 +14,9 @@
 
 <aui:model-context bean="<%= journalDisplayContext.getArticle() %>" model="<%= JournalArticle.class %>" />
 
-<liferay-ui:input-permissions
-	modelName="<%= JournalArticle.class.getName() %>"
-	reverse="<%= true %>"
-/>
+<div class="m-4">
+	<liferay-ui:input-permissions
+		modelName="<%= JournalArticle.class.getName() %>"
+		reverse="<%= true %>"
+	/>
+</div>
