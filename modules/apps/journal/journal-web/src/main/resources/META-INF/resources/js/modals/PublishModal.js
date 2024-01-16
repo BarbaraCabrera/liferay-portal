@@ -8,6 +8,7 @@ import ClayModal, {useModal} from '@clayui/modal';
 import React from 'react';
 
 import PermissionsOptions from '../PermissionsOptions';
+import ScheduleOptions from '../ScheduleOptions';
 
 export default function PublishModal({
 	actionButton,
@@ -24,36 +25,10 @@ export default function PublishModal({
 		},
 	});
 
-	const [{button, description, heading}, setLabels] = useState(() => {
-		if (actionButton === 'publish') {
-			return {
-				button: Liferay.Language.get('publish'),
-				description: Liferay.Language.get(
-					'confirm-the-web-content-visibility-before-publishing'
-				),
-				heading: Liferay.Language.get('publish-web-content'),
-			};
-		}
-		else if (actionButton === 'schedule') {
-			return {
-				button: Liferay.Language.get('schedule'),
-				description: Liferay.Language.get(
-					'set-the-date-and-time-you-want-the-web-content-to-be-published'
-				),
-				heading: Liferay.Language.get('schedule-publication'),
-			};
-		}
-		else {
-			return {
-				button: Liferay.Language.get('save-as-draft'),
-				description: Liferay.Language.get(
-					'confirm-the-web-content-visibility-before-saving-as-draft'
-				),
-				heading: Liferay.Language.get('save-as-draft'),
-			};
-		}
-	});
 	const {button, description, heading} = getLabels(actionButton);
+
+	const articleId = document.getElementById(`${portletNamespace}articleId`)
+		.value;
 
 	return (
 		<ClayModal className="m-0" observer={observer} size="lg">
@@ -62,10 +37,23 @@ export default function PublishModal({
 			<ClayModal.Body className="m-0">
 				<p className="text-secondary">{description}</p>
 
-				<PermissionsOptions
-					form={formId}
-					permissionsURL={permissionsURL}
-				/>
+				{actionButton === 'schedule' ? (
+					<ScheduleOptions
+						form={formId}
+						portletNamespace={portletNamespace}
+						timeZone={timeZone}
+					/>
+				) : null}
+
+				{articleId ?
+					null : (
+					<div className="mt-3">
+						<PermissionsOptions
+							form={formId}
+							permissionsURL={permissionsURL}
+						/>
+					</div>
+				)}
 			</ClayModal.Body>
 
 			<ClayModal.Footer
