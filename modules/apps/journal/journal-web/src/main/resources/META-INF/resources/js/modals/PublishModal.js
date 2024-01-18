@@ -16,6 +16,7 @@ export default function PublishModal({
 	onPublishButtonClick,
 	permissionsURL,
 	portletNamespace,
+	timeZone,
 }) {
 	const formId = `${portletNamespace}fm1`;
 
@@ -45,8 +46,7 @@ export default function PublishModal({
 					/>
 				) : null}
 
-				{articleId ?
-					null : (
+				{articleId ? null : (
 					<div className="mt-3">
 						<PermissionsOptions
 							form={formId}
@@ -59,10 +59,7 @@ export default function PublishModal({
 			<ClayModal.Footer
 				last={
 					<ClayButton.Group spaced>
-						<ClayButton
-							displayType="secondary"
-							onClick={onClose}
-						>
+						<ClayButton displayType="secondary" onClick={onClose}>
 							{Liferay.Language.get('cancel')}
 						</ClayButton>
 
