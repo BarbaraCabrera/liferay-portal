@@ -13,6 +13,9 @@ String referringPortletResource = ParamUtil.getString(request, "referringPortlet
 Map<String, Object> componentContext = journalDisplayContext.getComponentContext();
 %>
 
+<liferay-ui:success key="scheduledJournal" message='<%= GetterUtil.getString(MultiSessionMessages.get(renderRequest, "scheduledJournal")) %>' />
+<liferay-ui:success key="publishedJournal" message='<%= GetterUtil.getString(MultiSessionMessages.get(renderRequest, "publishedJournal")) %>' />
+
 <liferay-ui:search-container
 	cssClass='<%= journalDisplayContext.isSearch() ? "pt-0" : StringPool.BLANK %>'
 	emptyResultsMessage="no-web-content-was-found"
