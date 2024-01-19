@@ -36,6 +36,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.Portlet;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
@@ -50,6 +51,7 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.upload.LiferayFileItemException;
 import com.liferay.portal.kernel.upload.UploadException;
 import com.liferay.portal.kernel.upload.UploadPortletRequest;
+import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.FriendlyURLNormalizer;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.HtmlUtil;
@@ -68,9 +70,12 @@ import com.liferay.portal.util.PropsValues;
 
 import java.io.File;
 
+import java.text.Format;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -429,6 +434,9 @@ public class UpdateArticleMVCActionCommand extends BaseMVCActionCommand {
 		int workflowAction = ParamUtil.getInteger(
 			actionRequest, "workflowAction", WorkflowConstants.ACTION_PUBLISH);
 
+		HttpServletRequest httpServletRequest = _portal.getHttpServletRequest(
+			actionRequest);
+
 		if (workflowAction != WorkflowConstants.ACTION_SAVE_DRAFT) {
 			String referringPortletResource = ParamUtil.getString(
 				actionRequest, "referringPortletResource");
@@ -442,10 +450,58 @@ public class UpdateArticleMVCActionCommand extends BaseMVCActionCommand {
 				MultiSessionMessages.add(
 					actionRequest, portletResource + "requestProcessed");
 			}
-		}
 
-		HttpServletRequest httpServletRequest = _portal.getHttpServletRequest(
-			actionRequest);
+			if (FeatureFlagManagerUtil.isEnabled("LPS-198959")) {
+				ThemeDisplay themeDisplay =
+					(ThemeDisplay)actionRequest.getAttribute(
+						WebKeys.THEME_DISPLAY);
+
+				User user = themeDisplay.getUser();
+
+				Date displayDate = _portal.getDate(
+					displayDateMonth, displayDateDay, displayDateYear,
+					displayDateHour, displayDateMinute, user.getTimeZone(),
+					null);
+
+				String title = HtmlUtil.escape(
+					titleMap.get(themeDisplay.getSiteDefaultLocale()));
+
+				if (article.isScheduled()) {
+					Format dateTimeFormat =
+						FastDateFormatFactoryUtil.getDateTime(
+							themeDisplay.getLocale(), user.getTimeZone());
+
+					MultiSessionMessages.add(
+						actionRequest, "scheduledJournal",
+						_language.format(
+							_portal.getHttpServletRequest(actionRequest),
+							"x-will-be-published-on-x",
+							new Object[] {
+								"<strong>" + title + "</strong>",
+								dateTimeFormat.format(displayDate)
+							}));
+				}
+				else if ((workflowAction == WorkflowConstants.STATUS_PENDING) &&
+						 (displayDate != null)) {
+
+					MultiSessionMessages.add(
+						actionRequest, "publishedJournal",
+						_language.format(
+							_portal.getHttpServletRequest(actionRequest),
+							"x-has-been-successfully-scheduled-and-submitted-" +
+								"for-workflow",
+							new Object[] {"<strong>" + title + "</strong>"}));
+				}
+				else {
+					MultiSessionMessages.add(
+						actionRequest, "publishedJournal",
+						_language.format(
+							_portal.getHttpServletRequest(actionRequest),
+							"x-was-successfully-published",
+							new Object[] {"<strong>" + title + "</strong>"}));
+				}
+			}
+		}
 
 		Map<String, String> friendlyURLWarningMessages =
 			_getFriendlyURLWarningMessages(
