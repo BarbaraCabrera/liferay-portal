@@ -7,6 +7,7 @@ import ClayDatePicker from '@clayui/date-picker';
 import {ClayInput} from '@clayui/form';
 import {sub} from 'frontend-js-web';
 import React, {useState} from 'react';
+import ClayAlert from "@clayui/alert";
 
 export default function ScheduleOptions({
 	displayDate,
@@ -15,8 +16,22 @@ export default function ScheduleOptions({
 	timeZone,
 }) {
 	const [value, setValue] = useState(displayDate);
-
 	const {day, hour, minutes, month, year} = getDate(value);
+	const [error, setError] = useState('');
+
+	const isValidDate = () => {
+
+		if (value.valueOf() < new Date().valueOf()){
+			setError(Liferay.Language.get('the-date-entered-has-already-occurred'));
+			return false;
+		} else if (moment(value, 'YYYY/MM/DD', true).isValid()) {
+			setError(Liferay.Language.get('please-enter-a-valid-date'));
+			return false;
+		}else{
+			setError(Liferay.Language.get(''));
+			return true;
+		}
+	}
 
 	return (
 		<>
@@ -36,6 +51,20 @@ export default function ScheduleOptions({
 					start: new Date().getFullYear(),
 				}}
 			/>
+
+			{!isValidDate ?
+				<div className="error-container mt-1">
+					<ClayAlert
+						className="mt-1"
+						displayType="danger"
+						title={Liferay.Language.get('error-colon') + ' '}
+						variant="feedback"
+					>
+						{error}
+					</ClayAlert>
+				</div>
+			: null}
+
 
 			<p className="text-3 text-secondary">
 				{sub(Liferay.Language.get('time-zone-x'), timeZone)}
