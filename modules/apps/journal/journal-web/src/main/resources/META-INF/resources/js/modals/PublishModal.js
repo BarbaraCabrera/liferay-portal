@@ -80,7 +80,7 @@ export default function PublishModal({
 									onPublishButtonClick();
 								}
 							}}
-							type={!dateError ? "submit" : "button"}
+							type={!dateError ? 'submit' : 'button'}
 						>
 							{button}
 						</ClayButton>
