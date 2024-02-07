@@ -72,6 +72,21 @@ describe('SaveButtons', () => {
 
 		jest.useRealTimers();
 
-		expect(screen.getByText('save articlae')).toBeInTheDocument();
+		expect(screen.getByText('save article')).toBeInTheDocument();
 	});
+
+	it('do not open modal if the article id already exist', () =>{
+		renderComponent({
+			...DEFAULT_PROPS,
+			articleId: '2411',
+			saveButtonLabel: 'save article',
+		});
+
+		userEvent.click(screen.getByText('save article'));
+
+
+
+
+	});
+
 });
