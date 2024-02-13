@@ -97,7 +97,7 @@ public class MySitesPersonalMenuEntry implements PersonalMenuEntry {
 			"product-navigation-site-administration", "index.js"
 		).build();
 
-		return "{mySitesOpener} from " + moduleURL;
+		return "{openMySitesModal} from " + moduleURL;
 	}
 
 	@Override
