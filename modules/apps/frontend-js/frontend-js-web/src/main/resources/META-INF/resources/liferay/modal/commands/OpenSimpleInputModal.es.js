@@ -46,11 +46,16 @@ function openSimpleInputModalImplementation({
 	mainFieldLabel,
 	mainFieldName,
 	mainFieldValue,
+	maxlength,
 	method,
 	namespace,
 	onFormSuccess,
 	placeholder,
 	required,
+	secondaryFieldComponent,
+	secondaryFieldLabel,
+	secondaryFieldName,
+	secondaryFieldValue,
 	size,
 }) {
 	dispose();
@@ -73,11 +78,16 @@ function openSimpleInputModalImplementation({
 			mainFieldLabel={mainFieldLabel}
 			mainFieldName={mainFieldName}
 			mainFieldValue={mainFieldValue}
+			maxlength={maxlength}
 			method={method}
 			namespace={namespace}
 			onFormSuccess={onFormSuccess}
 			placeholder={placeholder}
 			required={required}
+			secondaryFieldComponent={secondaryFieldComponent}
+			secondaryFieldLabel={secondaryFieldLabel}
+			secondaryFieldName={secondaryFieldName}
+			secondaryFieldValue={secondaryFieldValue}
 			size={size}
 		/>,
 		DEFAULT_RENDER_DATA,

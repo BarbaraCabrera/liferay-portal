@@ -34,11 +34,16 @@ const SimpleInputModal = ({
 	mainFieldLabel,
 	mainFieldName,
 	mainFieldValue = '',
+	maxlength,
 	method = 'POST',
 	namespace,
 	onFormSuccess,
 	placeholder,
 	required = true,
+	secondaryFieldComponent,
+	secondaryFieldLabel,
+	secondaryFieldName,
+	secondaryFieldValue = '',
 	size = 'md',
 }) => {
 	const isMounted = useIsMounted();
@@ -48,6 +53,7 @@ const SimpleInputModal = ({
 	const [visible, setVisible] = useState(initialVisible);
 	const [inputValue, setInputValue] = useState(mainFieldValue);
 	const [isChecked, setChecked] = useState(checkboxFieldValue);
+	const [secondaryInputValue, setSecondaryInputValue] = useState('');
 
 	const handleFormError = (responseContent) => {
 		setErrorMessage(responseContent.error || '');
@@ -223,6 +229,26 @@ const SimpleInputModal = ({
 								/>
 							</div>
 						)}
+
+						{secondaryFieldValue && secondaryFieldLabel && (
+							<>
+								<label htmlFor="secondaryInput">
+									{Liferay.Language.get('script')}
+								</label>
+
+								<ClayInput
+									component={secondaryFieldComponent}
+									id="secondaryInput"
+									maxLength={maxlength}
+									onChange={(event) => {
+										setSecondaryInputValue(event.target.value);
+									}}
+									type="text"
+									value={secondaryInputValue}
+								/>
+							</>
+										   )}
+
 					</ClayModal.Body>
 
 					<ClayModal.Footer

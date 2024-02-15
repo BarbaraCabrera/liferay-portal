@@ -47,7 +47,12 @@ const ACTIONS = {
 			mainFieldName: 'name',
 			mainFieldPlaceholder: Liferay.Language.get('name'),
 			mainFieldValue: layoutPageTemplateCollectionName,
+			maxlength: 400,
 			namespace: portletNamespace,
+			secondaryFieldLabel: Liferay.Language.get('description'),
+			secondaryFieldName: 'description',
+			secondaryFieldPlaceholder: Liferay.Language.get('description'),
+			secondaryFieldValue: layoutPageTemplateCollectionName,
 		});
 	},
 };

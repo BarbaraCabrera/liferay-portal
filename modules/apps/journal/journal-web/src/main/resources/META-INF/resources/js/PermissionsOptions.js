@@ -8,7 +8,8 @@ import {useIsMounted} from '@liferay/frontend-js-react-web';
 import {fetch, runScriptsInElement} from 'frontend-js-web';
 import React, {useEffect, useState} from 'react';
 
-export default function PermissionsOptions({formId, permissionsURL}) {
+export default function
+	PermissionsOptions({formId, permissionsURL}) {
 	const [loading, setLoading] = useState(true);
 	const [content, setContent] = useState('');
 	const isMounted = useIsMounted();
