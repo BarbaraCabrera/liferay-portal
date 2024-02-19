@@ -153,6 +153,32 @@ public class LayoutPageTemplateCollectionServiceImpl
 			type);
 	}
 
+	public LayoutPageTemplateCollection moveLayoutPageTemplateCollection(
+		long layoutPageTemplateCollectionId,
+		long targetLayoutPageTemplateCollectionId)
+		throws PortalException {
+
+		_layoutPageTemplateCollectionModelResourcePermission.check(
+			getPermissionChecker(), layoutPageTemplateCollectionId,
+			ActionKeys.UPDATE);
+
+		LayoutPageTemplateCollection layoutPageTemplateCollection =
+			layoutPageTemplateCollectionLocalService.getLayoutPageTemplateCollection(
+				layoutPageTemplateCollectionId);
+
+		if (layoutPageTemplateCollection.getParentLayoutPageTemplateCollectionId() ==
+			targetLayoutPageTemplateCollectionId) {
+
+			return layoutPageTemplateCollection;
+		}
+
+		layoutPageTemplateCollection.setParentLayoutPageTemplateCollectionId(
+			targetLayoutPageTemplateCollectionId);
+
+		return layoutPageTemplateCollectionLocalService.
+		updateLayoutPageTemplateCollection(layoutPageTemplateCollection);
+	}
+
 	@Override
 	public LayoutPageTemplateCollection updateLayoutPageTemplateCollection(
 			long layoutPageTemplateCollectionId, String name)
