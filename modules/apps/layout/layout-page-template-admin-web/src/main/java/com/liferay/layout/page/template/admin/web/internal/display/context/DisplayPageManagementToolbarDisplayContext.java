@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
+import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.portlet.url.builder.ResourceURLBuilder;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
@@ -174,6 +175,10 @@ public class DisplayPageManagementToolbarDisplayContext
 							httpServletRequest,
 							"layoutPageTemplateCollectionId")
 					).buildString());
+				dropdownItem.putData(
+					"permissionsURL",
+					getPermissionsURL()
+				);
 				dropdownItem.setIcon("folder");
 				dropdownItem.setLabel(
 					LanguageUtil.get(httpServletRequest, "folder"));
@@ -203,6 +208,18 @@ public class DisplayPageManagementToolbarDisplayContext
 	@Override
 	public String getDefaultEventHandler() {
 		return "DISPLAY_PAGE_MANAGEMENT_TOOLBAR_DEFAULT_EVENT_HANDLER";
+	}
+
+	public String getPermissionsURL() {
+		return PortletURLBuilder.createRenderURL(
+			liferayPortletResponse
+		).setMVCPath(
+			"/permissions.jsp"
+		).setRedirect(
+			_themeDisplay.getURLCurrent()
+		).setWindowState(
+			LiferayWindowState.EXCLUSIVE
+		).buildString();
 	}
 
 	@Override

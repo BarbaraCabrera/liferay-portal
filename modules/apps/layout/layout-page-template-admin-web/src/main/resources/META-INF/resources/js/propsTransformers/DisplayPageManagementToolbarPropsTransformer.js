@@ -49,6 +49,8 @@ export default function propsTransformer({portletNamespace, ...otherProps}) {
 				openCreationModal({
 					formSubmitURL: data.addDisplayPageCollectionURL,
 					heading: Liferay.Language.get('new-folder'),
+					permissions: true,
+					permissionsURL: data.permissionsURL,
 					portletNamespace: portletNamespace,
 				})
 			}
