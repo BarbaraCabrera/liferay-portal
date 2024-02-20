@@ -107,89 +107,89 @@ function CreationModal({
     <ClayModal className="m-0" observer={observer}>
         <ClayModal.Header>{heading}</ClayModal.Header>
 
-        <ClayForm
-            id={`${portletNamespace}form`}
-            // @ts-ignore
-            noValidate
-            onSubmit={handleSubmit}
-        >
             <ClayModal.Body className="m-0">
-                <label
-                    className="control-label"
-                    htmlFor={`${portletNamespace}name`}
+                <ClayForm
+                    id={`${portletNamespace}form`}
+                    // @ts-ignore
+                    noValidate
+                    onSubmit={handleSubmit}
                 >
-                    {Liferay.Language.get('name')}
-
-                    <span className="reference-mark">
-                        <ClayIcon symbol="asterisk" />
-                    </span>
-
-                </label>
-
-                <ClayInput
-                    autoFocus
-                    className="form-control"
-                    component="input"
-                    disabled={loadingResponse}
-                    id={`${portletNamespace}name`}
-                    name={`${portletNamespace}name`}
-                    onChange={(event) => {
-                            setMainInputError(
-                                event.target.value
-                                    ? ''
-                                    : Liferay.Language.get(
-                                        'this-field-is-required'
-                                    )
-                            );
-
-                        setMainInputValue(event.target.value);
-                    }}
-                    required={true}
-                    type="text"
-                    value={mainInputValue}
-                />
-
-                {mainInputError && (
-                    <ClayAlert
-                        displayType="danger"
-                        title={`${Liferay.Language.get('error')}:`}
-                        variant="feedback"
+                    <label
+                        className="control-label"
+                        htmlFor={`${portletNamespace}name`}
                     >
-                        {mainInputError}
-                    </ClayAlert>
-                )}
+                        {Liferay.Language.get('name')}
 
-                <label
-                    className="control-label c-mt-4"
-                    htmlFor={`${portletNamespace}description`}
-                >
-                    {Liferay.Language.get('description')}
+                        <span className="reference-mark">
+                            <ClayIcon symbol="asterisk" />
+                        </span>
 
-                </label>
+                    </label>
 
-                <ClayInput
-                    autoFocus
-                    className="form-control"
-                    component="textarea"
-                    disabled={loadingResponse}
-                    id={`${portletNamespace}description`}
-                    name={`${portletNamespace}description`}
-                    onChange={(event) => setSecondaryInputValue(event.target.value)}
-                    type="text"
-                    value={secondaryInputValue}
-                />
+                    <ClayInput
+                        autoFocus
+                        className="form-control"
+                        component="input"
+                        disabled={loadingResponse}
+                        id={`${portletNamespace}name`}
+                        name={`${portletNamespace}name`}
+                        onChange={(event) => {
+                                setMainInputError(
+                                    event.target.value
+                                        ? ''
+                                        : Liferay.Language.get(
+                                            'this-field-is-required'
+                                        )
+                                );
 
-                {permissions && (
-                    <>
-                        <div className="c-mt-4">
-                            <PermissionsOptions
-                                formId="form"
-                                permissionsURL={permissionsURL}
-                            />
-                        </div>
-                    </>
-                )}
+                            setMainInputValue(event.target.value);
+                        }}
+                        required={true}
+                        type="text"
+                        value={mainInputValue}
+                    />
 
+                    {mainInputError && (
+                        <ClayAlert
+                            displayType="danger"
+                            title={`${Liferay.Language.get('error')}:`}
+                            variant="feedback"
+                        >
+                            {mainInputError}
+                        </ClayAlert>
+                    )}
+
+                    <label
+                        className="control-label c-mt-4"
+                        htmlFor={`${portletNamespace}description`}
+                    >
+                        {Liferay.Language.get('description')}
+
+                    </label>
+
+                    <ClayInput
+                        autoFocus
+                        className="form-control"
+                        component="textarea"
+                        disabled={loadingResponse}
+                        id={`${portletNamespace}description`}
+                        name={`${portletNamespace}description`}
+                        onChange={(event) => setSecondaryInputValue(event.target.value)}
+                        type="text"
+                        value={secondaryInputValue}
+                    />
+
+                    {permissions && (
+                        <>
+                            <div className="c-mt-4">
+                                <PermissionsOptions
+                                    formId="form"
+                                    permissionsURL={permissionsURL}
+                                />
+                            </div>
+                        </>
+                    )}
+                </ClayForm>
             </ClayModal.Body>
 
             <ClayModal.Footer
@@ -206,6 +206,7 @@ function CreationModal({
                         <ClayButton
                             disabled={loadingResponse}
                             displayType="primary"
+                            form={`${portletNamespace}form`}
                             type='submit'
                         >
                             {loadingResponse && (
@@ -222,7 +223,6 @@ function CreationModal({
                     </ClayButton.Group>
                 }
             />
-        </ClayForm>
     </ClayModal>
 );
 }
