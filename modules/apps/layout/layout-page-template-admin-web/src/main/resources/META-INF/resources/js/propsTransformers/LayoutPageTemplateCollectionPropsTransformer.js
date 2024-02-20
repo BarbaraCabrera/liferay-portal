@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-import {openModal, openSimpleInputModal} from 'frontend-js-web';
+import {openModal} from 'frontend-js-web';
+import {openCreationModal} from '@liferay/layout-js-components-web'
 
 import openDeletePageTemplateModal from '../commands/openDeletePageTemplateModal';
 
@@ -36,19 +37,18 @@ const ACTIONS = {
 		{
 			dialogTitle,
 			layoutPageTemplateCollectionName,
+			layoutPageTemplateCollectionDescription,
 			updateLayoutPageTemplateCollectionURL,
 		},
 		portletNamespace
 	) {
-		openSimpleInputModal({
-			dialogTitle,
+		openCreationModal({
 			formSubmitURL: updateLayoutPageTemplateCollectionURL,
-			mainFieldLabel: Liferay.Language.get('name'),
-			mainFieldName: 'name',
-			mainFieldPlaceholder: Liferay.Language.get('name'),
+			heading: Liferay.Language.get('edit-folder'),
 			mainFieldValue: layoutPageTemplateCollectionName,
-			namespace: portletNamespace,
-		});
+			portletNamespace: portletNamespace,
+			secondaryFieldValue: layoutPageTemplateCollectionDescription,
+		})
 	},
 };
 

@@ -93,6 +93,9 @@ public class LayoutPageTemplateCollectionActionDropdownItem {
 								"layoutPageTemplateCollectionName",
 								layoutPageTemplateCollection.getName());
 							dropdownItem.putData(
+								"layoutPageTemplateCollectionDescription",
+								layoutPageTemplateCollection.getDescription());
+							dropdownItem.putData(
 								"updateLayoutPageTemplateCollectionURL",
 								_getUpdateLayoutPageTemplateCollectionURL(
 									layoutPageTemplateCollection, tabs1));
