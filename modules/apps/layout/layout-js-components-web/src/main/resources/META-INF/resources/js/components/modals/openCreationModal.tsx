@@ -19,6 +19,8 @@ interface Props {
     heading: string;
     mainFieldValue: string;
     method: string;
+    permissions: boolean,
+    permissionsURL: string,
     portletNamespace: string;
     secondaryFieldValue: string;
 }
@@ -43,6 +45,8 @@ function openCreationModalImplementation({
     formSubmitURL,
     heading,
     mainFieldValue,
+    permissions = false,
+    permissionsURL,
     portletNamespace,
     secondaryFieldValue,
 }: Props){
@@ -54,6 +58,8 @@ function openCreationModalImplementation({
 			heading={heading}
             mainFieldValue={mainFieldValue}
             onCloseModal={dispose}
+            permissions={permissions}
+            permissionsURL={permissionsURL}
             portletNamespace={portletNamespace}
             secondaryFieldValue={secondaryFieldValue}
             method="POST"

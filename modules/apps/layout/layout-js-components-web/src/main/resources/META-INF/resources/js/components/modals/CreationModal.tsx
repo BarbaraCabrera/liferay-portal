@@ -12,7 +12,8 @@ import {useIsMounted} from "@clayui/core/lib/hooks";
 import {navigate} from 'frontend-js-web';
 import ClayAlert from "@clayui/alert";
 import ClayButton from "@clayui/button";
-import {unmountComponentAtNode} from "react-dom";
+
+import PermissionsOptions from "./PermissionsOptions";
 
 interface Props {
     formSubmitURL: string;
@@ -20,6 +21,8 @@ interface Props {
     mainFieldValue: string;
     method: string;
     onCloseModal: () => void;
+    permissions: boolean;
+    permissionsURL: string;
     portletNamespace: string;
     secondaryFieldValue: string;
 }
@@ -30,6 +33,8 @@ function CreationModal({
     mainFieldValue = '',
     method = 'POST',
     onCloseModal,
+    permissions,
+    permissionsURL,
     portletNamespace,
     secondaryFieldValue = '',
 }: Props) {
@@ -173,6 +178,17 @@ function CreationModal({
                     type="text"
                     value={secondaryInputValue}
                 />
+
+                {permissions && (
+                    <>
+                        <div className="c-mt-4">
+                            <PermissionsOptions
+                                formId="form"
+                                permissionsURL={permissionsURL}
+                            />
+                        </div>
+                    </>
+                )}
 
             </ClayModal.Body>
 
