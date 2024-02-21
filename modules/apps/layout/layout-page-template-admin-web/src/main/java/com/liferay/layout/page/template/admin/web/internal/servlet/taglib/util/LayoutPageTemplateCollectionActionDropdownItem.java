@@ -35,6 +35,9 @@ public class LayoutPageTemplateCollectionActionDropdownItem {
 
 		_httpServletRequest = httpServletRequest;
 		_renderResponse = renderResponse;
+
+		_themeDisplay = (ThemeDisplay)_httpServletRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
 	}
 
 	public List<DropdownItem> getActionDropdownItems(
@@ -101,6 +104,26 @@ public class LayoutPageTemplateCollectionActionDropdownItem {
 								LanguageUtil.get(
 									_httpServletRequest, "rename"));
 						}
+					).add(
+						() ->
+							(layoutPageTemplateCollection.getType() ==
+							 LayoutPageTemplateCollectionTypeConstants.
+								 DISPLAY_PAGE) &&
+							LayoutPageTemplateCollectionPermission.contains(
+								themeDisplay.getPermissionChecker(),
+								layoutPageTemplateCollection,
+								ActionKeys.UPDATE),
+						dropdownItem -> {
+							dropdownItem.putData(
+								"action", "moveLayoutPageTemplateCollection");
+							dropdownItem.putData(
+								"moveLayoutPageTemplateCollectionURL",
+								_getMoveLayoutPageTemplateCollectionURL(
+									layoutPageTemplateCollection));
+							dropdownItem.setIcon("move-folder");
+							dropdownItem.setLabel(
+								LanguageUtil.get(_httpServletRequest, "move"));
+						}
 					).build());
 				dropdownGroupItem.setSeparator(true);
 			}
@@ -156,6 +179,19 @@ public class LayoutPageTemplateCollectionActionDropdownItem {
 				dropdownGroupItem.setSeparator(true);
 			}
 		).build();
+	}
+
+	private String _getMoveLayoutPageTemplateCollectionURL(LayoutPageTemplateCollection layoutPageTemplateCollection){
+		return PortletURLBuilder.createActionURL(
+			_renderResponse
+		).setActionName(
+			"/layout_page_template_admin/move_layout_page_template_collection"
+		).setRedirect(
+			_themeDisplay.getURLCurrent()
+		).setParameter(
+			"layoutPageTemplateCollectionId",
+			layoutPageTemplateCollection.getLayoutPageTemplateCollectionId()
+		).buildString();
 	}
 
 	private String _getDeleteDialogTitle(
@@ -262,5 +298,7 @@ public class LayoutPageTemplateCollectionActionDropdownItem {
 
 	private final HttpServletRequest _httpServletRequest;
 	private final RenderResponse _renderResponse;
+
+	private final ThemeDisplay _themeDisplay;
 
 }

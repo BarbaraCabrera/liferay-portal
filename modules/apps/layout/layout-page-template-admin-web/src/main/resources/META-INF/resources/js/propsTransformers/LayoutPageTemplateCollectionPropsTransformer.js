@@ -23,6 +23,34 @@ const ACTIONS = {
 		});
 	},
 
+	moveLayoutPageTemplateCollection(
+		{moveLayoutPageTemplateEntryURL},
+		namespace
+	) {
+		openSelectionModal({
+			onSelect: (selectedItem) => {
+				if (!selectedItem) {
+					return;
+				}
+
+				const value = JSON.parse(selectedItem.value);
+
+				const portletURL = new createPortletURL(
+					moveLayoutPageTemplateEntryURL,
+					{
+						targetLayoutPageTemplateCollectionId:
+						value.layoutPageTemplateCollectionId,
+					}
+				);
+
+				send(portletURL.toString());
+			},
+			selectEventName: `${namespace}selectItem`,
+			title: Liferay.Language.get('select-destination'),
+			url: itemSelectorURL,
+		});
+	},
+
 	permissionsLayoutPageTemplateCollection({
 		permissionsLayoutPageTemplateCollectionURL,
 	}) {
