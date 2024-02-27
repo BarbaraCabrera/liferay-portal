@@ -4,7 +4,7 @@
  */
 
 import {openCreationModal} from '@liferay/layout-js-components-web';
-import {openModal} from 'frontend-js-web';
+import {openModal, openSelectionModal} from 'frontend-js-web';
 
 import openDeletePageTemplateModal from '../commands/openDeletePageTemplateModal';
 
@@ -21,6 +21,18 @@ const ACTIONS = {
 				);
 			},
 			title: dialogTitle,
+		});
+	},
+
+	moveLayoutPageTemplateCollection({moveLayoutPageTemplateCollectionURL}){
+		openSelectionModal({
+			onSelect: (selectedItems) => {
+				console.log("HELLOOOO");
+				console.log("se manda:", selectedItems);
+			},
+			selectEventName: 'selectFolder',
+			title: Liferay.Language.get('move-folder'),
+			url: moveLayoutPageTemplateCollectionURL,
 		});
 	},
 
