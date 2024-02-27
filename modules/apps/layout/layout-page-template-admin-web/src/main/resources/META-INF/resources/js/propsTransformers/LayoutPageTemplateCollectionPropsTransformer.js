@@ -4,7 +4,7 @@
  */
 
 import {openCreationModal} from '@liferay/layout-js-components-web';
-import {openModal} from 'frontend-js-web';
+import {openModal, openSelectionModal, openToast, objectToFormData} from 'frontend-js-web';
 
 import openDeletePageTemplateModal from '../commands/openDeletePageTemplateModal';
 
@@ -21,6 +21,42 @@ const ACTIONS = {
 				);
 			},
 			title: dialogTitle,
+		});
+	},
+
+	moveLayoutPageTemplateCollection({itemSelectorURL, moveLayoutPageTemplateCollectionURL}, portletNamespace){
+		openSelectionModal({
+			onSelect: (selectedItems) => {
+				fetch(moveLayoutPageTemplateCollectionURL, {
+					body: objectToFormData({
+						[`${portletNamespace}targetLayoutPageTemplateCollectionId`]: selectedItems.resourceid,
+						[`${portletNamespace}targetLayoutPageTemplateCollectionId`]: selectedItems.resourceid,
+					}),
+					method: 'POST',
+				})
+					.then((response) => {
+						if (!response.ok) {
+							throw new Error();
+						}
+
+						window.location.reload();
+					})
+					.catch(
+						({
+							 message = Liferay.Language.get(
+								 'an-unexpected-error-occurred'
+							 ),
+						 }) => {
+							openToast({
+								message,
+								type: 'danger',
+							});
+						}
+					);
+			},
+			selectEventName: 'selectFolder',
+			title: Liferay.Language.get('move-folder'),
+			url: itemSelectorURL,
 		});
 	},
 
