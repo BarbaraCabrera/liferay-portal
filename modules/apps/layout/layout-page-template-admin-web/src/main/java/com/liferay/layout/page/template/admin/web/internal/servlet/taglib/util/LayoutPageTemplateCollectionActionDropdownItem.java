@@ -41,10 +41,11 @@ public class LayoutPageTemplateCollectionActionDropdownItem {
 
 		_httpServletRequest = httpServletRequest;
 		_renderResponse = renderResponse;
-		_itemSelector = (ItemSelector)_httpServletRequest.getAttribute(
+
+		_itemSelector = (ItemSelector)httpServletRequest.getAttribute(
 			LayoutPageTemplateAdminWebKeys.ITEM_SELECTOR);
 
-		_themeDisplay = (ThemeDisplay)_httpServletRequest.getAttribute(
+		_themeDisplay = (ThemeDisplay)httpServletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 	}
 
@@ -117,8 +118,8 @@ public class LayoutPageTemplateCollectionActionDropdownItem {
 					).add(
 						() ->
 							(layoutPageTemplateCollection.getType() ==
-							 LayoutPageTemplateCollectionTypeConstants.
-								 DISPLAY_PAGE) &&
+								LayoutPageTemplateCollectionTypeConstants.
+									DISPLAY_PAGE) &&
 							LayoutPageTemplateCollectionPermission.contains(
 								themeDisplay.getPermissionChecker(),
 								layoutPageTemplateCollection,
@@ -127,8 +128,11 @@ public class LayoutPageTemplateCollectionActionDropdownItem {
 							dropdownItem.putData(
 								"action", "moveLayoutPageTemplateCollection");
 							dropdownItem.putData(
+								"itemSelectorURL", _getItemSelectorURL());
+							dropdownItem.putData(
 								"moveLayoutPageTemplateCollectionURL",
-								_getMoveLayoutPageTemplateCollectionURL());
+								_getMoveLayoutPageTemplateCollectionURL(
+									layoutPageTemplateCollection));
 							dropdownItem.setIcon("move-folder");
 							dropdownItem.setLabel(
 								LanguageUtil.get(_httpServletRequest, "move"));
@@ -190,22 +194,6 @@ public class LayoutPageTemplateCollectionActionDropdownItem {
 		).build();
 	}
 
-	private String _getMoveLayoutPageTemplateCollectionURL(){
-		LayoutPageTemplateCollectionTreeNodeItemSelectorCriterion
-			layoutPageTemplateCollectionTreeNodeItemSelectorCriterion =
-			new LayoutPageTemplateCollectionTreeNodeItemSelectorCriterion();
-
-		layoutPageTemplateCollectionTreeNodeItemSelectorCriterion.
-			setDesiredItemSelectorReturnTypes(new UUIDItemSelectorReturnType());
-
-		PortletURL itemSelectorURL = _itemSelector.getItemSelectorURL(
-			RequestBackedPortletURLFactoryUtil.create(_httpServletRequest),
-			"selectFolder",
-			layoutPageTemplateCollectionTreeNodeItemSelectorCriterion);
-
-		return itemSelectorURL.toString();
-	}
-
 	private String _getDeleteDialogTitle(
 		HttpServletRequest httpServletRequest,
 		LayoutPageTemplateCollection layoutPageTemplateCollection) {
@@ -261,6 +249,37 @@ public class LayoutPageTemplateCollectionActionDropdownItem {
 		).buildString();
 	}
 
+	private String _getItemSelectorURL() {
+		LayoutPageTemplateCollectionTreeNodeItemSelectorCriterion
+			layoutPageTemplateCollectionTreeNodeItemSelectorCriterion =
+				new LayoutPageTemplateCollectionTreeNodeItemSelectorCriterion();
+
+		layoutPageTemplateCollectionTreeNodeItemSelectorCriterion.
+			setDesiredItemSelectorReturnTypes(new UUIDItemSelectorReturnType());
+
+		PortletURL itemSelectorURL = _itemSelector.getItemSelectorURL(
+			RequestBackedPortletURLFactoryUtil.create(_httpServletRequest),
+			"selectFolder",
+			layoutPageTemplateCollectionTreeNodeItemSelectorCriterion);
+
+		return itemSelectorURL.toString();
+	}
+
+	private String _getMoveLayoutPageTemplateCollectionURL(
+		LayoutPageTemplateCollection layoutPageTemplateCollection) {
+
+		return PortletURLBuilder.createActionURL(
+			_renderResponse
+		).setActionName(
+			"/layout_page_template_admin/move_layout_page_template_collection"
+		).setRedirect(
+			_themeDisplay.getURLCurrent()
+		).setParameter(
+			"layoutPageTemplateCollectionId",
+			layoutPageTemplateCollection.getLayoutPageTemplateCollectionId()
+		).buildString();
+	}
+
 	private String _getPermissionsLayoutPageTemplateCollectionURL(
 			LayoutPageTemplateCollection layoutPageTemplateCollection)
 		throws Exception {
@@ -309,9 +328,8 @@ public class LayoutPageTemplateCollectionActionDropdownItem {
 	}
 
 	private final HttpServletRequest _httpServletRequest;
-	private final RenderResponse _renderResponse;
-
 	private final ItemSelector _itemSelector;
+	private final RenderResponse _renderResponse;
 	private final ThemeDisplay _themeDisplay;
 
 }
