@@ -127,7 +127,9 @@ public class LayoutPageTemplateCollectionActionDropdownItem {
 							dropdownItem.putData(
 								"action", "moveLayoutPageTemplateCollection");
 							dropdownItem.putData(
-								"itemSelectorURL", _getItemSelectorURL());
+								"itemSelectorURL",
+								_getItemSelectorURL(
+									layoutPageTemplateCollection));
 							dropdownItem.putData(
 								"layoutPageTemplateCollectionName",
 								layoutPageTemplateCollection.getName());
@@ -251,7 +253,9 @@ public class LayoutPageTemplateCollectionActionDropdownItem {
 		).buildString();
 	}
 
-	private String _getItemSelectorURL() {
+	private String _getItemSelectorURL(
+		LayoutPageTemplateCollection layoutPageTemplateCollection) {
+
 		LayoutPageTemplateCollectionTreeNodeItemSelectorCriterion
 			layoutPageTemplateCollectionTreeNodeItemSelectorCriterion =
 				new LayoutPageTemplateCollectionTreeNodeItemSelectorCriterion();
@@ -259,11 +263,15 @@ public class LayoutPageTemplateCollectionActionDropdownItem {
 		layoutPageTemplateCollectionTreeNodeItemSelectorCriterion.
 			setDesiredItemSelectorReturnTypes(new UUIDItemSelectorReturnType());
 
-		return String.valueOf(
+		return PortletURLBuilder.create(
 			_itemSelector.getItemSelectorURL(
 				RequestBackedPortletURLFactoryUtil.create(_httpServletRequest),
 				"selectFolder",
-				layoutPageTemplateCollectionTreeNodeItemSelectorCriterion));
+				layoutPageTemplateCollectionTreeNodeItemSelectorCriterion)
+		).setParameter(
+			"layoutPageTemplateCollectionId",
+			layoutPageTemplateCollection.getLayoutPageTemplateCollectionId()
+		).buildString();
 	}
 
 	private String _getMoveLayoutPageTemplateCollectionURL(

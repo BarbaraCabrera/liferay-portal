@@ -7,6 +7,7 @@ package com.liferay.layout.page.template.item.selector.web.internal.display.cont
 
 import com.liferay.layout.page.template.model.LayoutPageTemplateCollection;
 import com.liferay.layout.page.template.service.LayoutPageTemplateCollectionLocalServiceUtil;
+import com.liferay.portal.kernel.bean.BeanParamUtil;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -45,6 +46,18 @@ public class LayoutPageTemplateCollectionsTreeNodeDisplayContext {
 		return _layoutPageTemplateCollection;
 	}
 
+	public long getLayoutPageTemplateCollectionId() {
+		if (_layoutPageTemplateCollectionId != null) {
+			return _layoutPageTemplateCollectionId;
+		}
+
+		_layoutPageTemplateCollectionId = BeanParamUtil.getLong(
+			getLayoutPageTemplateCollection(), _httpServletRequest,
+			"layoutPageTemplateCollectionId", -1);
+
+		return _layoutPageTemplateCollectionId;
+	}
+
 	public JSONArray getLayoutPageTemplateCollectionJSONArray() {
 		return JSONUtil.put(
 			JSONUtil.put(
@@ -56,6 +69,17 @@ public class LayoutPageTemplateCollectionsTreeNodeDisplayContext {
 			).put(
 				"name", LanguageUtil.get(_themeDisplay.getLocale(), "home")
 			));
+	}
+
+	public long getParentLayoutPageTemplateCollectionId() {
+		if (_parentLayoutPageTemplateCollectionId != null) {
+			return _parentLayoutPageTemplateCollectionId;
+		}
+
+		_parentLayoutPageTemplateCollectionId = ParamUtil.getLong(
+			_httpServletRequest, "parentLayoutPageTemplateCollectionId", -1);
+
+		return _parentLayoutPageTemplateCollectionId;
 	}
 
 	private JSONArray _getLayoutPageTemplateCollectionJSONArray(
@@ -90,6 +114,16 @@ public class LayoutPageTemplateCollectionsTreeNodeDisplayContext {
 				"name", layoutPageTemplateCollection.getName()
 			);
 
+			long selectedLayoutPageTemplateCollectionId =
+				getLayoutPageTemplateCollectionId();
+
+			if (selectedLayoutPageTemplateCollectionId ==
+					layoutPageTemplateCollection.
+						getLayoutPageTemplateCollectionId()) {
+
+				continue;
+			}
+
 			jsonArray.put(jsonObject);
 		}
 
@@ -98,6 +132,8 @@ public class LayoutPageTemplateCollectionsTreeNodeDisplayContext {
 
 	private final HttpServletRequest _httpServletRequest;
 	private LayoutPageTemplateCollection _layoutPageTemplateCollection;
+	private Long _layoutPageTemplateCollectionId;
+	private Long _parentLayoutPageTemplateCollectionId;
 	private final ThemeDisplay _themeDisplay;
 
 }
