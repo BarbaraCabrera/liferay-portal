@@ -12,4 +12,16 @@ import com.liferay.item.selector.BaseItemSelectorCriterion;
  */
 public class LayoutPageTemplateCollectionTreeNodeItemSelectorCriterion
 	extends BaseItemSelectorCriterion {
+
+	public void setLayoutPageTemplateCollectionId(
+		long layoutPageTemplateCollectionId) {
+		_layoutPageTemplateCollectionId = layoutPageTemplateCollectionId;
+	}
+
+	public long getLayoutPageTemplateCollectionId() {
+		return _layoutPageTemplateCollectionId;
+	}
+
+	private long _layoutPageTemplateCollectionId;
+
 }

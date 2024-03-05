@@ -71,17 +71,6 @@ public class LayoutPageTemplateCollectionsTreeNodeDisplayContext {
 			));
 	}
 
-	public long getParentLayoutPageTemplateCollectionId() {
-		if (_parentLayoutPageTemplateCollectionId != null) {
-			return _parentLayoutPageTemplateCollectionId;
-		}
-
-		_parentLayoutPageTemplateCollectionId = ParamUtil.getLong(
-			_httpServletRequest, "parentLayoutPageTemplateCollectionId", -1);
-
-		return _parentLayoutPageTemplateCollectionId;
-	}
-
 	private JSONArray _getLayoutPageTemplateCollectionJSONArray(
 		long groupId, long layoutPageTemplateCollectionId) {
 
@@ -133,7 +122,6 @@ public class LayoutPageTemplateCollectionsTreeNodeDisplayContext {
 	private final HttpServletRequest _httpServletRequest;
 	private LayoutPageTemplateCollection _layoutPageTemplateCollection;
 	private Long _layoutPageTemplateCollectionId;
-	private Long _parentLayoutPageTemplateCollectionId;
 	private final ThemeDisplay _themeDisplay;
 
 }
