@@ -491,3 +491,128 @@ scheduleTest(
 		);
 	}
 );
+
+scheduleTest(
+	'Create a web content scheduled with workflow activated',
+	async ({journalEditArticlePage, page, site}) => {
+		await page.goto(
+			`/group${
+				site['friendlyUrlPath'] || '/guest'
+			}${'/~/control_panel/manage?p_p_id=com_liferay_portal_workflow_web_internal_portlet_SiteAdministrationWorkflowPortlet'}`
+		);
+
+		const row = await page
+			.getByRole('row')
+			.filter({hasText: 'Web Content Article'});
+
+		await clickAndExpectToBeVisible({
+			target: page.getByRole('button', {name: 'Save'}),
+			trigger: row.getByRole('button', {name: 'Edit'}),
+		});
+
+		await row
+			.getByTitle('Workflow Definition')
+			.selectOption({label: 'Single Approver'});
+
+		await page.getByRole('button', {name: 'Save'}).click();
+
+		await journalEditArticlePage.goto({siteUrl: site.friendlyUrlPath});
+
+		const title = getRandomString();
+
+		await journalEditArticlePage.fillTitle(title);
+
+		await clickAndExpectToBeVisible({
+			autoClick: true,
+			target: page.getByRole('menuitem', {
+				name: 'Schedule Publication and Submit for Workflow',
+			}),
+			trigger: page.getByRole('button', {
+				name: 'Select and Confirm Submit for Workflow Settings',
+			}),
+		});
+
+		await page
+			.getByPlaceholder('YYYY-MM-DD HH:mm')
+			.fill('9987-11-26 13:00');
+
+		await page
+			.getByRole('button', {exact: true, name: 'Submit for Workflow'})
+			.click();
+
+		await page
+			.getByText(
+				`Success:${title} has been scheduled and submitted for workflow.`
+			)
+			.waitFor();
+
+		await expect(
+			page.locator('span.label').filter({hasText: 'Pending'})
+		).toBeVisible();
+
+		await page.goto(
+			`/group${
+				site['friendlyUrlPath'] || '/guest'
+			}${'/~/control_panel/manage?p_p_id=com_liferay_portal_workflow_task_web_portlet_MyWorkflowTaskPortlet'}`
+		);
+
+		await page.getByRole('link', {name: 'Assigned to my roles'}).click();
+
+		await clickAndExpectToBeVisible({
+			autoClick: true,
+			target: page.getByText('Assign to Me', {exact: true}),
+			trigger: page.locator(
+				'[id="_com_liferay_portal_workflow_task_web_portlet_MyWorkflowTaskPortlet_workflowTasks_1_menu"]'
+			),
+		});
+
+		await page.getByText('Done').click();
+
+		await page.getByRole('link', {name: 'Assigned to Me'}).click();
+
+		await clickAndExpectToBeVisible({
+			autoClick: true,
+			target: page.getByText('Approve', {
+				exact: true,
+			}),
+			trigger: page.locator(
+				'[id="_com_liferay_portal_workflow_task_web_portlet_MyWorkflowTaskPortlet_workflowTasks_1_menu"]'
+			),
+		});
+
+		await page.getByText('Done').click();
+
+		await journalEditArticlePage.goto({siteUrl: site.friendlyUrlPath});
+
+		await expect(
+			page.locator('span.label').filter({hasText: 'Schedule'})
+		).toBeVisible();
+
+		await page.getByLabel(`Actions for ${title}`).waitFor();
+
+		await clickAndExpectToBeVisible({
+			autoClick: true,
+			target: page.getByRole('menuitem', {
+				exact: true,
+				name: 'Edit',
+			}),
+			trigger: page.getByLabel(`Actions for ${title}`, {
+				exact: true,
+			}),
+		});
+
+		await clickAndExpectToBeVisible({
+			autoClick: true,
+			target: page.getByRole('menuitem', {
+				name: 'Schedule Publication',
+			}),
+			trigger: page.getByRole('button', {
+				name: 'Select and Confirm Publish Settings',
+			}),
+		});
+
+		await expect(page.getByPlaceholder('YYYY-MM-DD HH:mm')).toHaveValue(
+			'9987-11-26 13:00'
+		);
+	}
+);
