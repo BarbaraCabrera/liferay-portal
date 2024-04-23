@@ -491,6 +491,60 @@ public class AssetListEntryLocalServiceImpl
 	}
 
 	@Override
+	public AssetListEntry updateAssetListEntry(
+			String externalReferenceCode, long groupId, long segmentsEntryId,
+			String title, String typeSettings, ServiceContext serviceContext)
+		throws PortalException {
+
+		AssetListEntry assetListEntry = assetListEntryPersistence.findByERC_G(
+			externalReferenceCode, groupId);
+
+		_validateTitle(assetListEntry.getGroupId(), title);
+
+		assetListEntry.setModifiedDate(new Date());
+		assetListEntry.setTitle(title);
+
+		long assetListEntryId = assetListEntry.getAssetListEntryId();
+
+		if (assetListEntry.getType() ==
+				AssetListEntryTypeConstants.TYPE_DYNAMIC) {
+
+			String assetEntryType = _getSegmentsAssetEntryType(
+				assetListEntryId, segmentsEntryId, typeSettings);
+
+			assetListEntry.setAssetEntrySubtype(
+				_getSegmentsAssetEntrySubtype(
+					assetEntryType, assetListEntryId, segmentsEntryId,
+					typeSettings));
+			assetListEntry.setAssetEntryType(assetEntryType);
+		}
+
+		assetListEntry = assetListEntryPersistence.update(assetListEntry);
+
+		// Asset list entry segments entry rel
+
+		AssetListEntrySegmentsEntryRel assetListEntrySegmentsEntryRel =
+			_assetListEntrySegmentsEntryRelLocalService.
+				fetchAssetListEntrySegmentsEntryRel(
+					assetListEntryId, segmentsEntryId);
+
+		if (assetListEntrySegmentsEntryRel == null) {
+			_assetListEntrySegmentsEntryRelLocalService.
+				addAssetListEntrySegmentsEntryRel(
+					serviceContext.getUserId(),
+					serviceContext.getScopeGroupId(), assetListEntryId,
+					segmentsEntryId, typeSettings, serviceContext);
+		}
+		else {
+			_assetListEntrySegmentsEntryRelLocalService.
+				updateAssetListEntrySegmentsEntryRelTypeSettings(
+					assetListEntryId, segmentsEntryId, typeSettings);
+		}
+
+		return assetListEntry;
+	}
+
+	@Override
 	public void updateAssetListEntryTypeSettings(
 			long assetListEntryId, long segmentsEntryId, String typeSettings)
 		throws PortalException {
