@@ -11,7 +11,9 @@ import com.liferay.layout.utility.page.model.LayoutUtilityPageEntry;
 import com.liferay.layout.utility.page.service.base.LayoutUtilityPageEntryLocalServiceBaseImpl;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.dao.orm.custom.sql.CustomSQL;
 import com.liferay.portal.aop.AopService;
+import com.liferay.portal.kernel.dao.orm.WildcardMode;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.model.ColorScheme;
@@ -285,7 +287,7 @@ public class LayoutUtilityPageEntryLocalServiceImpl
 		OrderByComparator<LayoutUtilityPageEntry> orderByComparator) {
 
 		return layoutUtilityPageEntryPersistence.findByG_LikeN_T(
-			groupId, keyword, types, start, end, orderByComparator);
+			groupId, _customSQL.keywords(keyword, false, WildcardMode.SURROUND)[0], types, start, end, orderByComparator);
 	}
 
 	@Override
@@ -597,6 +599,9 @@ public class LayoutUtilityPageEntryLocalServiceImpl
 		';', '/', '?', ':', '@', '=', '&', '\"', '<', '>', '#', '%', '{', '}',
 		'|', '\\', '^', '~', '[', ']', '`'
 	};
+
+	@Reference
+	private CustomSQL _customSQL;
 
 	@Reference
 	private File _file;
