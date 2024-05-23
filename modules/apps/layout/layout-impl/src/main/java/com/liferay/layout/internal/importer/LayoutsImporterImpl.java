@@ -482,8 +482,8 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 		if (layoutPageTemplateCollection == null) {
 			layoutPageTemplateCollection =
 				_layoutPageTemplateCollectionLocalService.
-					fetchLayoutPageTemplateCollectionByName(
-						groupId, pageTemplateCollection.getName(),
+					fetchLayoutPageTemplateCollection(
+						groupId, pageTemplateCollection.getName(), 0,
 						LayoutPageTemplateEntryTypeConstants.BASIC);
 
 			if (layoutPageTemplateCollection == null) {
@@ -509,7 +509,7 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 						PARENT_LAYOUT_PAGE_TEMPLATE_COLLECTION_ID_DEFAULT,
 					_layoutPageTemplateCollectionLocalService.
 						getUniqueLayoutPageTemplateCollectionName(
-							groupId, pageTemplateCollection.getName(),
+							groupId, 0, pageTemplateCollection.getName(),
 							LayoutPageTemplateEntryTypeConstants.BASIC),
 					pageTemplateCollection.getDescription(),
 					LayoutPageTemplateCollectionTypeConstants.BASIC,
@@ -1328,7 +1328,7 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 
 		LayoutPageTemplateEntry layoutPageTemplateEntry =
 			_layoutPageTemplateEntryLocalService.fetchLayoutPageTemplateEntry(
-				groupId, name, layoutPageTemplateEntryType);
+				groupId, 0, name, layoutPageTemplateEntryType);
 
 		try (SafeCloseable safeCloseable =
 				CheckUnlockedLayoutThreadLocal.setWithSafeCloseable(false)) {
@@ -1358,7 +1358,7 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 					classTypeId,
 					_layoutPageTemplateEntryLocalService.
 						getUniqueLayoutPageTemplateEntryName(
-							groupId, name, layoutPageTemplateEntryType),
+							groupId, 0, name, layoutPageTemplateEntryType),
 					layoutPageTemplateEntryType);
 				added = true;
 			}
@@ -2063,7 +2063,7 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 				LayoutPageTemplateEntry layoutPageTemplateEntry =
 					_layoutPageTemplateEntryLocalService.
 						fetchLayoutPageTemplateEntry(
-							groupId, pageTemplate.getName(),
+							groupId, 0, pageTemplate.getName(),
 							LayoutPageTemplateEntryTypeConstants.BASIC);
 
 				if (layoutPageTemplateEntry != null) {
@@ -2094,7 +2094,7 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 			LayoutPageTemplateEntry layoutPageTemplateEntry =
 				_layoutPageTemplateEntryLocalService.
 					fetchLayoutPageTemplateEntry(
-						groupId, displayPageTemplate.getName(),
+						groupId, 0, displayPageTemplate.getName(),
 						LayoutPageTemplateEntryTypeConstants.DISPLAY_PAGE);
 
 			if (layoutPageTemplateEntry != null) {
@@ -2120,7 +2120,7 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 			LayoutPageTemplateEntry layoutPageTemplateEntry =
 				_layoutPageTemplateEntryLocalService.
 					fetchLayoutPageTemplateEntry(
-						groupId, masterPage.getName(),
+						groupId, 0, masterPage.getName(),
 						LayoutPageTemplateEntryTypeConstants.MASTER_LAYOUT);
 
 			if (layoutPageTemplateEntry != null) {
