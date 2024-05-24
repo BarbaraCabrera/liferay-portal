@@ -74,7 +74,7 @@ public class LayoutPageTemplateCollectionServiceTest {
 	}
 
 	@Test(expected = DuplicateLayoutPageTemplateCollectionException.class)
-	public void testAddDuplicateLayoutPageTemplateCollections()
+	public void testAddDuplicateBasicLayoutPageTemplateCollections()
 		throws Exception {
 
 		ServiceContext serviceContext =
@@ -94,6 +94,38 @@ public class LayoutPageTemplateCollectionServiceTest {
 				PARENT_LAYOUT_PAGE_TEMPLATE_COLLECTION_ID_DEFAULT,
 			"Layout Page Template Collection", null,
 			LayoutPageTemplateCollectionTypeConstants.BASIC, serviceContext);
+	}
+
+	@Test(expected = DuplicateLayoutPageTemplateCollectionException.class)
+	public void testAddDuplicateDisplayPageLayoutPageTemplateCollections()
+		throws Exception {
+
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(
+				_group.getGroupId(), TestPropsValues.getUserId());
+
+		_layoutPageTemplateCollectionService.addLayoutPageTemplateCollection(
+			null, _group.getGroupId(),
+			LayoutPageTemplateConstants.
+				PARENT_LAYOUT_PAGE_TEMPLATE_COLLECTION_ID_DEFAULT,
+			"Layout Page Template Collection", null,
+			LayoutPageTemplateCollectionTypeConstants.DISPLAY_PAGE,
+			serviceContext);
+
+		_layoutPageTemplateCollectionService.addLayoutPageTemplateCollection(
+			null, _group.getGroupId(),
+			LayoutPageTemplateConstants.
+				PARENT_LAYOUT_PAGE_TEMPLATE_COLLECTION_ID_DEFAULT,
+			"Layout Page Template Collection", null,
+			LayoutPageTemplateCollectionTypeConstants.DISPLAY_PAGE,
+			serviceContext);
+
+		Assert.assertEquals(
+			2,
+			_layoutPageTemplateCollectionService.
+				getLayoutPageTemplateCollectionsCount(
+					_group.getGroupId(), "Layout Page Template Collection",
+					LayoutPageTemplateCollectionTypeConstants.DISPLAY_PAGE));
 	}
 
 	@Test
