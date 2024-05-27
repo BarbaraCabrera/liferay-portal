@@ -174,7 +174,10 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 		throws Exception {
 
 		importFile(
-			userId, groupId, 0, file, layoutsImportStrategy, preserveItemIds);
+			userId, groupId,
+			LayoutPageTemplateConstants.
+				PARENT_LAYOUT_PAGE_TEMPLATE_COLLECTION_ID_DEFAULT,
+			file, layoutsImportStrategy, preserveItemIds);
 	}
 
 	@Override
@@ -483,7 +486,9 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 			layoutPageTemplateCollection =
 				_layoutPageTemplateCollectionLocalService.
 					fetchLayoutPageTemplateCollection(
-						groupId, pageTemplateCollection.getName(), 0,
+						groupId, pageTemplateCollection.getName(),
+						LayoutPageTemplateConstants.
+							PARENT_LAYOUT_PAGE_TEMPLATE_COLLECTION_ID_DEFAULT,
 						LayoutPageTemplateEntryTypeConstants.BASIC);
 
 			if (layoutPageTemplateCollection == null) {
@@ -509,7 +514,10 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 						PARENT_LAYOUT_PAGE_TEMPLATE_COLLECTION_ID_DEFAULT,
 					_layoutPageTemplateCollectionLocalService.
 						getUniqueLayoutPageTemplateCollectionName(
-							groupId, 0, pageTemplateCollection.getName(),
+							groupId,
+							LayoutPageTemplateConstants.
+								PARENT_LAYOUT_PAGE_TEMPLATE_COLLECTION_ID_DEFAULT,
+							pageTemplateCollection.getName(),
 							LayoutPageTemplateEntryTypeConstants.BASIC),
 					pageTemplateCollection.getDescription(),
 					LayoutPageTemplateCollectionTypeConstants.BASIC,
@@ -1328,7 +1336,10 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 
 		LayoutPageTemplateEntry layoutPageTemplateEntry =
 			_layoutPageTemplateEntryLocalService.fetchLayoutPageTemplateEntry(
-				groupId, 0, name, layoutPageTemplateEntryType);
+				groupId,
+				LayoutPageTemplateConstants.
+					PARENT_LAYOUT_PAGE_TEMPLATE_COLLECTION_ID_DEFAULT,
+				name, layoutPageTemplateEntryType);
 
 		try (SafeCloseable safeCloseable =
 				CheckUnlockedLayoutThreadLocal.setWithSafeCloseable(false)) {
@@ -1358,7 +1369,10 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 					classTypeId,
 					_layoutPageTemplateEntryLocalService.
 						getUniqueLayoutPageTemplateEntryName(
-							groupId, 0, name, layoutPageTemplateEntryType),
+							groupId,
+							LayoutPageTemplateConstants.
+								PARENT_LAYOUT_PAGE_TEMPLATE_COLLECTION_ID_DEFAULT,
+							name, layoutPageTemplateEntryType),
 					layoutPageTemplateEntryType);
 				added = true;
 			}
@@ -2063,7 +2077,10 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 				LayoutPageTemplateEntry layoutPageTemplateEntry =
 					_layoutPageTemplateEntryLocalService.
 						fetchLayoutPageTemplateEntry(
-							groupId, 0, pageTemplate.getName(),
+							groupId,
+							LayoutPageTemplateConstants.
+								PARENT_LAYOUT_PAGE_TEMPLATE_COLLECTION_ID_DEFAULT,
+							pageTemplate.getName(),
 							LayoutPageTemplateEntryTypeConstants.BASIC);
 
 				if (layoutPageTemplateEntry != null) {
@@ -2094,7 +2111,10 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 			LayoutPageTemplateEntry layoutPageTemplateEntry =
 				_layoutPageTemplateEntryLocalService.
 					fetchLayoutPageTemplateEntry(
-						groupId, 0, displayPageTemplate.getName(),
+						groupId,
+						LayoutPageTemplateConstants.
+							PARENT_LAYOUT_PAGE_TEMPLATE_COLLECTION_ID_DEFAULT,
+						displayPageTemplate.getName(),
 						LayoutPageTemplateEntryTypeConstants.DISPLAY_PAGE);
 
 			if (layoutPageTemplateEntry != null) {
@@ -2120,7 +2140,10 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 			LayoutPageTemplateEntry layoutPageTemplateEntry =
 				_layoutPageTemplateEntryLocalService.
 					fetchLayoutPageTemplateEntry(
-						groupId, 0, masterPage.getName(),
+						groupId,
+						LayoutPageTemplateConstants.
+							PARENT_LAYOUT_PAGE_TEMPLATE_COLLECTION_ID_DEFAULT,
+						masterPage.getName(),
 						LayoutPageTemplateEntryTypeConstants.MASTER_LAYOUT);
 
 			if (layoutPageTemplateEntry != null) {
@@ -2480,7 +2503,9 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 
 			LayoutPageTemplateEntry layoutPageTemplateEntry =
 				_processLayoutPageTemplateEntry(
-					classNameId, classTypeId, _groupId, 0,
+					classNameId, classTypeId, _groupId,
+					LayoutPageTemplateConstants.
+						PARENT_LAYOUT_PAGE_TEMPLATE_COLLECTION_ID_DEFAULT,
 					_layoutsImporterResultEntries, _layoutsImportStrategy,
 					displayPageTemplate.getName(),
 					_displayPageTemplateEntry.getPageDefinition(),
@@ -2578,9 +2603,12 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 			MasterPage masterPage = _masterPageEntry.getMasterPage();
 
 			_processLayoutPageTemplateEntry(
-				0, 0, _groupId, 0, _layoutsImporterResultEntries,
-				_layoutsImportStrategy, masterPage.getName(),
-				_masterPageEntry.getPageDefinition(), _preserveItemIds,
+				0, 0, _groupId,
+				LayoutPageTemplateConstants.
+					PARENT_LAYOUT_PAGE_TEMPLATE_COLLECTION_ID_DEFAULT,
+				_layoutsImporterResultEntries, _layoutsImportStrategy,
+				masterPage.getName(), _masterPageEntry.getPageDefinition(),
+				_preserveItemIds,
 				LayoutPageTemplateEntryTypeConstants.MASTER_LAYOUT, _userId,
 				_masterPageEntry.getThumbnailZipEntry(),
 				_masterPageEntry.getZipPath(), _zipFile);
