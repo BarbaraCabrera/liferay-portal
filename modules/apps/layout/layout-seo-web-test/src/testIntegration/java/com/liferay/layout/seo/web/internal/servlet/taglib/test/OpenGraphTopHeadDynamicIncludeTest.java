@@ -68,6 +68,7 @@ import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.FileUtil;
+import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.HashMapDictionaryBuilder;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -75,6 +76,7 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
@@ -238,57 +240,13 @@ public class OpenGraphTopHeadDynamicIncludeTest {
 
 	@Test
 	public void testIncludeCustomTitle() throws Exception {
-		MockHttpServletResponse mockHttpServletResponse =
-			new MockHttpServletResponse();
-
-		_layoutSEOEntryLocalService.updateLayoutSEOEntry(
-			TestPropsValues.getUserId(), _layout.getGroupId(), false,
-			_layout.getLayoutId(), true,
-			Collections.singletonMap(LocaleUtil.US, "http://example.com"),
-			false, Collections.emptyMap(), Collections.emptyMap(), 0, true,
-			Collections.singletonMap(LocaleUtil.US, "Heló"),
-			ServiceContextTestUtil.getServiceContext(_group.getGroupId()));
-
-		_testWithLayoutSEOCompanyConfiguration(
-			() -> _dynamicInclude.include(
-				_getHttpServletRequest(), mockHttpServletResponse,
-				RandomTestUtil.randomString()),
-			false, true);
-
-		Document document = Jsoup.parse(
-			mockHttpServletResponse.getContentAsString());
-
-		_assertMetaTag(document, "og:title", "Heló");
+		_assertIncludeTitleAndDescription(null, "Heló");
 	}
 
 	@Test
 	public void testIncludeCustomTitleAndDescription() throws Exception {
-		MockHttpServletResponse mockHttpServletResponse =
-			new MockHttpServletResponse();
-
-		_layoutSEOEntryLocalService.updateLayoutSEOEntry(
-			TestPropsValues.getUserId(), _layout.getGroupId(), false,
-			_layout.getLayoutId(), true,
-			Collections.singletonMap(LocaleUtil.US, "http://example.com"), true,
-			Collections.singletonMap(
-				LocaleUtil.US, "description@#$%^&*()~`1234567890"),
-			Collections.emptyMap(), 0, true,
-			Collections.singletonMap(
-				LocaleUtil.US, "@#$%^&*()~`1234567890title"),
-			ServiceContextTestUtil.getServiceContext(_group.getGroupId()));
-
-		_testWithLayoutSEOCompanyConfiguration(
-			() -> _dynamicInclude.include(
-				_getHttpServletRequest(), mockHttpServletResponse,
-				RandomTestUtil.randomString()),
-			false, true);
-
-		Document document = Jsoup.parse(
-			mockHttpServletResponse.getContentAsString());
-
-		_assertMetaTag(
-			document, "og:description", "description@#$%^&*()~`1234567890");
-		_assertMetaTag(document, "og:title", "@#$%^&*()~`1234567890title");
+		_assertIncludeTitleAndDescription(
+			"description@#$%^&*()~`1234567890", "@#$%^&*()~`1234567890title");
 	}
 
 	@Test
@@ -1552,6 +1510,41 @@ public class OpenGraphTopHeadDynamicIncludeTest {
 		Element element = elements.get(0);
 
 		Assert.assertEquals(href, element.attr("href"));
+	}
+
+	private void _assertIncludeTitleAndDescription(
+			String description, String title)
+		throws Exception {
+
+		MockHttpServletResponse mockHttpServletResponse =
+			new MockHttpServletResponse();
+
+		_layoutSEOEntryLocalService.updateLayoutSEOEntry(
+			TestPropsValues.getUserId(), _layout.getGroupId(), false,
+			_layout.getLayoutId(), true,
+			Collections.singletonMap(LocaleUtil.US, "http://example.com"),
+			Validator.isNotNull(description),
+			HashMapBuilder.put(
+				LocaleUtil.US, description
+			).build(),
+			Collections.emptyMap(), 0, true,
+			Collections.singletonMap(LocaleUtil.US, title),
+			ServiceContextTestUtil.getServiceContext(_group.getGroupId()));
+
+		_testWithLayoutSEOCompanyConfiguration(
+			() -> _dynamicInclude.include(
+				_getHttpServletRequest(), mockHttpServletResponse,
+				RandomTestUtil.randomString()),
+			false, true);
+
+		Document document = Jsoup.parse(
+			mockHttpServletResponse.getContentAsString());
+
+		if (Validator.isNotNull(description)) {
+			_assertMetaTag(document, "og:description", description);
+		}
+
+		_assertMetaTag(document, "og:title", title);
 	}
 
 	private void _assertLinkElements(Document document) {
