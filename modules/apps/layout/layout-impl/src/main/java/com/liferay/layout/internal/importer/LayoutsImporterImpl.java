@@ -198,7 +198,7 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 				groupId, layoutsImporterResultEntries, layoutsImportStrategy,
 				preserveItemIds, userId, zipFile);
 
-			_processDisplayPageTemplatePageTemplateEntries(
+			_processDisplayPageTemplatePageTemplateEntriesAndCollections(
 				groupId, layoutPageTemplateCollectionId,
 				layoutsImporterResultEntries, layoutsImportStrategy,
 				preserveItemIds, userId, zipFile);
@@ -548,7 +548,8 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 			};
 
 		return new PageTemplateCollectionEntry(
-			_PAGE_TEMPLATE_COLLECTION_KEY_DEFAULT, pageTemplateCollection);
+			_PAGE_TEMPLATE_COLLECTION_KEY_DEFAULT, pageTemplateCollection,
+			pageTemplateCollection.getName());
 	}
 
 	private List<DisplayPageTemplateEntry> _getDisplayPageTemplateEntries(
@@ -642,6 +643,294 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 		}
 
 		return displayPageTemplateEntries;
+	}
+
+	private List<DisplayPageTemplateEntry>
+			_getDisplayPageTemplateEntriesFromCollection(
+				long groupId, String layoutPageTemplateCollectionKey,
+				List<LayoutsImporterResultEntry> layoutsImporterResultEntries,
+				ZipFile zipFile)
+		throws Exception {
+
+		List<DisplayPageTemplateEntry> displayPageTemplateEntries =
+			new ArrayList<>();
+
+		Enumeration<? extends ZipEntry> enumeration = zipFile.entries();
+
+		while (enumeration.hasMoreElements()) {
+			ZipEntry zipEntry = enumeration.nextElement();
+
+			if ((zipEntry == null) ||
+				!_isDisplayPageTemplateFile(zipEntry.getName())) {
+
+				continue;
+			}
+
+			String path = zipEntry.toString();
+
+			String[] pathElements = path.split(StringPool.FORWARD_SLASH);
+
+			if ((pathElements.length > 3) &&
+				StringUtil.equals(
+					pathElements[pathElements.length - 4],
+					layoutPageTemplateCollectionKey)) {
+
+				String content = StringUtil.read(
+					zipFile.getInputStream(zipEntry));
+
+				DisplayPageTemplate displayPageTemplate = null;
+
+				try {
+					DisplayPageTemplateValidator.validateDisplayPageTemplate(
+						content);
+
+					displayPageTemplate = _objectMapper.readValue(
+						content, DisplayPageTemplate.class);
+				}
+				catch (JSONValidatorException jsonValidatorException) {
+					if (_log.isWarnEnabled()) {
+						_log.warn(
+							"Invalid display page template for: " +
+								zipEntry.getName(),
+							jsonValidatorException);
+					}
+
+					layoutsImporterResultEntries.add(
+						new LayoutsImporterResultEntry(
+							zipEntry.getName(),
+							LayoutsImporterResultEntry.Status.INVALID,
+							_getErrorMessage(
+								groupId,
+								"x-could-not-be-imported-because-its-display-" +
+									"page-template-is-invalid",
+								new String[] {zipEntry.getName()})));
+
+					continue;
+				}
+
+				try {
+					String pageDefinitionJSON = _getPageDefinitionJSON(
+						zipEntry.getName(), zipFile);
+
+					PageDefinitionValidator.validatePageDefinition(
+						pageDefinitionJSON);
+
+					displayPageTemplateEntries.add(
+						new DisplayPageTemplateEntry(
+							displayPageTemplate,
+							_getKey(
+								_DISPLAY_PAGE_TEMPLATE_ENTRY_KEY_DEFAULT,
+								displayPageTemplate.getName(), zipEntry),
+							_objectMapper.readValue(
+								pageDefinitionJSON, PageDefinition.class),
+							_getThumbnailZipEntry(zipEntry.getName(), zipFile),
+							zipEntry.getName()));
+				}
+				catch (Exception exception) {
+					if (_log.isWarnEnabled()) {
+						_log.warn(
+							"Invalid page definition for: " +
+								displayPageTemplate.getName(),
+							exception);
+					}
+
+					layoutsImporterResultEntries.add(
+						new LayoutsImporterResultEntry(
+							displayPageTemplate.getName(),
+							LayoutsImporterResultEntry.Status.INVALID,
+							_getErrorMessage(
+								groupId,
+								"x-could-not-be-imported-because-its-page-" +
+									"definition-is-invalid",
+								new String[] {zipEntry.getName()})));
+				}
+			}
+		}
+
+		return displayPageTemplateEntries;
+	}
+
+	private LayoutPageTemplateCollection
+			_getDisplayPageTemplateLayoutPageTemplateCollection(
+				Map<String, String> importedElementKeys, long groupId,
+				long layoutPageTemplateCollectionId,
+				List<LayoutsImporterResultEntry> layoutsImporterResultEntries,
+				LayoutsImportStrategy layoutsImportStrategy,
+				PageTemplateCollectionEntry pageTemplateCollectionEntry)
+		throws Exception {
+
+		long parentLayoutPageTemplateCollectionId =
+			layoutPageTemplateCollectionId;
+		String parentLayoutPageTemplateCollectionKey = null;
+
+		String[] path = pageTemplateCollectionEntry.getZipPath(
+		).split(
+			StringPool.FORWARD_SLASH
+		);
+
+		if ((path.length > 2) &&
+			StringUtil.equals(
+				path[path.length - 2], pageTemplateCollectionEntry.getKey())) {
+
+			parentLayoutPageTemplateCollectionKey = path[path.length - 3];
+
+			LayoutPageTemplateCollection parentLayoutPageTemplateCollection =
+				_layoutPageTemplateCollectionLocalService.
+					fetchLayoutPageTemplateCollection(
+						groupId, parentLayoutPageTemplateCollectionKey,
+						LayoutPageTemplateCollectionTypeConstants.DISPLAY_PAGE);
+
+			if (parentLayoutPageTemplateCollection == null) {
+				return null;
+			}
+
+			parentLayoutPageTemplateCollectionId =
+				parentLayoutPageTemplateCollection.
+					getLayoutPageTemplateCollectionId();
+		}
+
+		PageTemplateCollection pageTemplateCollection =
+			pageTemplateCollectionEntry.getPageTemplateCollection();
+
+		LayoutPageTemplateCollection layoutPageTemplateCollection =
+			_layoutPageTemplateCollectionLocalService.
+				fetchLayoutPageTemplateCollection(
+					groupId, pageTemplateCollection.getName(),
+					parentLayoutPageTemplateCollectionId,
+					LayoutPageTemplateEntryTypeConstants.DISPLAY_PAGE);
+
+		String importedElementKey = importedElementKeys.get(
+			parentLayoutPageTemplateCollectionKey);
+
+		if (layoutPageTemplateCollection == null) {
+			if (Validator.isNotNull(importedElementKey)) {
+				LayoutPageTemplateCollection
+					importedParentLayoutPageTemplateCollection =
+						_layoutPageTemplateCollectionLocalService.
+							fetchLayoutPageTemplateCollection(
+								groupId, importedElementKey,
+								LayoutPageTemplateEntryTypeConstants.
+									DISPLAY_PAGE);
+
+				layoutPageTemplateCollection =
+					_layoutPageTemplateCollectionService.
+						addLayoutPageTemplateCollection(
+							null, groupId,
+							importedParentLayoutPageTemplateCollection.
+								getLayoutPageTemplateCollectionId(),
+							pageTemplateCollection.getName(),
+							pageTemplateCollection.getDescription(),
+							LayoutPageTemplateCollectionTypeConstants.
+								DISPLAY_PAGE,
+							ServiceContextThreadLocal.getServiceContext());
+			}
+			else {
+				layoutPageTemplateCollection =
+					_layoutPageTemplateCollectionService.
+						addLayoutPageTemplateCollection(
+							null, groupId, parentLayoutPageTemplateCollectionId,
+							pageTemplateCollection.getName(),
+							pageTemplateCollection.getDescription(),
+							LayoutPageTemplateCollectionTypeConstants.
+								DISPLAY_PAGE,
+							ServiceContextThreadLocal.getServiceContext());
+			}
+
+			importedElementKeys.put(
+				pageTemplateCollectionEntry.getKey(),
+				layoutPageTemplateCollection.
+					getLayoutPageTemplateCollectionKey());
+
+			layoutsImporterResultEntries.add(
+				new LayoutsImporterResultEntry(
+					layoutPageTemplateCollection.getName(),
+					LayoutsImporterResultEntry.TYPE_COLLECTION,
+					LayoutsImporterResultEntry.Status.IMPORTED));
+
+			return layoutPageTemplateCollection;
+		}
+
+		if (Objects.equals(
+				LayoutsImportStrategy.KEEP_BOTH, layoutsImportStrategy)) {
+
+			LayoutPageTemplateCollection
+				importedParentLayoutPageTemplateCollection =
+					_layoutPageTemplateCollectionLocalService.
+						fetchLayoutPageTemplateCollection(
+							groupId, importedElementKey,
+							LayoutPageTemplateEntryTypeConstants.DISPLAY_PAGE);
+
+			LayoutPageTemplateCollection importedLayoutPageTemplateCollection =
+				null;
+
+			if (importedElementKey != null) {
+				importedLayoutPageTemplateCollection =
+					_layoutPageTemplateCollectionService.
+						addLayoutPageTemplateCollection(
+							null, groupId,
+							importedParentLayoutPageTemplateCollection.
+								getLayoutPageTemplateCollectionId(),
+							pageTemplateCollection.getName(),
+							pageTemplateCollection.getDescription(),
+							LayoutPageTemplateCollectionTypeConstants.
+								DISPLAY_PAGE,
+							ServiceContextThreadLocal.getServiceContext());
+			}
+			else {
+				importedLayoutPageTemplateCollection =
+					_layoutPageTemplateCollectionService.
+						addLayoutPageTemplateCollection(
+							null, groupId, parentLayoutPageTemplateCollectionId,
+							_layoutPageTemplateCollectionLocalService.
+								getUniqueLayoutPageTemplateCollectionName(
+									groupId,
+									parentLayoutPageTemplateCollectionId,
+									pageTemplateCollection.getName(),
+									LayoutPageTemplateCollectionTypeConstants.
+										DISPLAY_PAGE),
+							pageTemplateCollection.getDescription(),
+							LayoutPageTemplateCollectionTypeConstants.
+								DISPLAY_PAGE,
+							ServiceContextThreadLocal.getServiceContext());
+			}
+
+			importedElementKeys.put(
+				pageTemplateCollectionEntry.getKey(),
+				importedLayoutPageTemplateCollection.
+					getLayoutPageTemplateCollectionKey());
+
+			layoutsImporterResultEntries.add(
+				new LayoutsImporterResultEntry(
+					importedLayoutPageTemplateCollection.getName(),
+					LayoutsImporterResultEntry.TYPE_COLLECTION,
+					LayoutsImporterResultEntry.Status.IMPORTED));
+
+			return importedLayoutPageTemplateCollection;
+		}
+		else if (Objects.equals(
+					LayoutsImportStrategy.OVERWRITE, layoutsImportStrategy)) {
+
+			layoutsImporterResultEntries.add(
+				new LayoutsImporterResultEntry(
+					layoutPageTemplateCollection.getName(),
+					LayoutsImporterResultEntry.TYPE_COLLECTION,
+					LayoutsImporterResultEntry.Status.IMPORTED));
+
+			return _layoutPageTemplateCollectionService.
+				updateLayoutPageTemplateCollection(
+					layoutPageTemplateCollection.
+						getLayoutPageTemplateCollectionId(),
+					pageTemplateCollection.getName(),
+					pageTemplateCollection.getDescription());
+		}
+
+		if (layoutPageTemplateCollection == null) {
+			throw new PortalException(
+				"Invalid layout page template collection ID: " +
+					layoutPageTemplateCollectionId);
+		}
+
+		return layoutPageTemplateCollection;
 	}
 
 	private String _getErrorMessage(
@@ -947,7 +1236,8 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 			pageTemplateCollectionMap.put(
 				pageTemplateCollectionKey,
 				new PageTemplateCollectionEntry(
-					pageTemplateCollectionKey, pageTemplateCollection));
+					pageTemplateCollectionKey, pageTemplateCollection,
+					StringPool.BLANK));
 		}
 
 		enumeration = zipFile.entries();
@@ -1072,6 +1362,101 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 		}
 
 		return _PAGE_TEMPLATE_COLLECTION_KEY_DEFAULT;
+	}
+
+	private List<PageTemplateCollectionEntry> _getPageTemplateCollections(
+			long groupId,
+			List<LayoutsImporterResultEntry> layoutsImporterResultEntries,
+			ZipFile zipFile)
+		throws Exception {
+
+		List<PageTemplateCollectionEntry> pageTemplateCollectionEntries =
+			new ArrayList<>();
+
+		Enumeration<? extends ZipEntry> enumeration = zipFile.entries();
+
+		while (enumeration.hasMoreElements()) {
+			ZipEntry zipEntry = enumeration.nextElement();
+
+			if ((zipEntry == null) ||
+				!_isPageTemplateCollectionFile(zipEntry.getName())) {
+
+				continue;
+			}
+
+			if (zipEntry.getName(
+				).contains(
+					LayoutPageTemplateExportImportConstants.
+						FILE_NAME_PAGE_TEMPLATE_COLLECTION
+				)) {
+
+				String content = StringUtil.read(
+					zipFile.getInputStream(zipEntry));
+				PageTemplateCollection pageTemplateCollection = null;
+
+				try {
+					PageTemplateCollectionValidator.
+						validatePageTemplateCollection(content);
+
+					pageTemplateCollection = _objectMapper.readValue(
+						content, PageTemplateCollection.class);
+				}
+				catch (JSONValidatorException jsonValidatorException) {
+					if (_log.isWarnEnabled()) {
+						_log.warn(
+							"Invalid display page template for: " +
+								zipEntry.getName(),
+							jsonValidatorException);
+					}
+
+					layoutsImporterResultEntries.add(
+						new LayoutsImporterResultEntry(
+							zipEntry.getName(),
+							LayoutsImporterResultEntry.TYPE_COLLECTION,
+							LayoutsImporterResultEntry.Status.INVALID,
+							_getErrorMessage(
+								groupId,
+								"x-could-not-be-imported-because-its-page-" +
+									"template-is-invalid",
+								new String[] {zipEntry.getName()})));
+
+					continue;
+				}
+
+				try {
+					PageDefinitionValidator.validatePageDefinition(
+						_getPageDefinitionJSON(zipEntry.getName(), zipFile));
+
+					pageTemplateCollectionEntries.add(
+						new PageTemplateCollectionEntry(
+							_getKey(
+								_PAGE_TEMPLATE_COLLECTION_KEY_DEFAULT,
+								pageTemplateCollection.getName(), zipEntry),
+							pageTemplateCollection, zipEntry.getName()));
+				}
+				catch (Exception exception) {
+					if (_log.isWarnEnabled()) {
+						_log.warn(
+							"Invalid page definition for: " +
+								pageTemplateCollection.getName(),
+							exception);
+					}
+
+					layoutsImporterResultEntries.add(
+						new LayoutsImporterResultEntry(
+							pageTemplateCollection.getName(),
+							LayoutsImporterResultEntry.TYPE_COLLECTION,
+							LayoutsImporterResultEntry.Status.INVALID,
+							_getErrorMessage(
+								groupId,
+								"x-could-not-be-imported-because-its-page-" +
+									"definition-is-invalid",
+								new String[] {zipEntry.getName()})));
+				}
+			}
+		}
+
+		return pageTemplateCollectionEntries;
 	}
 
 	private long _getPreviewFileEntryId(
@@ -1269,14 +1654,16 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 
 	private void _processDisplayPageTemplatePageTemplateEntries(
 			long groupId, long layoutPageTemplateCollectionId,
+			List<DisplayPageTemplateEntry> displayPageTemplateEntries,
 			List<LayoutsImporterResultEntry> layoutsImporterResultEntries,
 			LayoutsImportStrategy layoutsImportStrategy,
 			boolean preserveItemIds, long userId, ZipFile zipFile)
 		throws Exception {
 
-		List<DisplayPageTemplateEntry> displayPageTemplateEntries =
-			_getDisplayPageTemplateEntries(
+		if (displayPageTemplateEntries == null) {
+			displayPageTemplateEntries = _getDisplayPageTemplateEntries(
 				groupId, layoutsImporterResultEntries, zipFile);
+		}
 
 		for (DisplayPageTemplateEntry displayPageTemplateEntry :
 				displayPageTemplateEntries) {
@@ -1306,6 +1693,69 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 							"x-could-not-be-imported-because-of-invalid-" +
 								"values-in-its-page-definition",
 							new String[] {displayPageTemplate.getName()})));
+			}
+		}
+	}
+
+	private void _processDisplayPageTemplatePageTemplateEntriesAndCollections(
+			long groupId, long layoutPageTemplateCollectionId,
+			List<LayoutsImporterResultEntry> layoutsImporterResultEntries,
+			LayoutsImportStrategy layoutsImportStrategy,
+			boolean preserveItemIds, long userId, ZipFile zipFile)
+		throws Exception {
+
+		List<DisplayPageTemplateEntry> allDisplayPageTemplateEntries =
+			_getDisplayPageTemplateEntries(
+				groupId, layoutsImporterResultEntries, zipFile);
+
+		List<DisplayPageTemplateEntry> displayPageTemplateEntries =
+			new ArrayList<>();
+
+		for (DisplayPageTemplateEntry displayPageTemplateEntry :
+				allDisplayPageTemplateEntries) {
+
+			String path = displayPageTemplateEntry.getZipPath();
+
+			String[] pathElements = path.split(StringPool.FORWARD_SLASH);
+
+			if (pathElements[0].contains("display-page-templates")) {
+				displayPageTemplateEntries.add(displayPageTemplateEntry);
+			}
+		}
+
+		_processDisplayPageTemplatePageTemplateEntries(
+			groupId, layoutPageTemplateCollectionId, displayPageTemplateEntries,
+			layoutsImporterResultEntries, layoutsImportStrategy,
+			preserveItemIds, userId, zipFile);
+
+		List<PageTemplateCollectionEntry> pageTemplateCollectionEntries =
+			_getPageTemplateCollections(
+				groupId, layoutsImporterResultEntries, zipFile);
+
+		Map<String, String> importedElementKeys = new HashMap<>();
+
+		for (PageTemplateCollectionEntry pageTemplateCollectionEntry :
+				pageTemplateCollectionEntries) {
+
+			LayoutPageTemplateCollection layoutPageTemplateCollection =
+				_getDisplayPageTemplateLayoutPageTemplateCollection(
+					importedElementKeys, groupId,
+					layoutPageTemplateCollectionId,
+					layoutsImporterResultEntries, layoutsImportStrategy,
+					pageTemplateCollectionEntry);
+
+			if (layoutPageTemplateCollection != null) {
+				displayPageTemplateEntries =
+					_getDisplayPageTemplateEntriesFromCollection(
+						groupId, pageTemplateCollectionEntry.getKey(),
+						layoutsImporterResultEntries, zipFile);
+
+				_processDisplayPageTemplatePageTemplateEntries(
+					layoutPageTemplateCollection.getGroupId(),
+					layoutPageTemplateCollection.
+						getLayoutPageTemplateCollectionId(),
+					displayPageTemplateEntries, layoutsImporterResultEntries,
+					layoutsImportStrategy, preserveItemIds, userId, zipFile);
 			}
 		}
 	}
@@ -2085,17 +2535,10 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 		for (DisplayPageTemplateEntry displayPageTemplateEntry :
 				displayPageTemplateEntries) {
 
-			DisplayPageTemplate displayPageTemplate =
-				displayPageTemplateEntry.getDisplayPageTemplate();
-
 			LayoutPageTemplateEntry layoutPageTemplateEntry =
 				_layoutPageTemplateEntryLocalService.
 					fetchLayoutPageTemplateEntry(
-						groupId,
-						LayoutPageTemplateConstants.
-							PARENT_LAYOUT_PAGE_TEMPLATE_COLLECTION_ID_DEFAULT,
-						displayPageTemplate.getName(),
-						LayoutPageTemplateEntryTypeConstants.DISPLAY_PAGE);
+						groupId, displayPageTemplateEntry.getKey());
 
 			if (layoutPageTemplateEntry != null) {
 				return false;
@@ -2621,10 +3064,12 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 	private class PageTemplateCollectionEntry {
 
 		public PageTemplateCollectionEntry(
-			String key, PageTemplateCollection pageTemplateCollection) {
+			String key, PageTemplateCollection pageTemplateCollection,
+			String zipPath) {
 
 			_key = key;
 			_pageTemplateCollection = pageTemplateCollection;
+			_zipPath = zipPath;
 		}
 
 		public void addPageTemplateEntry(
@@ -2645,10 +3090,15 @@ public class LayoutsImporterImpl implements LayoutsImporter {
 			return _pageTemplateEntries;
 		}
 
+		public String getZipPath() {
+			return _zipPath;
+		}
+
 		private final String _key;
 		private final PageTemplateCollection _pageTemplateCollection;
 		private final Map<String, PageTemplateEntry> _pageTemplateEntries =
 			new HashMap<>();
+		private final String _zipPath;
 
 	}
 
