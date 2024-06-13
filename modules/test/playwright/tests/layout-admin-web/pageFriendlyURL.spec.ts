@@ -69,8 +69,11 @@ test('This is a test for LPD-21554. Some page names result in 404 friendly URLs.
 
 test('Navigating to the URL of an uncreated page does not throw errors.', async ({
 	page,
+	site,
 }) => {
-	await page.goto(`${liferayConfig.environment.baseUrl}/web/test-page-name`);
+	await page.goto(
+		`${liferayConfig.environment.baseUrl}/web${site.friendlyUrlPath}/test-page-name`
+	);
 
 	// Doesn't show an alert but the default 404 Utility Page
 
