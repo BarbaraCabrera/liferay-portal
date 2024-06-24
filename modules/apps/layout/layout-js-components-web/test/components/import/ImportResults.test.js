@@ -16,6 +16,7 @@ const SUCCESS_RESULT = {
 	success: [
 		{
 			name: 'fragment 1',
+			type: 'type-entry',
 		},
 	],
 };
@@ -25,21 +26,25 @@ const SUCCESS_WARNING_AND_INVALID_RESULT = {
 		{
 			messages: ['This is an invalid message'],
 			name: 'fragment 4',
+			type: 'type-entry',
 		},
 	],
 	success: [
 		{
 			name: 'fragment 1',
+			type: 'type-entry',
 		},
 	],
 	warning: [
 		{
 			messages: ['This is a warning message'],
 			name: 'fragment 2',
+			type: 'type-entry',
 		},
 		{
 			messages: ['This is another warning message'],
 			name: 'fragment 3',
+			type: 'type-entry',
 		},
 	],
 };

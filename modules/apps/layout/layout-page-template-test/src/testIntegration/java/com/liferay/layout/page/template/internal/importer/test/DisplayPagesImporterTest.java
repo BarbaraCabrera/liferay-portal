@@ -18,7 +18,6 @@ import com.liferay.layout.util.structure.CollectionStyledLayoutStructureItem;
 import com.liferay.layout.util.structure.LayoutStructure;
 import com.liferay.layout.util.structure.LayoutStructureItem;
 import com.liferay.petra.string.CharPool;
-import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.model.Group;
@@ -118,7 +117,7 @@ public class DisplayPagesImporterTest {
 			layoutsImporterResultEntry.getStatus());
 		Assert.assertEquals(
 			String.format(
-				"%s/display-page-templates/%s/display-page-template.json was " +
+				"display-page-templates/%s/display-page-template.json was " +
 					"ignored because a display page template with the same " +
 						"key already exists.",
 				testCaseName, testCaseName),
@@ -216,12 +215,13 @@ public class DisplayPagesImporterTest {
 			collectionJSONObject.getString("key"));
 	}
 
-	private void _addZipWriterEntry(ZipWriter zipWriter, URL url)
+	private void _addZipWriterEntry(
+			String removablePath, ZipWriter zipWriter, URL url)
 		throws IOException {
 
 		String entryPath = url.getPath();
 
-		String zipPath = StringUtil.removeSubstring(entryPath, _BASE_PATH);
+		String zipPath = StringUtil.removeSubstring(entryPath, removablePath);
 
 		try (InputStream inputStream = url.openStream()) {
 			zipWriter.addEntry(zipPath, inputStream);
@@ -231,11 +231,10 @@ public class DisplayPagesImporterTest {
 	private File _generateZipFile(String testCaseName) throws Exception {
 		ZipWriter zipWriter = _zipWriterFactory.getZipWriter();
 
+		String path = _BASE_PATH + testCaseName + StringPool.FORWARD_SLASH;
+
 		Enumeration<URL> enumeration = _bundle.findEntries(
-			StringBundler.concat(
-				_BASE_PATH + testCaseName,
-				StringPool.FORWARD_SLASH + _ROOT_FOLDER,
-				StringPool.FORWARD_SLASH),
+			path,
 			LayoutPageTemplateExportImportConstants.
 				FILE_NAME_DISPLAY_PAGE_TEMPLATE,
 			true);
@@ -244,7 +243,7 @@ public class DisplayPagesImporterTest {
 			while (enumeration.hasMoreElements()) {
 				URL url = enumeration.nextElement();
 
-				_populateZipWriter(zipWriter, url);
+				_populateZipWriter(path, zipWriter, url);
 			}
 
 			return zipWriter.getFile();
@@ -319,10 +318,12 @@ public class DisplayPagesImporterTest {
 		return _getLayoutPageTemplateEntry(layoutsImporterResultEntries, 0);
 	}
 
-	private void _populateZipWriter(ZipWriter zipWriter, URL url)
+	private void _populateZipWriter(
+			String removablePath, ZipWriter zipWriter, URL url)
 		throws IOException {
 
-		String zipPath = StringUtil.removeSubstring(url.getFile(), _BASE_PATH);
+		String zipPath = StringUtil.removeSubstring(
+			url.getFile(), removablePath);
 
 		try (InputStream inputStream = url.openStream()) {
 			zipWriter.addEntry(zipPath, inputStream);
@@ -339,7 +340,7 @@ public class DisplayPagesImporterTest {
 		while (enumeration.hasMoreElements()) {
 			URL elementURL = enumeration.nextElement();
 
-			_addZipWriterEntry(zipWriter, elementURL);
+			_addZipWriterEntry(removablePath, zipWriter, elementURL);
 		}
 
 		enumeration = _bundle.findEntries(
@@ -350,7 +351,7 @@ public class DisplayPagesImporterTest {
 		while (enumeration.hasMoreElements()) {
 			URL elementURL = enumeration.nextElement();
 
-			_addZipWriterEntry(zipWriter, elementURL);
+			_addZipWriterEntry(removablePath, zipWriter, elementURL);
 		}
 	}
 
@@ -367,8 +368,6 @@ public class DisplayPagesImporterTest {
 
 	private static final String _BASE_PATH =
 		"com/liferay/layout/page/template/internal/importer/test/dependencies/";
-
-	private static final String _ROOT_FOLDER = "display-page-templates";
 
 	private Bundle _bundle;
 
