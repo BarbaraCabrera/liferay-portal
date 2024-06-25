@@ -9,9 +9,12 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.layout.importer.LayoutsImportStrategy;
 import com.liferay.layout.importer.LayoutsImporter;
 import com.liferay.layout.importer.LayoutsImporterResultEntry;
+import com.liferay.layout.page.template.constants.LayoutPageTemplateCollectionTypeConstants;
 import com.liferay.layout.page.template.constants.LayoutPageTemplateExportImportConstants;
+import com.liferay.layout.page.template.model.LayoutPageTemplateCollection;
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
 import com.liferay.layout.page.template.model.LayoutPageTemplateStructure;
+import com.liferay.layout.page.template.service.LayoutPageTemplateCollectionLocalService;
 import com.liferay.layout.page.template.service.LayoutPageTemplateEntryLocalService;
 import com.liferay.layout.page.template.service.LayoutPageTemplateStructureLocalService;
 import com.liferay.layout.util.structure.CollectionStyledLayoutStructureItem;
@@ -98,6 +101,42 @@ public class DisplayPagesImporterTest {
 			_layoutPageTemplateStructureLocalService.
 				fetchLayoutPageTemplateStructure(
 					_group.getGroupId(), layoutPageTemplateEntry.getPlid()));
+	}
+
+	@Test
+	public void testImportDisplayPageCollection() throws Exception {
+		File file = _generateCollectionZipFile(
+			"display-page-template-single-collection");
+
+		List<LayoutsImporterResultEntry> layoutsImporterResultEntries =
+			_getLayoutsImporterResultEntries(file);
+
+		Assert.assertEquals(
+			layoutsImporterResultEntries.toString(), 2,
+			layoutsImporterResultEntries.size());
+
+		LayoutPageTemplateCollection layoutPageTemplateCollection =
+			_getLayoutPageTemplateCollection(layoutsImporterResultEntries, 0);
+
+		Assert.assertEquals(
+			"Display Page Template Collection",
+			layoutPageTemplateCollection.getName());
+
+		Assert.assertEquals(
+			"Folder description",
+			layoutPageTemplateCollection.getDescription());
+
+		LayoutPageTemplateEntry layoutPageTemplateEntry =
+			_getLayoutPageTemplateEntry(layoutsImporterResultEntries, 1);
+
+		String className = "com.liferay.commerce.product.model.CPDefinition";
+
+		Assert.assertEquals(className, layoutPageTemplateEntry.getClassName());
+
+		Assert.assertEquals(
+			"Display Page Template", layoutPageTemplateEntry.getName());
+
+		Assert.assertEquals(0, layoutPageTemplateEntry.getClassTypeId());
 	}
 
 	@Test
@@ -233,6 +272,40 @@ public class DisplayPagesImporterTest {
 		}
 	}
 
+	private File _generateCollectionZipFile(String testCaseName)
+		throws Exception {
+
+		ZipWriter zipWriter = _zipWriterFactory.getZipWriter();
+
+		String path = _BASE_PATH + testCaseName + StringPool.FORWARD_SLASH;
+
+		Enumeration<URL> enumeration = _bundle.findEntries(
+			path,
+			LayoutPageTemplateExportImportConstants.
+				FILE_NAME_PAGE_TEMPLATE_COLLECTION,
+			true);
+
+		ArrayList<URL> enumList = Collections.list(enumeration);
+
+		Collections.reverse(enumList);
+
+		Enumeration<URL> reversedEnumeration = Collections.enumeration(
+			enumList);
+
+		try {
+			while (reversedEnumeration.hasMoreElements()) {
+				URL url = reversedEnumeration.nextElement();
+
+				_populateZipWriter(path, zipWriter, url);
+			}
+
+			return zipWriter.getFile();
+		}
+		catch (Exception exception) {
+			throw new Exception(exception);
+		}
+	}
+
 	private File _generateZipFile(String testCaseName) throws Exception {
 		ZipWriter zipWriter = _zipWriterFactory.getZipWriter();
 
@@ -256,6 +329,34 @@ public class DisplayPagesImporterTest {
 		catch (Exception exception) {
 			throw new Exception(exception);
 		}
+	}
+
+	private LayoutPageTemplateCollection _getLayoutPageTemplateCollection(
+		List<LayoutsImporterResultEntry> layoutsImporterResultEntries,
+		int index) {
+
+		LayoutsImporterResultEntry layoutsImporterResultEntry =
+			layoutsImporterResultEntries.get(index);
+
+		Assert.assertEquals(
+			LayoutsImporterResultEntry.Status.IMPORTED,
+			layoutsImporterResultEntry.getStatus());
+
+		String layoutPageTemplateCollectionKey = StringUtil.toLowerCase(
+			layoutsImporterResultEntry.getName());
+
+		layoutPageTemplateCollectionKey = StringUtil.replace(
+			layoutPageTemplateCollectionKey, CharPool.SPACE, CharPool.DASH);
+
+		LayoutPageTemplateCollection layoutPageTemplateCollection =
+			_layoutPageTemplateCollectionLocalService.
+				fetchLayoutPageTemplateCollection(
+					_group.getGroupId(), layoutPageTemplateCollectionKey,
+					LayoutPageTemplateCollectionTypeConstants.DISPLAY_PAGE);
+
+		Assert.assertNotNull(layoutPageTemplateCollection);
+
+		return layoutPageTemplateCollection;
 	}
 
 	private LayoutPageTemplateEntry _getLayoutPageTemplateEntry(
@@ -380,6 +481,10 @@ public class DisplayPagesImporterTest {
 
 	@DeleteAfterTestRun
 	private Group _group;
+
+	@Inject
+	private LayoutPageTemplateCollectionLocalService
+		_layoutPageTemplateCollectionLocalService;
 
 	@Inject
 	private LayoutPageTemplateEntryLocalService
