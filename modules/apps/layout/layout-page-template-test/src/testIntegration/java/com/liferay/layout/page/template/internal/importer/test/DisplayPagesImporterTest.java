@@ -82,7 +82,7 @@ public class DisplayPagesImporterTest {
 	@Test
 	public void testImportDisplayPage() throws Exception {
 		LayoutPageTemplateEntry layoutPageTemplateEntry =
-			_importLayoutPageTemplateEntry("display-page-template-one");
+			_importLayoutPageTemplateEntry("display-page-template-one", 1, 0);
 
 		String className =
 			"com.liferay.portal.kernel.repository.model.FileEntry";
@@ -104,10 +104,12 @@ public class DisplayPagesImporterTest {
 	public void testImportDisplayPageExistingNameNoOvewrite() throws Exception {
 		String testCaseName = "display-page-template-one";
 
-		_importLayoutPageTemplateEntry(testCaseName);
+		_importLayoutPageTemplateEntry(testCaseName, 1, 0);
+
+		File file = _generateZipFile(testCaseName);
 
 		List<LayoutsImporterResultEntry> layoutsImporterResultEntries =
-			_getLayoutsImporterResultEntries(testCaseName);
+			_getLayoutsImporterResultEntries(file);
 
 		LayoutsImporterResultEntry layoutsImporterResultEntry =
 			layoutsImporterResultEntries.get(0);
@@ -126,8 +128,10 @@ public class DisplayPagesImporterTest {
 
 	@Test
 	public void testImportDisplayPages() throws Exception {
+		File file = _generateZipFile("display-page-template-multiple");
+
 		List<LayoutsImporterResultEntry> layoutsImporterResultEntries =
-			_getLayoutsImporterResultEntries("display-page-template-multiple");
+			_getLayoutsImporterResultEntries(file);
 
 		Assert.assertEquals(
 			layoutsImporterResultEntries.toString(), 2,
@@ -157,7 +161,7 @@ public class DisplayPagesImporterTest {
 	public void testImportDisplayPageWithCollectionDisplay() throws Exception {
 		LayoutPageTemplateEntry layoutPageTemplateEntry =
 			_importLayoutPageTemplateEntry(
-				"display-page-template-with-collection-display");
+				"display-page-template-with-collection-display", 1, 0);
 
 		Assert.assertEquals(
 			"com.liferay.portal.kernel.repository.model.FileEntry",
@@ -281,10 +285,8 @@ public class DisplayPagesImporterTest {
 	}
 
 	private List<LayoutsImporterResultEntry> _getLayoutsImporterResultEntries(
-			String testCaseName)
+			File file)
 		throws Exception {
-
-		File file = _generateZipFile(testCaseName);
 
 		List<LayoutsImporterResultEntry> layoutsImporterResultEntries = null;
 
@@ -306,17 +308,21 @@ public class DisplayPagesImporterTest {
 	}
 
 	private LayoutPageTemplateEntry _importLayoutPageTemplateEntry(
-			String testCaseName)
+			String testCaseName, long expectedImporterResultEntries,
+			int indexImporterResultEntry)
 		throws Exception {
 
+		File file = _generateZipFile(testCaseName);
+
 		List<LayoutsImporterResultEntry> layoutsImporterResultEntries =
-			_getLayoutsImporterResultEntries(testCaseName);
+			_getLayoutsImporterResultEntries(file);
 
 		Assert.assertEquals(
-			layoutsImporterResultEntries.toString(), 1,
-			layoutsImporterResultEntries.size());
+			layoutsImporterResultEntries.toString(),
+			expectedImporterResultEntries, layoutsImporterResultEntries.size());
 
-		return _getLayoutPageTemplateEntry(layoutsImporterResultEntries, 0);
+		return _getLayoutPageTemplateEntry(
+			layoutsImporterResultEntries, indexImporterResultEntry);
 	}
 
 	private void _populateZipWriter(
