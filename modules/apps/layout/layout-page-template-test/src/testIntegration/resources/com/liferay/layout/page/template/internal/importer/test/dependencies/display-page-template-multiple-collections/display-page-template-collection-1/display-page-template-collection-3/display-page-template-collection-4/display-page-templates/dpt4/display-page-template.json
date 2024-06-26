@@ -1,0 +1,9 @@
+{
+	"contentSubtype": {
+		"subtypeId": 0
+	},
+	"contentType": {
+		"className": "com.liferay.asset.kernel.model.AssetCategory"
+	},
+	"name": "DPT4"
+}

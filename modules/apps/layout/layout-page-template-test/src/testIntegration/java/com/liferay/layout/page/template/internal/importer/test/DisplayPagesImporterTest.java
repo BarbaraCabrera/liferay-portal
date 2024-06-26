@@ -47,6 +47,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -135,6 +136,102 @@ public class DisplayPagesImporterTest {
 
 		Assert.assertEquals(
 			"Display Page Template", layoutPageTemplateEntry.getName());
+
+		Assert.assertEquals(0, layoutPageTemplateEntry.getClassTypeId());
+	}
+
+	@Test
+	public void testImportDisplayPageCollectionsWithHierarchy()
+		throws Exception {
+
+		File file = _generateCollectionZipFile(
+			"display-page-template-multiple-collections");
+
+		List<LayoutsImporterResultEntry> layoutsImporterResultEntries =
+			_getLayoutsImporterResultEntries(file);
+
+		Assert.assertEquals(
+			layoutsImporterResultEntries.toString(), 8,
+			layoutsImporterResultEntries.size());
+
+		LayoutPageTemplateCollection layoutPageTemplateCollection =
+			_getLayoutPageTemplateCollection(layoutsImporterResultEntries, 0);
+
+		Assert.assertEquals(
+			"Display Page Template Collection 1",
+			layoutPageTemplateCollection.getName());
+
+		Assert.assertEquals(
+			"First Collection", layoutPageTemplateCollection.getDescription());
+
+		layoutPageTemplateCollection = _getLayoutPageTemplateCollection(
+			layoutsImporterResultEntries, 2);
+
+		Assert.assertEquals(
+			"Display Page Template Collection 3",
+			layoutPageTemplateCollection.getName());
+
+		Assert.assertEquals(
+			"Same level as Collection 2",
+			layoutPageTemplateCollection.getDescription());
+
+		layoutPageTemplateCollection = _getLayoutPageTemplateCollection(
+			layoutsImporterResultEntries, 4);
+
+		Assert.assertEquals(
+			"Display Page Template Collection 4",
+			layoutPageTemplateCollection.getName());
+
+		Assert.assertEquals(
+			"Inside Collection 3",
+			layoutPageTemplateCollection.getDescription());
+
+		layoutPageTemplateCollection = _getLayoutPageTemplateCollection(
+			layoutsImporterResultEntries, 6);
+
+		Assert.assertEquals(
+			"Display Page Template Collection 2",
+			layoutPageTemplateCollection.getName());
+
+		Assert.assertEquals(
+			"Inside Collection 1",
+			layoutPageTemplateCollection.getDescription());
+
+		LayoutPageTemplateEntry layoutPageTemplateEntry =
+			_getLayoutPageTemplateEntry(layoutsImporterResultEntries, 1);
+
+		String className = "com.liferay.asset.kernel.model.AssetCategory";
+
+		Assert.assertEquals(className, layoutPageTemplateEntry.getClassName());
+
+		Assert.assertEquals("DPT1", layoutPageTemplateEntry.getName());
+
+		Assert.assertEquals(0, layoutPageTemplateEntry.getClassTypeId());
+
+		layoutPageTemplateEntry = _getLayoutPageTemplateEntry(
+			layoutsImporterResultEntries, 3);
+
+		Assert.assertEquals(className, layoutPageTemplateEntry.getClassName());
+
+		Assert.assertEquals("DPT3", layoutPageTemplateEntry.getName());
+
+		Assert.assertEquals(0, layoutPageTemplateEntry.getClassTypeId());
+
+		layoutPageTemplateEntry = _getLayoutPageTemplateEntry(
+			layoutsImporterResultEntries, 5);
+
+		Assert.assertEquals(className, layoutPageTemplateEntry.getClassName());
+
+		Assert.assertEquals("DPT4", layoutPageTemplateEntry.getName());
+
+		Assert.assertEquals(0, layoutPageTemplateEntry.getClassTypeId());
+
+		layoutPageTemplateEntry = _getLayoutPageTemplateEntry(
+			layoutsImporterResultEntries, 7);
+
+		Assert.assertEquals(className, layoutPageTemplateEntry.getClassName());
+
+		Assert.assertEquals("DPT2", layoutPageTemplateEntry.getName());
 
 		Assert.assertEquals(0, layoutPageTemplateEntry.getClassTypeId());
 	}
