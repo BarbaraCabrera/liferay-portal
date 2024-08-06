@@ -26,6 +26,7 @@ import com.liferay.layout.test.util.LayoutTestUtil;
 import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
@@ -193,8 +194,12 @@ public class FragmentEntryFragmentRendererTest {
 
 		String originalText = RandomTestUtil.randomString();
 
+		JSONObject jsonObject = JSONUtil.put(
+			"element-text",
+			JSONUtil.put(LocaleUtil.toLanguageId(_locale), originalText));
+
 		FragmentEntryLink fragmentEntryLink = _addHeadingFragmentEntryLink(
-			originalText);
+			jsonObject);
 
 		_renderFragmentEntryLink(fragmentEntryLink);
 
@@ -302,7 +307,8 @@ public class FragmentEntryFragmentRendererTest {
 		Assert.assertTrue(content.contains(fragmentEntry.getHtml()));
 	}
 
-	private FragmentEntryLink _addHeadingFragmentEntryLink(String text)
+	private FragmentEntryLink _addHeadingFragmentEntryLink(
+			JSONObject jsonObject)
 		throws Exception {
 
 		FragmentEntry fragmentEntry =
@@ -317,9 +323,7 @@ public class FragmentEntryFragmentRendererTest {
 			JSONUtil.put(
 				FragmentEntryProcessorConstants.
 					KEY_EDITABLE_FRAGMENT_ENTRY_PROCESSOR,
-				JSONUtil.put(
-					"element-text",
-					JSONUtil.put(LocaleUtil.toLanguageId(_locale), text))
+				jsonObject
 			).toString(),
 			StringPool.BLANK, 0, fragmentEntry.getFragmentEntryKey(),
 			fragmentEntry.getType(), _serviceContext);
