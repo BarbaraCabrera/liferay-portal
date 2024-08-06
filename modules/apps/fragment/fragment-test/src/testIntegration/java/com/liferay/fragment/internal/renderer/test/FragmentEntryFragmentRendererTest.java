@@ -381,7 +381,8 @@ public class FragmentEntryFragmentRendererTest {
 			fragmentEntryLink, defaultFragmentRendererContext);
 	}
 
-	private void _renderFragmentEntryLink(FragmentEntryLink fragmentEntryLink)
+	private MockHttpServletResponse _renderFragmentEntryLink(
+			FragmentEntryLink fragmentEntryLink)
 		throws Exception {
 
 		DefaultFragmentRendererContext defaultFragmentRendererContext =
@@ -398,9 +399,14 @@ public class FragmentEntryFragmentRendererTest {
 		mockHttpServletRequest.setAttribute(
 			WebKeys.THEME_DISPLAY, _getThemeDisplay(mockHttpServletRequest));
 
+		MockHttpServletResponse mockHttpServletResponse =
+			new MockHttpServletResponse();
+
 		_fragmentRenderer.render(
 			defaultFragmentRendererContext, mockHttpServletRequest,
-			new MockHttpServletResponse());
+			mockHttpServletResponse);
+
+		return mockHttpServletResponse;
 	}
 
 	@Inject
