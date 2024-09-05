@@ -6,6 +6,7 @@
 import React from 'react';
 
 import {getLayoutDataItemPropTypes} from '../../../prop_types/index';
+import {config} from '../../config';
 import {useSelectorCallback} from '../../contexts/StoreContext';
 import getLayoutDataItemTopperUniqueClassName from '../../utils/getLayoutDataItemTopperUniqueClassName';
 import isItemEmpty from '../../utils/isItemEmpty';
@@ -25,7 +26,12 @@ const Root = React.forwardRef(({children, item}, ref) => {
 		>
 			<div className="page-editor__root" ref={ref}>
 				{isEmpty && (
-					<div className="page-editor__no-fragments-state">
+					<div className="page-editor__no-fragments-state text-center">
+						<img
+							className="page-editor__no-fragments-state__image"
+							src={`${config.imagesPath}/drag_and_drop.svg`}
+						/>
+
 						<p className="page-editor__no-fragments-state__message">
 							{Liferay.Language.get(
 								'drag-and-drop-fragments-or-widgets-here'
