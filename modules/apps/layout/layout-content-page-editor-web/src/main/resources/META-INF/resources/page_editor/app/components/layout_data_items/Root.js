@@ -19,6 +19,27 @@ const Root = React.forwardRef(({children, item}, ref) => {
 		[item]
 	);
 
+	const getParentHeight = (item, layoutData) => {
+		if (!item) {
+			return null;
+		}
+
+		const parentItem = layoutData.items[item.parentId];
+
+		if (!parentItem) {
+			return null;
+		}
+
+		if (parentItem.type === 'fragment') {
+			return parentItem.config.styles.height;
+		}
+		else {
+			return getParentHeight(parentItem, layoutData);
+		}
+	};
+
+	const layoutData = useSelector((state) => state.layoutData);
+
 	return (
 		<TopperEmpty
 			className={getLayoutDataItemTopperUniqueClassName(item.itemId)}
@@ -26,7 +47,9 @@ const Root = React.forwardRef(({children, item}, ref) => {
 		>
 			<div className="page-editor__root" ref={ref}>
 				{isEmpty && (
-					<div className="page-editor__no-fragments-state text-center">
+					<div className="page-editor__no-fragments-state text-center"
+						 style={{height: getParentHeight(item, layoutData)}}
+					>
 						<img
 							className="page-editor__no-fragments-state__image"
 							src={`${config.imagesPath}/drag_and_drop.svg`}
