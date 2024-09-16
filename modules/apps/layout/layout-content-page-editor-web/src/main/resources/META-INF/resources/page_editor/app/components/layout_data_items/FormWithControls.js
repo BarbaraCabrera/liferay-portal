@@ -19,6 +19,7 @@ import {getEditableLocalizedValue} from '../../utils/getEditableLocalizedValue';
 import isItemEmpty from '../../utils/isItemEmpty';
 import {useSaveFormConfig} from '../../utils/useSaveFormConfig';
 import ContainerWithControls from './ContainerWithControls';
+import {config} from "../../config";
 
 const FormWithControls = React.forwardRef(({children, item, ...rest}, ref) => {
 	const localConfig = useItemLocalConfig(item.itemId);
@@ -109,16 +110,25 @@ function FormEmptyState({isMapped, item}) {
 
 	if (isMapped) {
 		return (
-			<div className="page-editor__no-fragments-state">
-				<p className="m-0 page-editor__no-fragments-state__message">
-					{Liferay.Language.get('place-fragments-here')}
+			<div className="page-editor__no-fragments-state text-center"
+			>
+				<img
+					className="page-editor__no-fragments-state__image"
+					src={`${config.imagesPath}/drag_and_drop.svg`}
+				/>
+
+				<p className="page-editor__no-fragments-state__message">
+					{Liferay.Language.get(
+						'drag-and-drop-fragments-or-widgets-here'
+					)}
 				</p>
 			</div>
 		);
 	}
 
 	return (
-		<div className="align-items-center bg-lighter d-flex flex-column page-editor__form-unmapped-state page-editor__no-fragments-state">
+		<div
+			className="align-items-center bg-lighter d-flex flex-column page-editor__form-unmapped-state page-editor__no-fragments-state">
 			<p className="page-editor__no-fragments-state__title">
 				{Liferay.Language.get('map-your-form')}
 			</p>
