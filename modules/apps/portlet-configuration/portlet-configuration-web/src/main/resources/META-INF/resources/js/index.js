@@ -8,4 +8,3 @@ export {default as ArchivedSetuptsDropdownDefaultEventHandler} from './ArchivedS
 export {default as ArchivedSetuptsDropdownDefaultPropsTransformer} from './ArchivedSetuptsDropdownDefaultPropsTransformer';
 export {default as EditConfigurationEventHandler} from './EditConfigurationEventHandler';
 export {default as ManagementToolbarPropsTransformer} from './ManagementToolbarPropsTransformer';
-export {default as PermissionsCheckbox} from './PermissionsCheckbox';
