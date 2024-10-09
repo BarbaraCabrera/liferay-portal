@@ -5,7 +5,7 @@
  */
 --%>
 
-<%@ include file="init.jsp" %>
+<%@ include file="/init.jsp" %>
 
 <%
 RoleTypeContributorProvider roleTypeContributorProvider = (RoleTypeContributorProvider)request.getAttribute(RolesAdminWebKeys.ROLE_TYPE_CONTRIBUTOR_PROVIDER);
@@ -224,8 +224,16 @@ if (Validator.isNotNull(portletConfigurationPermissionsDisplayContext.getModelRe
 
 	<aui:button-row>
 		<clay:button
+			additionalProps='<%=
+				HashMapBuilder.<String, Object>put(
+					"roleSearchContainer",
+					portletConfigurationPermissionsDisplayContext.getRoleSearchContainer(
+					).getTotal()
+				).build()
+			%>'
 			id='<%= liferayPortletResponse.getNamespace() + "saveButton" %>'
 			label="save"
+			propsTransformer="{SaveButtonPropsTransformer} from portlet-configuration-icon-permissions"
 			type="submit"
 		/>
 
@@ -236,25 +244,3 @@ if (Validator.isNotNull(portletConfigurationPermissionsDisplayContext.getModelRe
 		/>
 	</aui:button-row>
 </div>
-
-<aui:script>
-	var <portlet:namespace />saveButton = document.getElementById(
-		'<portlet:namespace />saveButton'
-	);
-
-	if (<portlet:namespace />saveButton) {
-		<portlet:namespace />saveButton.addEventListener('click', (event) => {
-			event.preventDefault();
-
-			if (
-				<%= portletConfigurationPermissionsDisplayContext.getRoleSearchContainer().getTotal() != 0 %>
-			) {
-				var form = document.getElementById('<portlet:namespace />fm');
-
-				if (form) {
-					submitForm(form);
-				}
-			}
-		});
-	}
-</aui:script>
