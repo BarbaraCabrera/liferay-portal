@@ -4,3 +4,4 @@
  */
 
 export {default as PermissionsCheckbox} from './PermissionsCheckbox';
+export {default as SaveButtonPropsTransformer} from './SaveButtonPropsTransformer';
