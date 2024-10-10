@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-package com.liferay.portlet.configuration.web.internal.configuration;
+package com.liferay.portlet.configuration.icon.permissions.configuration;
 
 import aQute.bnd.annotation.metatype.Meta;
 
@@ -14,7 +14,7 @@ import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClass
  */
 @ExtendedObjectClassDefinition(category = "users")
 @Meta.OCD(
-	id = "com.liferay.portlet.configuration.web.internal.configuration.RoleVisibilityConfiguration",
+	id = "com.liferay.portlet.configuration.icon.permissions.configuration.RoleVisibilityConfiguration",
 	localization = "content/Language",
 	name = "role-visibility-configuration-name"
 )
