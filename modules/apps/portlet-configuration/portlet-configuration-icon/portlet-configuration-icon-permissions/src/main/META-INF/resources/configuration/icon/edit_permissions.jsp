@@ -74,7 +74,12 @@ if (Validator.isNotNull(portletConfigurationPermissionsDisplayContext.getModelRe
 
 							<c:if test="<%= layout.isPrivateLayout() && name.equals(RoleConstants.GUEST) && PropsValues.PERMISSIONS_CHECK_GUEST_ENABLED %>">
 								<span class="inline-item-after">
-									<liferay-ui:icon-help message="under-the-current-configuration-all-users-automatically-inherit-permissions-from-the-guest-role" />
+									<clay:icon
+										aria-label='<%= LanguageUtil.get(request, "under-the-current-configuration-all-users-automatically-inherit-permissions-from-the-guest-role") %>'
+										cssClass="lfr-portal-tooltip"
+										symbol="question-circle-full"
+										title='<%= LanguageUtil.get(request, "under-the-current-configuration-all-users-automatically-inherit-permissions-from-the-guest-role") %>'
+									/>
 								</span>
 							</c:if>
 						</span>
