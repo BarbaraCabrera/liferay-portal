@@ -62,12 +62,11 @@ if (Validator.isNotNull(portletConfigurationPermissionsDisplayContext.getModelRe
 
 						<span class="text-truncate-inline">
 							<span class="inline-item-before">
-								<liferay-ui:icon
-									icon='<%= (roleTypeContributor != null) ? roleTypeContributor.getIcon() : "users" %>'
-									label="<%= false %>"
-									markupView="lexicon"
-									message='<%= LanguageUtil.get(request, (roleTypeContributor != null) ? roleTypeContributor.getTitle(locale) : "team") %>'
+								<clay:icon
+									symbol='<%= (roleTypeContributor != null) ? roleTypeContributor.getIcon() : "users" %>'
 								/>
+
+								<liferay-ui:message key='<%= LanguageUtil.get(request, (roleTypeContributor != null) ? roleTypeContributor.getTitle(locale) : "team") %>' />
 							</span>
 							<span class="lfr-portal-tooltip text-truncate" title="<%= role.getTitle(locale) %>">
 								<%= role.getTitle(locale) %>
