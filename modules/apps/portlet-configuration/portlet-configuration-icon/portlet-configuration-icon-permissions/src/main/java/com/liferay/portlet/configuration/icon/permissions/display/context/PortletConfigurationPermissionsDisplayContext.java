@@ -50,7 +50,7 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.configuration.icon.constants.PortletConfigurationPortletKeys;
-import com.liferay.portlet.configuration.web.internal.configuration.RoleVisibilityConfiguration;
+import com.liferay.portlet.configuration.icon.permissions.configuration.RoleVisibilityConfiguration;
 import com.liferay.roles.admin.role.type.contributor.RoleTypeContributor;
 import com.liferay.roles.admin.role.type.contributor.provider.RoleTypeContributorProvider;
 import com.liferay.roles.admin.search.RoleSearch;
