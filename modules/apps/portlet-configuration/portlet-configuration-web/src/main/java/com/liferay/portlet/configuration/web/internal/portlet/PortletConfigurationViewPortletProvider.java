@@ -10,8 +10,8 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.portlet.BasePortletProvider;
 import com.liferay.portal.kernel.portlet.PortletProvider;
 import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
+import com.liferay.portlet.configuration.icon.constants.PortletConfigurationPortletKeys;
 import com.liferay.portlet.configuration.kernel.util.PortletConfigurationApplicationType;
-import com.liferay.portlet.configuration.web.internal.constants.PortletConfigurationPortletKeys;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;

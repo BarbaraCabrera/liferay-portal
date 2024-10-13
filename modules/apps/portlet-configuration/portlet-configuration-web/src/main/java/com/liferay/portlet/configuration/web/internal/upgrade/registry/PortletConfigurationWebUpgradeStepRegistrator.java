@@ -7,7 +7,7 @@ package com.liferay.portlet.configuration.web.internal.upgrade.registry;
 
 import com.liferay.portal.kernel.upgrade.BasePortletIdUpgradeProcess;
 import com.liferay.portal.upgrade.registry.UpgradeStepRegistrator;
-import com.liferay.portlet.configuration.web.internal.constants.PortletConfigurationPortletKeys;
+import com.liferay.portlet.configuration.icon.constants.PortletConfigurationPortletKeys;
 
 import org.osgi.service.component.annotations.Component;
 

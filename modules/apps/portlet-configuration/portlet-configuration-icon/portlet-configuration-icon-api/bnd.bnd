@@ -1,3 +1,4 @@
 Bundle-Name: Liferay Portlet Configuration Icon API
 Bundle-SymbolicName: com.liferay.portlet.configuration.icon.api
 Bundle-Version: 1.0.0
+Export-Package: com.liferay.portlet.configuration.icon.constants
