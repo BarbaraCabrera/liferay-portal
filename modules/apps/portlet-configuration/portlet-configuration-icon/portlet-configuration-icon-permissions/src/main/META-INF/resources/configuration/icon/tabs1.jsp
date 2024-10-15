@@ -14,7 +14,8 @@ String redirect = ParamUtil.getString(request, "redirect");
 String returnToFullPageURL = ParamUtil.getString(request, "returnToFullPageURL");
 
 PortalUtil.addPortletBreadcrumbEntry(request, PortalUtil.getPortletTitle(renderResponse), null);
-PortalUtil.addPortletBreadcrumbEntry(request, LanguageUtil.get(request, "configuration"), null);
+PortalUtil.addPortletBreadcrumbEntry(request, LanguageUtil.get(request,
+	"configuration"), null);
 PortalUtil.addPortletBreadcrumbEntry(request, LanguageUtil.get(request, tabs1), currentURL);
 %>
 
@@ -36,7 +37,7 @@ PortalUtil.addPortletBreadcrumbEntry(request, LanguageUtil.get(request, tabs1), 
 						add(
 							navigationItem -> {
 								navigationItem.setActive(tabs1.equals("supported-clients"));
-								navigationItem.setHref(renderResponse.createRenderURL(), "mvcPath", "/edit_supported_clients.jsp", "redirect", redirect, "returnToFullPageURL", returnToFullPageURL, "portletConfiguration", Boolean.TRUE.toString(), "portletResource", portletResource);
+								navigationItem.setHref(renderResponse.createRenderURL(), "mvcPath", "/src/main/META-INF/resources/configuration/icon/edit_supported_clients.jsp", "redirect", redirect, "returnToFullPageURL", returnToFullPageURL, "portletConfiguration", Boolean.TRUE.toString(), "portletResource", portletResource);
 								navigationItem.setLabel(LanguageUtil.get(httpServletRequest, "supported-clients"));
 							});
 					}
@@ -47,7 +48,7 @@ PortalUtil.addPortletBreadcrumbEntry(request, LanguageUtil.get(request, tabs1), 
 						add(
 							navigationItem -> {
 								navigationItem.setActive(tabs1.equals("communication"));
-								navigationItem.setHref(renderResponse.createRenderURL(), "mvcPath", "/edit_public_render_parameters.jsp", "redirect", redirect, "returnToFullPageURL", returnToFullPageURL, "portletConfiguration", Boolean.TRUE.toString(), "portletResource", portletResource);
+								navigationItem.setHref(renderResponse.createRenderURL(), "mvcPath", "/src/main/META-INF/resources/configuration/icon/edit_public_render_parameters.jsp", "redirect", redirect, "returnToFullPageURL", returnToFullPageURL, "portletConfiguration", Boolean.TRUE.toString(), "portletResource", portletResource);
 								navigationItem.setLabel(LanguageUtil.get(httpServletRequest, "communication"));
 							});
 					}
@@ -55,7 +56,7 @@ PortalUtil.addPortletBreadcrumbEntry(request, LanguageUtil.get(request, tabs1), 
 					add(
 						navigationItem -> {
 							navigationItem.setActive(tabs1.equals("sharing"));
-							navigationItem.setHref(renderResponse.createRenderURL(), "mvcPath", "/edit_sharing.jsp", "redirect", redirect, "returnToFullPageURL", returnToFullPageURL, "portletConfiguration", Boolean.TRUE.toString(), "portletResource", portletResource);
+							navigationItem.setHref(renderResponse.createRenderURL(), "mvcPath", "/src/main/META-INF/resources/configuration/icon/edit_sharing.jsp", "redirect", redirect, "returnToFullPageURL", returnToFullPageURL, "portletConfiguration", Boolean.TRUE.toString(), "portletResource", portletResource);
 							navigationItem.setLabel(LanguageUtil.get(httpServletRequest, "sharing"));
 						});
 
@@ -63,7 +64,7 @@ PortalUtil.addPortletBreadcrumbEntry(request, LanguageUtil.get(request, tabs1), 
 						add(
 							navigationItem -> {
 								navigationItem.setActive(tabs1.equals("scope"));
-								navigationItem.setHref(renderResponse.createRenderURL(), "mvcPath", "/edit_scope.jsp", "redirect", redirect, "returnToFullPageURL", returnToFullPageURL, "portletConfiguration", Boolean.TRUE.toString(), "portletResource", portletResource);
+								navigationItem.setHref(renderResponse.createRenderURL(), "mvcPath", "/src/main/META-INF/resources/configuration/icon/edit_scope.jsp", "redirect", redirect, "returnToFullPageURL", returnToFullPageURL, "portletConfiguration", Boolean.TRUE.toString(), "portletResource", portletResource);
 								navigationItem.setLabel(LanguageUtil.get(httpServletRequest, "scope"));
 							});
 					}

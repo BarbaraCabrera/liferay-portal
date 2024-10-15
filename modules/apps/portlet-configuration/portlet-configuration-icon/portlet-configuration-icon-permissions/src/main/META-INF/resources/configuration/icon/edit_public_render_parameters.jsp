@@ -37,7 +37,7 @@ Set<PublicRenderParameter> publicRenderParameters = (Set<PublicRenderParameter>)
 				PortletURLBuilder.createRenderURL(
 					renderResponse
 				).setMVCPath(
-					"/edit_public_render_parameters.jsp"
+					"/src/main/META-INF/resources/configuration/icon/edit_public_render_parameters.jsp"
 				).setRedirect(
 					ParamUtil.getString(request, "redirect")
 				).setPortletResource(
