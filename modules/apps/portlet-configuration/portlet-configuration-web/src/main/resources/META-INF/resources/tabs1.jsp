@@ -27,7 +27,7 @@ PortalUtil.addPortletBreadcrumbEntry(request, LanguageUtil.get(request, tabs1), 
 						add(
 							navigationItem -> {
 								navigationItem.setActive(tabs1.equals("setup"));
-								navigationItem.setHref(renderResponse.createRenderURL(), "mvcPath", "/edit_configuration.jsp", "redirect", redirect, "returnToFullPageURL", returnToFullPageURL, "portletConfiguration", Boolean.TRUE.toString(), "portletResource", portletResource);
+								navigationItem.setHref(renderResponse.createRenderURL(), "mvcPath", "/src/main/META-INF/resources/configuration/icon/edit_configuration.jsp", "redirect", redirect, "returnToFullPageURL", returnToFullPageURL, "portletConfiguration", Boolean.TRUE.toString(), "portletResource", portletResource);
 								navigationItem.setLabel(LanguageUtil.get(httpServletRequest, "setup"));
 							});
 					}

@@ -68,7 +68,7 @@ public class ConfigurationPortletConfigurationIcon
 						CLASS_NAME,
 					PortletProvider.Action.VIEW)
 			).setMVCPath(
-				"/edit_configuration.jsp"
+				"/src/main/META-INF/resources/configuration/icon/edit_configuration.jsp"
 			).setRedirect(
 				themeDisplay.getURLCurrent()
 			).setPortletResource(
