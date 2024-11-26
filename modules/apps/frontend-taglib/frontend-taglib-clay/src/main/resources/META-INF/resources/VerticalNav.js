@@ -44,12 +44,12 @@ export default function VerticalNav({
 					key={item.id}
 					textValue={item.label}
 				>
-					{item.label}
+					<span className="c-mr-1">{item.label}</span>
 
 					{item.icons?.map((icon) => {
 						return (
 							<ClayIcon
-								className="c-ml-1 text-muted"
+								className="c-mr-2 text-muted"
 								key={icon.symbol}
 								symbol={icon.symbol}
 								title={icon.title}
@@ -59,7 +59,7 @@ export default function VerticalNav({
 
 					{item.deprecated ? (
 						<ClayBadge
-							className="c-ml-2 text-uppercase"
+							className="text-uppercase"
 							displayType="warning"
 							label={Liferay.Language.get('deprecated')}
 							translucent

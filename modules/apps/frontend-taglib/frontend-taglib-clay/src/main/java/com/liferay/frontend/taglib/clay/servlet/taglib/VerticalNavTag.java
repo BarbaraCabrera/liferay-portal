@@ -293,13 +293,15 @@ public class VerticalNavTag extends BaseContainerTag {
 				jspWriter.write("\" role=\"menuitem\" tabindex=\"-1\">");
 			}
 
+			jspWriter.write("<span class=\"c-mr-1\">");
 			jspWriter.write(
 				HtmlUtil.escape((String)verticalNavItem.get("label")));
+			jspWriter.write("</span>");
 
 			if (GetterUtil.getBoolean(verticalNavItem.get("locked"))) {
 				jspWriter.write("<svg title=\"\" class=\"lexicon-icon");
-				jspWriter.write(" lexicon-icon-lock c-ml-1 text-muted");
-				jspWriter.write(" role=\"presentation\">");
+				jspWriter.write(" lexicon-icon-lock text-muted");
+				jspWriter.write(" c-mr-2 role=\"presentation\">");
 				jspWriter.write(
 					"<use href=\"http://localhost:8080/o/admin-theme/");
 				jspWriter.write("images/clay/icons.svg#lock\">");
@@ -307,7 +309,7 @@ public class VerticalNavTag extends BaseContainerTag {
 			}
 
 			if (GetterUtil.getBoolean(verticalNavItem.get("deprecated"))) {
-				jspWriter.write("<span class=\"badge badge-warning c-ml-2");
+				jspWriter.write("<span class=\"badge badge-warning");
 				jspWriter.write(" text-uppercase badge-translucent\">");
 				jspWriter.write("<span class=\"badge-item ");
 				jspWriter.write("badge-item-expand\">");
