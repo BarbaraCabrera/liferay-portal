@@ -618,6 +618,7 @@ public class FragmentDisplayContext {
 			verticalNavItemList.add(
 				verticalNavItem -> {
 					if (isLocked(fragmentCollection)) {
+						verticalNavItem.setLocked(true);
 						verticalNavItem.addIcon(
 							IconItem.of("lock", StringPool.BLANK));
 					}
@@ -655,6 +656,7 @@ public class FragmentDisplayContext {
 
 			verticalNavItemList.add(
 				verticalNavItem -> {
+					verticalNavItem.setLocked(true);
 					verticalNavItem.addIcon(
 						IconItem.of("lock", StringPool.BLANK));
 
