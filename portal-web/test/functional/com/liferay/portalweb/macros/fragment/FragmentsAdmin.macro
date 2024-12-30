@@ -149,7 +149,7 @@ definition {
 	}
 
 	@summary = "Default summary"
-	macro enableFeaturedContent() {
+	macro disableFeaturedContent() {
 		ApplicationsMenu.gotoPortlet(
 			category = "Configuration",
 			panel = "Control Panel",
@@ -161,10 +161,10 @@ definition {
 			configurationScope = "System Scope");
 
 		if (IsElementPresent(locator1 = "FeatureFlag#TOGGLE_ROW", title_row = "Featured Content Fragment Set", toggle_state = "Disabled")) {
-			Check.checkToggleSwitch(
+			Uncheck.checkToggleSwitch(
 				locator1 = "FeatureFlag#TOGGLE_ROW",
 				title_row = "Featured Content Fragment Set",
-				toggle_state = "Disabled");
+				toggle_state = "Enabled");
 		}
 
 		Navigator.openURL();
