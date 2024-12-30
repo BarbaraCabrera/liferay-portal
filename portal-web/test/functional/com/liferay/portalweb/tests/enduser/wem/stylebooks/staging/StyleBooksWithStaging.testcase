@@ -18,7 +18,7 @@ definition {
 		}
 
 		task ("Enable featured content fragment set") {
-			FragmentsAdmin.enableFeaturedContent();
+			FragmentsAdmin.disableFeaturedContent();
 		}
 
 		task ("Activate local live staging") {

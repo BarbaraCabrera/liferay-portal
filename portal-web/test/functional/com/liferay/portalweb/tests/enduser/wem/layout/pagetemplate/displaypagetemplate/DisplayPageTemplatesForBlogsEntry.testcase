@@ -40,7 +40,7 @@ definition {
 		}
 
 		task ("Enable featured content fragment set") {
-			FragmentsAdmin.enableFeaturedContent();
+			FragmentsAdmin.disableFeaturedContent();
 		}
 
 		task ("Add a Banner Center fragment to display page template") {

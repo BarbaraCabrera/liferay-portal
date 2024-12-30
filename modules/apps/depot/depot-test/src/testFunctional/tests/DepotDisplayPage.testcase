@@ -15,7 +15,7 @@ definition {
 		}
 
 		task ("Enable featured content fragment set") {
-			FragmentsAdmin.enableFeaturedContent();
+			FragmentsAdmin.disableFeaturedContent();
 		}
 
 		HeadlessSite.addSite(siteName = "Test Site Name");

@@ -33,7 +33,7 @@ definition {
 	@priority = 4
 	test CanNavigateToPreviewPageViaPagePreviewInfoBarButNotAllowInteractWithPreviewPage {
 		task ("Enable featured content fragment set") {
-			FragmentsAdmin.enableFeaturedContent();
+			FragmentsAdmin.disableFeaturedContent();
 		}
 
 		task ("Add a content page") {

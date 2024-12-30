@@ -2964,7 +2964,7 @@ definition {
 	@priority = 4
 	test ViewObjectsSearchResultDetailsDisplayPageTemplate {
 		task ("Enable featured content fragment set") {
-			FragmentsAdmin.enableFeaturedContent();
+			FragmentsAdmin.disableFeaturedContent();
 		}
 
 		ObjectAdmin.addObjectViaAPI(
