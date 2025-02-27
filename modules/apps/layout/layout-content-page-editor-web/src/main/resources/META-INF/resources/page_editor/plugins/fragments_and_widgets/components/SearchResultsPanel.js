@@ -6,6 +6,10 @@
 import ClayButton from '@clayui/button';
 import ClayEmptyState from '@clayui/empty-state';
 import ClayLoadingIndicator from '@clayui/loading-indicator';
+import {
+	MarketplaceRest,
+	useMarketplaceConfiguration,
+} from '@liferay/marketplace-js-components-web';
 import PropTypes from 'prop-types';
 import React, {useEffect, useState} from 'react';
 
@@ -18,6 +22,9 @@ export default function SearchResultsPanel({
 	searchValue,
 }) {
 	const [seeMarketPlaceResults, setSeeMarketPlaceResults] = useState(false);
+	const baseResourceURL = MarketplaceRest.getBaseResourceURL();
+	const marketplaceConfiguration =
+		useMarketplaceConfiguration(baseResourceURL);
 
 	useEffect(() => {
 		setSeeMarketPlaceResults(false);
@@ -65,11 +72,16 @@ export default function SearchResultsPanel({
 				/>
 			)}
 
-			<div className="page-editor__fragments-widgets__search-results-panel__see-marketplace-results">
-				{seeMarketPlaceResults ? (
-					<MarketplaceSearchResults searchValue={searchValue} />
-				) : (
-					Liferay.FeatureFlags['LPD-34938'] && (
+			{Liferay.FeatureFlags['LPD-34938'] &&
+			marketplaceConfiguration.authorized ? (
+				<div className="page-editor__fragments-widgets__search-results-panel__see-marketplace-results">
+					{seeMarketPlaceResults ? (
+						<MarketplaceSearchResults
+							baseResourceURL={baseResourceURL}
+							marketplaceConfiguration={marketplaceConfiguration}
+							searchValue={searchValue}
+						/>
+					) : (
 						<ClayButton
 							aria-label={Liferay.Language.get(
 								'see-marketplace-results'
@@ -77,15 +89,17 @@ export default function SearchResultsPanel({
 							className="p-3"
 							displayType="link"
 							onClick={() => {
-								setSeeMarketPlaceResults(true);
+								if (marketplaceConfiguration.authorized) {
+									setSeeMarketPlaceResults(true);
+								}
 							}}
 							size="sm"
 						>
 							{Liferay.Language.get('see-marketplace-results')}
 						</ClayButton>
-					)
-				)}
-			</div>
+					)}
+				</div>
+			) : null}
 		</div>
 	);
 }

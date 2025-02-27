@@ -5,10 +5,7 @@
 
 import ClayEmptyState from '@clayui/empty-state';
 import ClayLoadingIndicator from '@clayui/loading-indicator';
-import {
-	MarketplaceRest,
-	useMarketplaceConfiguration,
-} from '@liferay/marketplace-js-components-web';
+import {MarketplaceRest} from '@liferay/marketplace-js-components-web';
 import PropTypes from 'prop-types';
 import React, {useEffect, useMemo, useState} from 'react';
 
@@ -23,15 +20,16 @@ const productSearchParamsDefault = {
 	sortKey: 'createDate',
 };
 
-export default function MarketplaceSearchResults({searchValue}) {
+export default function MarketplaceSearchResults({
+	baseResourceURL,
+	marketplaceConfiguration,
+	searchValue,
+}) {
 	const [results, setResults] = useState({});
 	const [productSearchParams, setProductSearchParams] = useState({
 		...productSearchParamsDefault,
 		search: searchValue,
 	});
-	const baseResourceURL = MarketplaceRest.getBaseResourceURL();
-	const marketplaceConfiguration =
-		useMarketplaceConfiguration(baseResourceURL);
 	const [loading, setLoading] = useState(marketplaceConfiguration.loading);
 	const marketplaceRest = useMemo(() => {
 		return new MarketplaceRest(
