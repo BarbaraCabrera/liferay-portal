@@ -42,13 +42,16 @@ export default function MarketplaceSearchResults({searchValue}) {
 			marketplaceConfiguration.data
 		);
 	}, [baseResourceURL, marketplaceConfiguration.data]);
+	const hasMoreResults = results.lastPage > productSearchParams.page;
+	const authorized = marketplaceConfiguration.authorized;
 
 	useEffect(() => {
 		setSeeMarketPlaceResults(false);
+		setResults({});
 	}, [searchValue, setSeeMarketPlaceResults]);
 
 	useEffect(() => {
-		if (!marketplaceConfiguration.authorized && !seeMarketPlaceResults) {
+		if (!authorized || !seeMarketPlaceResults) {
 			return;
 		}
 
@@ -71,12 +74,23 @@ export default function MarketplaceSearchResults({searchValue}) {
 
 		marketplaceRest
 			.getProducts(urlSearchParams)
-			.then(setResults)
+			.then((nextResults) => {
+				setResults((prevResults) => {
+					if (prevResults.items) {
+						nextResults.items = prevResults.items.concat(
+							nextResults.items
+						);
+					}
+
+					return nextResults;
+				});
+				setLoading(false);
+			})
 			.catch((error) => console.error('Failed to fetch products:', error))
 			.finally(() => setLoading(false));
 	}, [
 		seeMarketPlaceResults,
-		marketplaceConfiguration.authorized,
+		authorized,
 		marketplaceRest,
 		productSearchParams.page,
 		productSearchParams.pageSize,
@@ -86,8 +100,7 @@ export default function MarketplaceSearchResults({searchValue}) {
 		productSearchParams.sortDirection,
 	]);
 
-	return Liferay.FeatureFlags['LPD-34938'] &&
-		marketplaceConfiguration.authorized ? (
+	return Liferay.FeatureFlags['LPD-34938'] && authorized ? (
 		<div className="page-editor__fragments-widgets__search-results-panel__see-marketplace-results">
 			{seeMarketPlaceResults ? (
 				<div>
@@ -119,6 +132,27 @@ export default function MarketplaceSearchResults({searchValue}) {
 
 					{loading && (
 						<ClayLoadingIndicator className="mt-3" size="sm" />
+					)}
+
+					{hasMoreResults && (
+						<ClayButton
+							aria-label={Liferay.Language.get(
+								'load-more-results'
+							)}
+							className="p-3 text-secondary"
+							displayType="link"
+							onClick={() => {
+								setProductSearchParams(
+									(prevProductSearchParams) => ({
+										...prevProductSearchParams,
+										page: prevProductSearchParams.page + 1,
+									})
+								);
+							}}
+							size="sm"
+						>
+							{Liferay.Language.get('load-more-results')}
+						</ClayButton>
 					)}
 				</div>
 			) : (
