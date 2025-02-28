@@ -5,6 +5,7 @@
 
 import ClayEmptyState from '@clayui/empty-state';
 import ClayLoadingIndicator from '@clayui/loading-indicator';
+import {MarketplaceModal} from '@liferay/layout-js-components-web';
 import {MarketplaceRest} from '@liferay/marketplace-js-components-web';
 import PropTypes from 'prop-types';
 import React, {useEffect, useMemo, useState} from 'react';
@@ -97,7 +98,10 @@ export default function MarketplaceSearchResults({
 			{results.items?.length ? (
 				<div className="px-3">
 					{results.items.map((item, index) => (
-						<MarketplaceTabItem item={item} key={index} />
+						<MarketplaceModal
+							key={index}
+							trigger={<MarketplaceTabItem item={item} />}
+						/>
 					))}
 				</div>
 			) : (

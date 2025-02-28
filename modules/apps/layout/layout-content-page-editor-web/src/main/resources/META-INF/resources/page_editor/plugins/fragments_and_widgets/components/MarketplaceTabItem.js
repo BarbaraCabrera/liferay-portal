@@ -5,10 +5,24 @@
 
 import Card from '@clayui/card';
 import ClayIcon from '@clayui/icon';
+import {
+	MarketplaceView,
+	useMarketplaceContext,
+} from '@liferay/marketplace-js-components-web';
 import React from 'react';
 
 export default function MarketplaceTabItem({item}) {
-	const openItem = () => {};
+	const {
+		modal: {onOpenChange},
+		setProduct,
+		setView,
+	} = useMarketplaceContext();
+
+	const openItem = () => {
+		setProduct(item);
+		setView(MarketplaceView.STOREFRONT);
+		onOpenChange(true);
+	};
 
 	return (
 		<Card
