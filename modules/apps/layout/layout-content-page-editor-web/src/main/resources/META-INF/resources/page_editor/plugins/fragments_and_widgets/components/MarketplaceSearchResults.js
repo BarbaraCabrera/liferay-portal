@@ -120,14 +120,16 @@ export default function MarketplaceSearchResults({searchValue}) {
 							))}
 						</div>
 					) : (
-						<ClayEmptyState
-							description={Liferay.Language.get(
-								'try-again-with-a-different-search'
-							)}
-							imgSrc={`${themeDisplay.getPathThemeImages()}/states/search_state.svg`}
-							small
-							title={Liferay.Language.get('no-results-found')}
-						/>
+						!loading && (
+							<ClayEmptyState
+								description={Liferay.Language.get(
+									'try-again-with-a-different-search'
+								)}
+								imgSrc={`${themeDisplay.getPathThemeImages()}/states/search_state.svg`}
+								small
+								title={Liferay.Language.get('no-results-found')}
+							/>
+						)
 					)}
 
 					{loading && (
