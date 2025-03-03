@@ -26,15 +26,10 @@ const productSearchParamsDefault = {
 };
 
 export default function MarketplaceSearchResults({searchValue}) {
-	const [results, setResults] = useState({});
-	const [seeMarketPlaceResults, setSeeMarketPlaceResults] = useState(false);
-	const [productSearchParams, setProductSearchParams] = useState({
-		...productSearchParamsDefault,
-		search: searchValue,
-	});
 	const baseResourceURL = MarketplaceRest.getBaseResourceURL();
 	const marketplaceConfiguration =
 		useMarketplaceConfiguration(baseResourceURL);
+	const authorized = marketplaceConfiguration.authorized;
 	const [loading, setLoading] = useState(marketplaceConfiguration.loading);
 	const marketplaceRest = useMemo(() => {
 		return new MarketplaceRest(
@@ -42,8 +37,13 @@ export default function MarketplaceSearchResults({searchValue}) {
 			marketplaceConfiguration.data
 		);
 	}, [baseResourceURL, marketplaceConfiguration.data]);
-	const hasMoreResults = results.lastPage > productSearchParams.page;
-	const authorized = marketplaceConfiguration.authorized;
+	const [productSearchParams, setProductSearchParams] = useState({
+		...productSearchParamsDefault,
+		search: searchValue,
+	});
+	const [results, setResults] = useState({});
+	const showMoreResults = results.lastPage > productSearchParams.page;
+	const [seeMarketPlaceResults, setSeeMarketPlaceResults] = useState(false);
 
 	useEffect(() => {
 		setSeeMarketPlaceResults(false);
@@ -134,7 +134,7 @@ export default function MarketplaceSearchResults({searchValue}) {
 						<ClayLoadingIndicator className="mt-3" size="sm" />
 					)}
 
-					{hasMoreResults && (
+					{showMoreResults && (
 						<ClayButton
 							aria-label={Liferay.Language.get(
 								'load-more-results'
