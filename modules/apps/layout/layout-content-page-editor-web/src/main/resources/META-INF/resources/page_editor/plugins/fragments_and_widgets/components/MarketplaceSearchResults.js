@@ -16,15 +16,6 @@ import React, {useEffect, useMemo, useState} from 'react';
 
 import MarketplaceTabItem from './MarketplaceTabItem';
 
-const productSearchParamsDefault = {
-	filter: "(categoryNames/any(x:(x eq 'Fragments')))",
-	page: 1,
-	pageSize: 20,
-	search: '',
-	sortDirection: 'asc',
-	sortKey: 'createDate',
-};
-
 export default function MarketplaceSearchResults({searchValue}) {
 	const baseResourceURL = MarketplaceRest.getBaseResourceURL();
 	const marketplaceConfiguration =
@@ -37,13 +28,10 @@ export default function MarketplaceSearchResults({searchValue}) {
 			marketplaceConfiguration.data
 		);
 	}, [baseResourceURL, marketplaceConfiguration.data]);
-	const [productSearchParams, setProductSearchParams] = useState({
-		...productSearchParamsDefault,
-		search: searchValue,
-	});
+	const [page, setPage] = useState(1);
 	const [results, setResults] = useState({});
-	const showMoreResults = results.lastPage > productSearchParams.page;
 	const [seeMarketPlaceResults, setSeeMarketPlaceResults] = useState(false);
+	const showMoreResults = results.lastPage > page;
 
 	useEffect(() => {
 		setSeeMarketPlaceResults(false);
@@ -60,16 +48,14 @@ export default function MarketplaceSearchResults({searchValue}) {
 		const urlSearchParams = new URLSearchParams({
 			'accountId': '-1',
 			'attachments.accountId': '-1',
-			'filter': productSearchParams.filter,
+			'filter': "(categoryNames/any(x:(x eq 'Fragments')))",
 			'images.accountId': '-1',
 			'nestedFields': 'productSpecifications,skus,categories,images',
-			'page': String(productSearchParams.page),
-			'pageSize': String(productSearchParams.pageSize),
-			'search': productSearchParams.search,
+			page,
+			'pageSize': '20',
+			'search': searchValue,
 			'skus.accountId': '-1',
-			...(productSearchParams.sortKey && {
-				sort: `${productSearchParams.sortKey}:${productSearchParams.sortDirection}`,
-			}),
+			'sort': 'name:asc',
 		});
 
 		marketplaceRest
@@ -88,17 +74,7 @@ export default function MarketplaceSearchResults({searchValue}) {
 			})
 			.catch((error) => console.error('Failed to fetch products:', error))
 			.finally(() => setLoading(false));
-	}, [
-		seeMarketPlaceResults,
-		authorized,
-		marketplaceRest,
-		productSearchParams.page,
-		productSearchParams.pageSize,
-		productSearchParams.filter,
-		productSearchParams.search,
-		productSearchParams.sortKey,
-		productSearchParams.sortDirection,
-	]);
+	}, [authorized, marketplaceRest, page, searchValue, seeMarketPlaceResults]);
 
 	return Liferay.FeatureFlags['LPD-34938'] && authorized ? (
 		<div className="page-editor__fragments-widgets__search-results-panel__see-marketplace-results">
@@ -144,12 +120,7 @@ export default function MarketplaceSearchResults({searchValue}) {
 							className="p-3 text-secondary"
 							displayType="link"
 							onClick={() => {
-								setProductSearchParams(
-									(prevProductSearchParams) => ({
-										...prevProductSearchParams,
-										page: prevProductSearchParams.page + 1,
-									})
-								);
+								setPage((prevPage) => prevPage + 1);
 							}}
 							size="sm"
 						>
