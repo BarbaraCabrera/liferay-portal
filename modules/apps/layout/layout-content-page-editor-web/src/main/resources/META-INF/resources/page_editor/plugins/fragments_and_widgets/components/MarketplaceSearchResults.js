@@ -12,7 +12,7 @@ import {
 	useMarketplaceConfiguration,
 } from '@liferay/marketplace-js-components-web';
 import PropTypes from 'prop-types';
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 
 import MarketplaceTabItem from './MarketplaceTabItem';
 
@@ -30,16 +30,22 @@ export default function MarketplaceSearchResults({searchValue}) {
 	}, [baseResourceURL, marketplaceConfiguration.data]);
 	const [page, setPage] = useState(1);
 	const [results, setResults] = useState({});
-	const [seeMarketPlaceResults, setSeeMarketPlaceResults] = useState(false);
 	const showMoreResults = results.lastPage > page;
+	const [showResults, setShowResults] = useState(false);
+	const showResultsRef = useRef(showResults);
+
+	// False positive - react-compiler/react-compiler
+	// eslint-disable-next-line react-compiler/react-compiler
+	showResultsRef.current = showResults;
 
 	useEffect(() => {
-		setSeeMarketPlaceResults(false);
+		showResultsRef.current = false;
+		setShowResults(false);
 		setResults({});
-	}, [searchValue, setSeeMarketPlaceResults]);
+	}, [searchValue, setShowResults]);
 
 	useEffect(() => {
-		if (!authorized || !seeMarketPlaceResults) {
+		if (!authorized || !showResultsRef.current) {
 			return;
 		}
 
@@ -74,11 +80,11 @@ export default function MarketplaceSearchResults({searchValue}) {
 			})
 			.catch((error) => console.error('Failed to fetch products:', error))
 			.finally(() => setLoading(false));
-	}, [authorized, marketplaceRest, page, searchValue, seeMarketPlaceResults]);
+	}, [authorized, marketplaceRest, page, searchValue, showResults]);
 
 	return Liferay.FeatureFlags['LPD-34938'] && authorized ? (
 		<div className="page-editor__fragments-widgets__search-results-panel__see-marketplace-results">
-			{seeMarketPlaceResults ? (
+			{showResults ? (
 				<div>
 					<div className="p-3 page-editor__marketplace-results__title text-3 text-secondary">
 						{Liferay.Language.get(
@@ -134,7 +140,7 @@ export default function MarketplaceSearchResults({searchValue}) {
 					className="p-3"
 					displayType="link"
 					onClick={() => {
-						setSeeMarketPlaceResults(true);
+						setShowResults(true);
 					}}
 					size="sm"
 				>
