@@ -196,3 +196,42 @@ test(
 		});
 	}
 );
+
+test(
+	'Check available actions of marketplace Fragment Collection',
+	{
+		tag: '@LPD-50980',
+	},
+	async ({apiHelpers, fragmentsPage, page, site}) => {
+
+		// Create new fragment collection
+
+		const fragmentCollectionName = getRandomString();
+
+		await apiHelpers.jsonWebServicesFragmentCollection.addFragmentCollection(
+			{
+				groupId: site.id,
+				marketplace: true,
+				name: fragmentCollectionName,
+			}
+		);
+
+		// Go to fragment administration
+
+		await fragmentsPage.goto(site.friendlyUrlPath);
+
+		// Click the dropdown button to open the actions for the Fragment Collection
+
+		await page
+			.getByRole('heading', {
+				name: fragmentCollectionName + ' Show Actions',
+			})
+			.click();
+
+		// Check available actions
+
+		await expect(
+			page.getByRole('menuitem', {name: 'Export'})
+		).not.toBeVisible();
+	}
+);
