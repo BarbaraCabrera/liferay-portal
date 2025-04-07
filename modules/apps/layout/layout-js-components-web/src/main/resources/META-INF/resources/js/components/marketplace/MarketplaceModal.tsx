@@ -5,6 +5,7 @@
 
 import {ClayButtonWithIcon} from '@clayui/button';
 import {
+	AppsPermissions,
 	Marketplace,
 	MarketplaceContext,
 	MarketplaceContextProvider,
@@ -28,12 +29,18 @@ import MarketplaceViews from './MarketplaceViews';
 interface MarketplaceModalProps {
 	children?: ReactNode;
 	openOnRender?: boolean;
+	permissions?: AppsPermissions;
 	trigger?: ReactElement | null;
 }
 
 export default function MarketplaceModal({
 	children,
 	openOnRender,
+	permissions = {
+		installFreeApps: true,
+		purchaseAndInstallPaidApps: false,
+		viewApps: true,
+	},
 	trigger,
 	...marketplaceViewProps
 }: MarketplaceModalProps & ComponentProps<typeof MarketplaceViews>) {
@@ -42,6 +49,7 @@ export default function MarketplaceModal({
 	return (
 		<MarketplaceContextProvider
 			baseResourceURL={MarketplaceRest.getBaseResourceURL()}
+			permissions={permissions}
 			settings={{productFilter: 'fragments'}}
 		>
 			{children}
