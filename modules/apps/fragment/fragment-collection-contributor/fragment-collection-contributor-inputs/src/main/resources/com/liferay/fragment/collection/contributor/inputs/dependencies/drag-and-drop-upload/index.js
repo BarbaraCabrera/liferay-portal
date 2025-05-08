@@ -3,6 +3,9 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
+const dropzone = document.getElementById(
+	`${fragmentNamespace}-drag-and-drop-upload-dropzone`
+);
 const fileInput = document.getElementById(
 	`${fragmentNamespace}-drag-and-drop-upload`
 );
@@ -17,6 +20,12 @@ const selectButton = document.getElementById(
 );
 const hiddenFileInput = document.getElementById(
 	`${fragmentNamespace}-drag-and-drop-upload-hidden`
+);
+const previewContainer = document.getElementById(
+	`${fragmentNamespace}-drag-and-drop-upload-preview`
+);
+const previewContent = document.getElementById(
+	`${fragmentNamespace}-drag-and-drop-upload-preview-content`
 );
 
 function showRemoveButton() {
@@ -35,6 +44,7 @@ function onInputChange() {
 		fileInput.files = dataTransfer.files;
 	}
 
+	showPreview(fileInput.files[0]);
 	fileInput.setAttribute('name', input.name);
 
 	hiddenFileInput.setAttribute('name', '');
@@ -51,6 +61,8 @@ function onRemoveFile() {
 	hiddenFileInput.value = '';
 
 	removeButton.classList.add('d-none');
+	dropzone.classList.remove('d-none');
+	previewContainer.classList.add('d-none');
 	removeButton.removeEventListener('click', onRemoveFile);
 }
 
@@ -343,4 +355,21 @@ else {
 	else {
 		selectButton.addEventListener('click', selectFileEvent);
 	}
+}
+
+function showPreview(file) {
+	if (!file || !file.type.startsWith('image/')) {
+		return;
+	}
+
+	dropzone.classList.add('d-none');
+	previewContainer.classList.remove('d-none');
+	previewContent.innerHTML = '';
+
+	const image = document.createElement('img');
+	image.src = URL.createObjectURL(file);
+	image.alt = '';
+	image.style.width = '100%';
+
+	previewContent.appendChild(image);
 }

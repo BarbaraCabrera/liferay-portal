@@ -6,3 +6,8 @@
 	justify-items: center;
 	padding: 24px 0;
 }
+
+.preview-container {
+	overflow: hidden;
+	width: 100%;
+}
