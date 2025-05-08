@@ -1,3 +1,13 @@
+[#assign
+disabled = input.attributes.disabled?? && input.attributes.disabled,
+localFileUploaded = false,
+showDocumentLibrarySelector = input.attributes.selectFromDocumentLibrary?? && input.attributes.selectFromDocumentLibrary
+]
+
+[#if input.value?? && !showDocumentLibrarySelector]
+[#assign localFileUploaded = true]
+[/#if]
+
 <div class="drag-and-drop-upload">
 	<label class="[#if !input.showLabel || !input.label?has_content]sr-only[/#if]" id="${fragmentEntryLinkNamespace}-drag-and-drop-upload-label">
 		${htmlUtil.escape(input.label)}
@@ -14,9 +24,17 @@
 			Drag and Drop or
 		</p>
 
-		<button class="btn btn-secondary" id="${fragmentEntryLinkNamespace}-drag-and-drop-upload-button-label" type="button">
-			Select File
-		</button>
+		<div class="position-relative">
+			<button class="btn btn-secondary" id="${fragmentEntryLinkNamespace}-drag-and-drop-upload-button" type="button">${htmlUtil.escape(configuration.buttonText)}</button>
+
+			<input id="${fragmentEntryLinkNamespace}-drag-and-drop-upload-hidden" [#if localFileUploaded]name="${input.name}"[/#if] type="hidden" value="${input.value?has_content?then(input.value, '')}" />
+
+			<input hidden accept="${(input.attributes.allowedFileExtensions?has_content)?then(input.attributes.allowedFileExtensions, '*')}" class="drag-and-drop-upload-input" formenctype="multipart/form-data" id="${fragmentEntryLinkNamespace}-drag-and-drop-upload" [#if !localFileUploaded]name="${input.name}"[/#if] ${input.required?then('required', '' )} type="${showDocumentLibrarySelector?then('text', 'file')}" [#if input.value??]value="${input.value}"[/#if] tabIndex="-1" />
+		</div>
+	</div>
+
+	<div class="d-none preview-container" id="${fragmentEntryLinkNamespace}-drag-and-drop-upload-preview">
+		<div id="${fragmentEntryLinkNamespace}-drag-and-drop-upload-preview-content"></div>
 	</div>
 
 	[#if !input.readOnly && ((input.showHelpText && input.helpText?has_content) || (configuration.showSupportedFileInfo && input.attributes.maxFileSize??))]
