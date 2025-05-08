@@ -3,6 +3,9 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
+const changeButton = document.getElementById(
+	`${fragmentNamespace}-drag-and-drop-upload-change-button`
+);
 const dropzone = document.getElementById(
 	`${fragmentNamespace}-drag-and-drop-upload-dropzone`
 );
@@ -51,6 +54,7 @@ function onInputChange() {
 	hiddenFileInput.value = '';
 
 	showRemoveButton();
+	showChangeButton();
 }
 
 function onRemoveFile() {
@@ -61,6 +65,7 @@ function onRemoveFile() {
 	hiddenFileInput.value = '';
 
 	removeButton.classList.add('d-none');
+	changeButton.classList.add('d-none');
 	dropzone.classList.remove('d-none');
 	previewContainer.classList.add('d-none');
 	removeButton.removeEventListener('click', onRemoveFile);
@@ -85,6 +90,7 @@ function onSelectFile(event, onChange, setTranslationInputValue) {
 			fileInput.value = fileEntryId;
 
 			showRemoveButton();
+			showChangeButton();
 		},
 		selectEventName: `${fragmentNamespace}selectFileEntry`,
 		url: input.attributes.selectFromDocumentLibraryURL,
@@ -113,18 +119,20 @@ const setFileName = (input) => {
 
 	if (fileName.innerText) {
 		removeButton.classList.remove('d-none');
+		changeButton.classList.remove('d-none');
 	}
 	else {
 		removeButton.classList.add('d-none');
+		changeButton.classList.add('d-none');
 	}
 };
+
+let selectFileEvent = onSelectFromUserComputer;
 
 if (layoutMode === 'edit') {
 	selectButton.classList.add('disabled');
 }
 else {
-	let selectFileEvent = onSelectFromUserComputer;
-
 	if (input.attributes.selectFromDocumentLibrary) {
 		selectFileEvent = onSelectFile;
 	}
@@ -355,6 +363,11 @@ else {
 	else {
 		selectButton.addEventListener('click', selectFileEvent);
 	}
+}
+
+function showChangeButton() {
+	changeButton.classList.remove('d-none');
+	changeButton.addEventListener('click', selectFileEvent);
 }
 
 function showPreview(file) {
