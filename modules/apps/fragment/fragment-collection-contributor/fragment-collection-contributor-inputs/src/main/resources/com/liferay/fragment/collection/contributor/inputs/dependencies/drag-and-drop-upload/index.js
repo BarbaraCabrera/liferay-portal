@@ -363,6 +363,40 @@ else {
 	else {
 		selectButton.addEventListener('click', selectFileEvent);
 	}
+
+	dropzone.addEventListener('dragover', (event) => {
+		event.preventDefault();
+		dropzone.classList.add('dropzone-hover');
+	});
+
+	dropzone.addEventListener('dragleave', () => {
+		dropzone.classList.remove('dropzone-hover');
+	});
+
+	dropzone.addEventListener('drop', (event) => {
+		event.preventDefault();
+		dropzone.classList.remove('dropzone-hover');
+
+		const files = event.dataTransfer.files;
+
+		if (files.length) {
+			const file = files[0];
+
+			const dataTransfer = new DataTransfer();
+			dataTransfer.items.add(file);
+			fileInput.files = dataTransfer.files;
+
+			previousFiles = file;
+
+			showPreview(file);
+			fileInput.setAttribute('name', input.name);
+			hiddenFileInput.setAttribute('name', '');
+			hiddenFileInput.value = '';
+
+			showRemoveButton();
+			showChangeButton();
+		}
+	});
 }
 
 function showChangeButton() {

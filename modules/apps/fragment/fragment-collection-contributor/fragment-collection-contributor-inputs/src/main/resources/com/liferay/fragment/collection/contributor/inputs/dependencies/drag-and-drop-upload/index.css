@@ -7,6 +7,12 @@
 	padding: 24px 0;
 }
 
+.dropzone-hover {
+	background-color: #F0F5FF;
+	border: 2px solid #80ACFF;
+	cursor: grabbing !important;
+}
+
 .preview-container {
 	overflow: hidden;
 	width: 100%;
