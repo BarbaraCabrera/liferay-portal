@@ -17,7 +17,7 @@ showDocumentLibrarySelector = input.attributes.selectFromDocumentLibrary?? && in
 		[#if input.required][@clay["icon"] className="reference-mark" symbol="asterisk" /][/#if]
 	</label>
 
-	<div class="dropzone" id="${fragmentEntryLinkNamespace}-drag-and-drop-upload-dropzone">
+	<div class="dropzone" data-no-preview-available-text="${languageUtil.get(locale, 'no-preview-available')}" id="${fragmentEntryLinkNamespace}-drag-and-drop-upload-dropzone">
 		<img alt="" role="presentation" src="${themeDisplay.getPortalURL() + themeDisplay.getPathContext() + '/o/fragment-collection-contributor-inputs/Drag_drop_illustration.svg'}" />
 
 		<p class="text-4 text-secondary text-weight-semi-bold">

@@ -30,6 +30,7 @@ const previewContainer = document.getElementById(
 const previewContent = document.getElementById(
 	`${fragmentNamespace}-drag-and-drop-upload-preview-content`
 );
+const noPreviewAvailable = dropzone.dataset.noPreviewAvailableText;
 
 function showRemoveButton() {
 	removeButton.classList.remove('d-none');
@@ -405,18 +406,34 @@ function showChangeButton() {
 }
 
 function showPreview(file) {
-	if (!file || !file.type.startsWith('image/')) {
+	if (!file) {
 		return;
 	}
 
-	dropzone.classList.add('d-none');
-	previewContainer.classList.remove('d-none');
-	previewContent.innerHTML = '';
+	const isImage = file.type.startsWith('image/');
 
-	const image = document.createElement('img');
-	image.src = URL.createObjectURL(file);
-	image.alt = '';
-	image.style.width = '100%';
+	if (isImage) {
+		dropzone.classList.add('d-none');
+		dropzone.classList.remove('no-preview-available');
+		previewContainer.classList.remove('d-none');
+		previewContent.innerHTML = '';
 
-	previewContent.appendChild(image);
+		const image = document.createElement('img');
+		image.src = URL.createObjectURL(file);
+		image.alt = '';
+		image.style.width = '100%';
+
+		previewContent.appendChild(image);
+	}
+	else {
+		previewContainer.classList.add('d-none');
+		dropzone.classList.remove('d-none');
+		dropzone.classList.add('no-preview-available');
+
+		dropzone.innerHTML = `
+			<p class="text-4 text-secondary text-weight-semi-bold mb-0">
+				${noPreviewAvailable}
+			</p>
+		`;
+	}
 }

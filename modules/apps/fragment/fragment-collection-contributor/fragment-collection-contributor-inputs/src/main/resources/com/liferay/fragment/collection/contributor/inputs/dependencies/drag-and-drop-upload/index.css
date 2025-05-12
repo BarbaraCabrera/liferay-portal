@@ -5,6 +5,11 @@
 	border-radius: 8px;
 	justify-items: center;
 	padding: 24px 0;
+
+	&.no-preview-available{
+		background: #FFFFFF !important;
+		border: 1px solid #E7E7ED !important;
+	}
 }
 
 .dropzone-hover {
