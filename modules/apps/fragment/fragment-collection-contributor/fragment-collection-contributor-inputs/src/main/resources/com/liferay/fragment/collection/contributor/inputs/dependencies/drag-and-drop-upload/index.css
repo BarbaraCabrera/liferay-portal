@@ -1,8 +1,14 @@
+.drag-and-drop-upload{
+	--default-fragment-height: 281px;
+	height: var(--default-fragment-height, fit-content);
+}
+
 .dropzone {
 	align-content: center;
 	background: #F7F8F9;
 	border: 2px dashed #CDCED9;
 	border-radius: 8px;
+	flex-grow: 1;
 	justify-items: center;
 	padding: 24px 0;
 
