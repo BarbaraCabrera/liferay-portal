@@ -16,20 +16,19 @@
 }
 
 .dropzone-default-content {
-	background: #F7F8F9 !important;
-	border: 2px dashed #CDCED9 !important;
+	background: #F7F8F9;
+	border: 2px dashed #CDCED9;
 
+	&.dropzone-hover {
+		background-color: #F0F5FF !important;
+		border: 2px solid #80ACFF !important;
+		cursor: grabbing !important;
+	}
 }
 
 .dropzone-no-preview {
 	background: #FFFFFF !important;
 	border: 1px solid #E7E7ED !important;
-}
-
-.dropzone-hover {
-	background-color: #F0F5FF;
-	border: 2px solid #80ACFF;
-	cursor: grabbing !important;
 }
 
 .preview-container {

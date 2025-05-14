@@ -369,18 +369,18 @@ else {
 		selectButton.addEventListener('click', selectFileEvent);
 	}
 
-	dropzone.addEventListener('dragover', (event) => {
+	defaultDropzone.addEventListener('dragover', (event) => {
 		event.preventDefault();
-		dropzone.classList.add('dropzone-hover');
+		defaultDropzone.classList.add('dropzone-hover');
 	});
 
-	dropzone.addEventListener('dragleave', () => {
-		dropzone.classList.remove('dropzone-hover');
+	defaultDropzone.addEventListener('dragleave', () => {
+		defaultDropzone.classList.remove('dropzone-hover');
 	});
 
-	dropzone.addEventListener('drop', (event) => {
+	defaultDropzone.addEventListener('drop', (event) => {
 		event.preventDefault();
-		dropzone.classList.remove('dropzone-hover');
+		defaultDropzone.classList.remove('dropzone-hover');
 
 		const files = event.dataTransfer.files;
 
