@@ -17,19 +17,27 @@ showDocumentLibrarySelector = input.attributes.selectFromDocumentLibrary?? && in
 		[#if input.required][@clay["icon"] className="reference-mark" symbol="asterisk" /][/#if]
 	</label>
 
-	<div class="dropzone" data-no-preview-available-text="${languageUtil.get(locale, 'no-preview-available')}" id="${fragmentEntryLinkNamespace}-drag-and-drop-upload-dropzone">
-		<img alt="" role="presentation" src="${themeDisplay.getPortalURL() + themeDisplay.getPathContext() + '/o/fragment-collection-contributor-inputs/Drag_drop_illustration.svg'}" />
+	<div class="dropzone" id="${fragmentEntryLinkNamespace}-drag-and-drop-upload-dropzone">
+		<div class="dropzone-default-content">
+			<img alt="" role="presentation" src="${themeDisplay.getPortalURL() + themeDisplay.getPathContext() + '/o/fragment-collection-contributor-inputs/Drag_drop_illustration.svg'}" />
 
-		<p class="text-4 text-secondary text-weight-semi-bold">
-			Drag and Drop or
-		</p>
+			<p class="text-4 text-secondary text-weight-semi-bold">
+				Drag and Drop or
+			</p>
 
-		<div class="position-relative">
-			<button class="btn btn-secondary" id="${fragmentEntryLinkNamespace}-drag-and-drop-upload-button" type="button">${htmlUtil.escape(configuration.buttonText)}</button>
+			<div class="position-relative">
+				<button class="btn btn-secondary" id="${fragmentEntryLinkNamespace}-drag-and-drop-upload-button" type="button">${htmlUtil.escape(configuration.buttonText)}</button>
 
-			<input id="${fragmentEntryLinkNamespace}-drag-and-drop-upload-hidden" [#if localFileUploaded]name="${input.name}"[/#if] type="hidden" value="${input.value?has_content?then(input.value, '')}" />
+				<input id="${fragmentEntryLinkNamespace}-drag-and-drop-upload-hidden" [#if localFileUploaded]name="${input.name}"[/#if] type="hidden" value="${input.value?has_content?then(input.value, '')}" />
 
-			<input hidden accept="${(input.attributes.allowedFileExtensions?has_content)?then(input.attributes.allowedFileExtensions, '*')}" class="drag-and-drop-upload-input" formenctype="multipart/form-data" id="${fragmentEntryLinkNamespace}-drag-and-drop-upload" [#if !localFileUploaded]name="${input.name}"[/#if] ${input.required?then('required', '' )} type="${showDocumentLibrarySelector?then('text', 'file')}" [#if input.value??]value="${input.value}"[/#if] tabIndex="-1" />
+				<input hidden accept="${(input.attributes.allowedFileExtensions?has_content)?then(input.attributes.allowedFileExtensions, '*')}" class="drag-and-drop-upload-input" formenctype="multipart/form-data" id="${fragmentEntryLinkNamespace}-drag-and-drop-upload" [#if !localFileUploaded]name="${input.name}"[/#if] ${input.required?then('required', '' )} type="${showDocumentLibrarySelector?then('text', 'file')}" [#if input.value??]value="${input.value}"[/#if] tabIndex="-1" />
+			</div>
+		</div>
+
+		<div class="d-none dropzone-no-preview">
+			<p class="mb-0 text-4 text-secondary text-weight-semi-bold">
+				${languageUtil.get(locale, 'no-preview-available')}
+			</p>
 		</div>
 	</div>
 

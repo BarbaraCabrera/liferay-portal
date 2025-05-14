@@ -30,7 +30,8 @@ const previewContainer = document.getElementById(
 const previewContent = document.getElementById(
 	`${fragmentNamespace}-drag-and-drop-upload-preview-content`
 );
-const noPreviewAvailable = dropzone.dataset.noPreviewAvailableText;
+const defaultDropzone = dropzone.querySelector('.dropzone-default-content');
+const noPreviewDropzone = dropzone.querySelector('.dropzone-no-preview');
 
 function showRemoveButton() {
 	removeButton.classList.remove('d-none');
@@ -68,6 +69,8 @@ function onRemoveFile() {
 	removeButton.classList.add('d-none');
 	changeButton.classList.add('d-none');
 	dropzone.classList.remove('d-none');
+	defaultDropzone.classList.remove('d-none');
+	noPreviewDropzone.classList.add('d-none');
 	previewContainer.classList.add('d-none');
 	removeButton.removeEventListener('click', onRemoveFile);
 }
@@ -90,6 +93,7 @@ function onSelectFile(event, onChange, setTranslationInputValue) {
 
 			fileInput.value = fileEntryId;
 
+			showPreview(selectedItem);
 			showRemoveButton();
 			showChangeButton();
 		},
@@ -410,16 +414,32 @@ function showPreview(file) {
 		return;
 	}
 
-	const isImage = file.type.startsWith('image/');
+	let isImage = false;
+	let imageUrl = null;
 
-	if (isImage) {
+	if (file.value) {
+		const fileData = JSON.parse(file.value);
+		const {type, url} = fileData;
+
+		const isFromDocumentsAndMedia = type?.startsWith('document');
+
+		if (isFromDocumentsAndMedia && url) {
+			isImage = true;
+			imageUrl = url;
+		}
+	}
+	else if (file.type?.startsWith('image/')) {
+		isImage = true;
+		imageUrl = URL.createObjectURL(file);
+	}
+
+	if (isImage && imageUrl) {
 		dropzone.classList.add('d-none');
-		dropzone.classList.remove('no-preview-available');
 		previewContainer.classList.remove('d-none');
 		previewContent.innerHTML = '';
 
 		const image = document.createElement('img');
-		image.src = URL.createObjectURL(file);
+		image.src = imageUrl;
 		image.alt = '';
 		image.style.width = '100%';
 
@@ -428,12 +448,7 @@ function showPreview(file) {
 	else {
 		previewContainer.classList.add('d-none');
 		dropzone.classList.remove('d-none');
-		dropzone.classList.add('no-preview-available');
-
-		dropzone.innerHTML = `
-			<p class="text-4 text-secondary text-weight-semi-bold mb-0">
-				${noPreviewAvailable}
-			</p>
-		`;
+		defaultDropzone.classList.add('d-none');
+		noPreviewDropzone.classList.remove('d-none');
 	}
 }
