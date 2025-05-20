@@ -118,24 +118,6 @@ function getTranslationInput(namespace, languageId, inputName) {
 	return document.getElementById(inputId);
 }
 
-const setFileName = (input) => {
-	if (!input) {
-		fileName.innerText = '';
-	}
-	else {
-		fileName.innerText = input.dataset.fileName || '';
-	}
-
-	if (fileName.innerText) {
-		removeButton.classList.remove('d-none');
-		changeButton.classList.remove('d-none');
-	}
-	else {
-		removeButton.classList.add('d-none');
-		changeButton.classList.add('d-none');
-	}
-};
-
 let selectFileEvent = onSelectFromUserComputer;
 
 if (layoutMode === 'edit') {
@@ -198,26 +180,6 @@ else {
 						defaultLanguageId,
 						onLocaleChange: ({languageId}) => {
 							currentLanguageId = languageId;
-
-							const translationInput = getTranslationInput(
-								fragmentNamespace,
-								languageId,
-								input.name
-							);
-
-							if (translationInput) {
-								setFileName(translationInput);
-							}
-							else {
-								const defaultTranslationInput =
-									getTranslationInput(
-										fragmentNamespace,
-										defaultLanguageId,
-										input.name
-									);
-
-								setFileName(defaultTranslationInput);
-							}
 						},
 					});
 
