@@ -112,12 +112,6 @@ const onSelectFromUserComputer = () => {
 	fileInput.click();
 };
 
-function getTranslationInput(namespace, languageId, inputName) {
-	const inputId = `${namespace}${inputName}-drag-and-drop-upload_${languageId}`;
-
-	return document.getElementById(inputId);
-}
-
 let selectFileEvent = onSelectFromUserComputer;
 
 if (layoutMode === 'edit') {
