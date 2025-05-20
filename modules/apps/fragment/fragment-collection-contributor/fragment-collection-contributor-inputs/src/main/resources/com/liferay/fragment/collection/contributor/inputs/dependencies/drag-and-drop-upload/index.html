@@ -50,11 +50,11 @@ showDocumentLibrarySelector = input.attributes.selectFromDocumentLibrary?? && in
 	[/#if]
 
 	<div class="flex-grow-0 py-2">
-		<button class="btn btn-secondary btn-xs d-none mr-2" id="${fragmentEntryLinkNamespace}-drag-and-drop-upload-change-button" type="button">
+		<button class="btn btn-monospaced btn-secondary btn-xs d-none lfr-portal-tooltip mr-2" id="${fragmentEntryLinkNamespace}-drag-and-drop-upload-change-button" title="${languageUtil.get(locale, 'change-file')}" type="button">
 			[@clay["icon"] symbol="change" /]
 		</button>
 
-		<button class="btn btn-secondary btn-xs d-none" id="${fragmentEntryLinkNamespace}-drag-and-drop-upload-remove-button" type="button">
+		<button class="btn btn-monospaced btn-secondary btn-xs d-none lfr-portal-tooltip" id="${fragmentEntryLinkNamespace}-drag-and-drop-upload-remove-button" title="${languageUtil.get(locale, 'delete-file')}" type="button">
 			[@clay["icon"] symbol="trash" /]
 		</button>
 	</div>
