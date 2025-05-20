@@ -350,23 +350,21 @@ else {
 
 		const files = event.dataTransfer.files;
 
-		if (files.length) {
-			const file = files[0];
-
-			const dataTransfer = new DataTransfer();
-			dataTransfer.items.add(file);
-			fileInput.files = dataTransfer.files;
-
-			previousFiles = file;
-
-			showPreview(file);
-			fileInput.setAttribute('name', input.name);
-			hiddenFileInput.setAttribute('name', '');
-			hiddenFileInput.value = '';
-
-			showRemoveButton();
-			showChangeButton();
+		if (!files.length) {
+			return;
 		}
+
+		const file = files[0];
+
+		previousFiles = file;
+		showPreview(file);
+
+		fileInput.setAttribute('name', input.name);
+		hiddenFileInput.setAttribute('name', '');
+		hiddenFileInput.value = '';
+
+		showRemoveButton();
+		showChangeButton();
 	});
 }
 
