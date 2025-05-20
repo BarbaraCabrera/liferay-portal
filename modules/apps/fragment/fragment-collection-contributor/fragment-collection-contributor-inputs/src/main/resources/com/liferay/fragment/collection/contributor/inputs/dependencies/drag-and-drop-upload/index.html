@@ -26,7 +26,7 @@ showDocumentLibrarySelector = input.attributes.selectFromDocumentLibrary?? && in
 			</p>
 
 			<div class="position-relative">
-				<button class="btn btn-secondary" id="${fragmentEntryLinkNamespace}-drag-and-drop-upload-button" type="button">${htmlUtil.escape(configuration.buttonText)}</button>
+				<button aria-describedby="${configuration.showSupportedFileInfo?then(languageUtil.format(locale, "maximum-size-x", input.attributes.maxFileSize!"") + 'MB.', '')} ${input.showHelpText?then(htmlUtil.escape(input.helpText), '' )}" class="btn btn-secondary" id="${fragmentEntryLinkNamespace}-drag-and-drop-upload-button" type="button">${htmlUtil.escape(configuration.buttonText)}</button>
 
 				<input id="${fragmentEntryLinkNamespace}-drag-and-drop-upload-hidden" [#if localFileUploaded]name="${input.name}"[/#if] type="hidden" value="${input.value?has_content?then(input.value, '')}" />
 
