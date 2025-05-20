@@ -57,6 +57,8 @@ function onInputChange() {
 
 	showRemoveButton();
 	showChangeButton();
+
+	changeButton.focus();
 }
 
 function onRemoveFile() {
@@ -73,6 +75,8 @@ function onRemoveFile() {
 	noPreviewDropzone.classList.add('d-none');
 	previewContainer.classList.add('d-none');
 	removeButton.removeEventListener('click', onRemoveFile);
+
+	selectButton.focus();
 }
 
 function onSelectFile(event, onChange, setTranslationInputValue) {
