@@ -165,6 +165,8 @@ else {
 
 					if (input.attributes?.previewURL) {
 						showPreview(input.attributes.previewURL);
+						showChangeButton();
+						showRemoveButton();
 					}
 
 					const isFromDocumentLibrary =
@@ -213,6 +215,8 @@ else {
 						}
 
 						showPreview(translationInput.dataset.previewURL);
+						showChangeButton();
+						showRemoveButton();
 					};
 
 					if (isFromDocumentLibrary) {
