@@ -12,9 +12,6 @@ const dropzone = document.getElementById(
 const fileInput = document.getElementById(
 	`${fragmentNamespace}-drag-and-drop-upload`
 );
-const fileName = fragmentElement.querySelector(
-	'.forms-drag-and-drop-upload-file-name'
-);
 const removeButton = document.getElementById(
 	`${fragmentNamespace}-drag-and-drop-upload-remove-button`
 );
@@ -84,11 +81,11 @@ function onSelectFile(event, onChange, setTranslationInputValue) {
 
 	Liferay.Util.openSelectionModal({
 		onSelect(selectedItem) {
-			const {fileEntryId, title} = JSON.parse(selectedItem.value);
+			const {fileEntryId, url} = JSON.parse(selectedItem.value);
 
 			if (onChange) {
 				setTranslationInputValue({
-					fileName: title,
+					previewURL: url,
 					value: fileEntryId,
 				});
 
@@ -145,7 +142,8 @@ else {
 							key,
 							{
 								fileEntryId: input.valueI18n[key],
-								name: input.attributes.fileNameI18n[key] || '',
+								previewURL:
+									input.attributes.previewURLI18n[key] || '',
 							},
 						]
 					);
@@ -161,9 +159,13 @@ else {
 							);
 
 							input.value = value.fileEntryId;
-							input.dataset.fileName = value.name;
+							input.dataset.previewURL = value.previewURL;
 						}
 					);
+
+					if (input.attributes?.previewURL) {
+						showPreview(input.attributes.previewURL);
+					}
 
 					const isFromDocumentLibrary =
 						input.attributes.selectFromDocumentLibrary;
@@ -177,7 +179,7 @@ else {
 						},
 					});
 
-					const setTranslationInputValue = ({fileName, value}) => {
+					const setTranslationInputValue = ({previewURL, value}) => {
 						const type =
 							isFromDocumentLibrary === false ? 'file' : 'hidden';
 
@@ -192,7 +194,7 @@ else {
 
 						if (isFromDocumentLibrary) {
 							translationInput.value = value;
-							translationInput.dataset.fileName = fileName;
+							translationInput.dataset.previewURL = previewURL;
 						}
 						else {
 							const files = value;
@@ -200,17 +202,17 @@ else {
 							if (files?.length) {
 								const dataTransfer = new DataTransfer();
 
-								if (files?.length) {
-									[...files].forEach((file) => {
-										dataTransfer.items.add(file);
-									});
-								}
+								[...files].forEach((file) => {
+									dataTransfer.items.add(file);
+								});
 
 								translationInput.files = dataTransfer.files;
-								translationInput.dataset.fileName =
-									dataTransfer.files[0].name;
+								translationInput.dataset.previewURL =
+									URL.createObjectURL(dataTransfer.files[0]);
 							}
 						}
+
+						showPreview(translationInput.dataset.previewURL);
 					};
 
 					if (isFromDocumentLibrary) {
@@ -238,8 +240,6 @@ else {
 					}
 
 					removeButton.addEventListener('click', () => {
-						fileName.innerText = '';
-
 						removeButton.classList.add('d-none');
 
 						const translationInput = getOrCreateTranslationInput(
@@ -251,7 +251,7 @@ else {
 						);
 
 						translationInput.value = '';
-						translationInput.dataset.fileName = '';
+						translationInput.dataset.previewURL = '';
 					});
 				}
 				else {
@@ -263,24 +263,24 @@ else {
 						customLocaleChangeHandler: true,
 						defaultLanguageId,
 						inputElement,
-						onLocaleChange: (languageId) => {
+						onLocaleChange: ({languageId}) => {
+							currentLanguageId = languageId;
+
+							const translationInput =
+								getOrCreateTranslationInput(
+									inputElement.id,
+									inputElement.name,
+									languageId,
+									inputElement.parentNode,
+									fragmentNamespace
+								);
+
 							if (defaultLanguageId !== languageId) {
 								if (unlocalizedFieldsState === 'read-only') {
 									selectButton.classList.add('d-none');
-
-									fileName.setAttribute('readonly', 'true');
-									fileName.setAttribute('tabindex', '0');
-									fileName.classList.add('form-control');
-
-									if (!fileName.innerText) {
-										fileName.innerText =
-											fileName.dataset.placeholder;
-									}
 								}
 								else {
 									selectButton.setAttribute('disabled', true);
-
-									fileName.classList.add('text-secondary');
 								}
 
 								removeButton.classList.add('d-none');
@@ -288,25 +288,12 @@ else {
 							else {
 								if (unlocalizedFieldsState === 'read-only') {
 									selectButton.classList.remove('d-none');
-
-									fileName.removeAttribute('readonly');
-									fileName.removeAttribute('tabindex');
-									fileName.classList.remove('form-control');
-
-									if (
-										fileName.innerText ===
-										fileName.dataset.placeholder
-									) {
-										fileName.innerText = '';
-									}
 								}
 								else {
 									selectButton.removeAttribute('disabled');
-
-									fileName.classList.remove('text-secondary');
 								}
 
-								if (fileName.innerText) {
+								if (translationInput?.dataset?.previewURL) {
 									removeButton.classList.remove('d-none');
 								}
 							}
@@ -367,16 +354,25 @@ function showChangeButton() {
 	changeButton.addEventListener('click', selectFileEvent);
 }
 
-function showPreview(file) {
-	if (!file) {
+function showPreview(fileOrUrl) {
+	if (!fileOrUrl) {
+		previewContainer.classList.add('d-none');
+		dropzone.classList.remove('d-none');
+		defaultDropzone.classList.add('d-none');
+		noPreviewDropzone.classList.remove('d-none');
+
 		return;
 	}
 
 	let isImage = false;
 	let imageUrl = null;
 
-	if (file.value) {
-		const fileData = JSON.parse(file.value);
+	if (typeof fileOrUrl === 'string') {
+		isImage = true;
+		imageUrl = fileOrUrl;
+	}
+	else if (fileOrUrl.value) {
+		const fileData = JSON.parse(fileOrUrl.value);
 		const {type, url} = fileData;
 
 		const isFromDocumentsAndMedia = type?.startsWith('document');
@@ -386,9 +382,9 @@ function showPreview(file) {
 			imageUrl = url;
 		}
 	}
-	else if (file.type?.startsWith('image/')) {
+	else if (fileOrUrl.type?.startsWith('image/')) {
 		isImage = true;
-		imageUrl = URL.createObjectURL(file);
+		imageUrl = URL.createObjectURL(fileOrUrl);
 	}
 
 	if (isImage && imageUrl) {
