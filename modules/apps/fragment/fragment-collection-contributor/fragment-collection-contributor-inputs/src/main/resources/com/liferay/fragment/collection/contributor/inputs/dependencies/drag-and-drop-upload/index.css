@@ -3,16 +3,12 @@
 	height: var(--default-fragment-height, fit-content);
 }
 
-.dropzone {
-	flex-grow: 1;
-
-	.dropzone-default-content, .dropzone-no-preview {
-		align-content: center;
-		border-radius: 8px;
-		height: 100%;
-		justify-items: center;
-		padding: 24px 0;
-	}
+.dropzone-default-content, .dropzone-no-preview {
+	align-content: center;
+	border-radius: 8px;
+	height: 100%;
+	justify-items: center;
+	padding: 24px 0;
 }
 
 .dropzone-default-content {
@@ -33,5 +29,4 @@
 
 .preview-container {
 	overflow: hidden;
-	width: 100%;
 }
