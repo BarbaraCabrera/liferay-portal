@@ -36,6 +36,7 @@ function showRemoveButton() {
 }
 
 let previousFiles = null;
+let previewURL = null;
 
 function onInputChange() {
 	if (!fileInput.files.length && previousFiles) {
@@ -262,43 +263,38 @@ else {
 					const unlocalizedFieldsState =
 						input.attributes.unlocalizedFieldsState;
 
+					if (input.attributes?.previewURL) {
+						showPreview(input.attributes.previewURL);
+						showChangeButton();
+						showRemoveButton();
+					}
+
 					registerUnlocalizedInput({
 						changeTextDirection: false,
 						customLocaleChangeHandler: true,
 						defaultLanguageId,
 						inputElement,
-						onLocaleChange: ({languageId}) => {
+						onLocaleChange: (languageId) => {
 							currentLanguageId = languageId;
 
-							const translationInput =
-								getOrCreateTranslationInput(
-									inputElement.id,
-									inputElement.name,
-									languageId,
-									inputElement.parentNode,
-									fragmentNamespace
-								);
-
 							if (defaultLanguageId !== languageId) {
-								if (unlocalizedFieldsState === 'read-only') {
-									selectButton.classList.add('d-none');
-								}
-								else {
-									selectButton.setAttribute('disabled', true);
-								}
+								selectButton.setAttribute('disabled', true);
+								dropzone.style.opacity = '0.4';
 
-								removeButton.classList.add('d-none');
+								if (previewURL) {
+									previewContainer.style.opacity = '0.4';
+									changeButton.setAttribute('disabled', true);
+									removeButton.setAttribute('disabled', true);
+								}
 							}
 							else {
-								if (unlocalizedFieldsState === 'read-only') {
-									selectButton.classList.remove('d-none');
-								}
-								else {
-									selectButton.removeAttribute('disabled');
-								}
+								selectButton.removeAttribute('disabled');
+								dropzone.style.opacity = '1';
 
-								if (translationInput?.dataset?.previewURL) {
-									removeButton.classList.remove('d-none');
+								if (previewURL) {
+									previewContainer.style.opacity = '1';
+									changeButton.removeAttribute('disabled');
+									removeButton.removeAttribute('disabled');
 								}
 							}
 						},
@@ -369,11 +365,10 @@ function showPreview(fileOrUrl) {
 	}
 
 	let isImage = false;
-	let imageUrl = null;
 
 	if (typeof fileOrUrl === 'string') {
 		isImage = true;
-		imageUrl = fileOrUrl;
+		previewURL = fileOrUrl;
 	}
 	else if (fileOrUrl.value) {
 		const fileData = JSON.parse(fileOrUrl.value);
@@ -383,21 +378,21 @@ function showPreview(fileOrUrl) {
 
 		if (isFromDocumentsAndMedia && url) {
 			isImage = true;
-			imageUrl = url;
+			previewURL = url;
 		}
 	}
 	else if (fileOrUrl.type?.startsWith('image/')) {
 		isImage = true;
-		imageUrl = URL.createObjectURL(fileOrUrl);
+		previewURL = URL.createObjectURL(fileOrUrl);
 	}
 
-	if (isImage && imageUrl) {
+	if (isImage && previewURL) {
 		dropzone.classList.add('d-none');
 		previewContainer.classList.remove('d-none');
 		previewContent.innerHTML = '';
 
 		const image = document.createElement('img');
-		image.src = imageUrl;
+		image.src = previewURL;
 		image.alt = '';
 		image.style.width = '100%';
 
