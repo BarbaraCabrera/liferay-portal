@@ -32,6 +32,9 @@ const noPreviewDropzone = dropzone.querySelector('.dropzone-no-preview');
 const unlocalizedInfo = document.getElementById(
 	`${fragmentNamespace}-unlocalized-info`
 );
+const helpText = document.getElementById(
+	`${fragmentNamespace}-drag-and-drop-upload-help-text`
+);
 
 function showRemoveButton() {
 	removeButton.classList.remove('d-none');
@@ -282,22 +285,25 @@ else {
 
 							if (defaultLanguageId !== languageId) {
 								selectButton.setAttribute('disabled', true);
-								dropzone.style.opacity = '0.4';
+								dropzone.parentNode.style.opacity = '0.4';
 								unlocalizedInfo.classList.remove('d-none');
 
 								if (previewURL) {
-									previewContainer.style.opacity = '0.4';
 									changeButton.setAttribute('disabled', true);
 									removeButton.setAttribute('disabled', true);
+								}
+
+								if (unlocalizedFieldsState === 'disabled') {
+									helpText.style.opacity = '0.4';
 								}
 							}
 							else {
 								selectButton.removeAttribute('disabled');
-								dropzone.style.opacity = '1';
+								dropzone.parentNode.style.opacity = '1';
 								unlocalizedInfo.classList.add('d-none');
+								helpText.style.opacity = '1';
 
 								if (previewURL) {
-									previewContainer.style.opacity = '1';
 									changeButton.removeAttribute('disabled');
 									removeButton.removeAttribute('disabled');
 								}
