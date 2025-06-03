@@ -47,13 +47,13 @@ let previewURL = null;
 function onInputChange() {
 	if (!fileInput.files.length && previousFiles) {
 		const dataTransfer = new DataTransfer();
-
 		dataTransfer.items.add(previousFiles);
-
 		fileInput.files = dataTransfer.files;
 	}
 
-	showPreview(fileInput.files[0]);
+	const file = fileInput.files[0];
+
+	showPreview(file);
 	fileInput.setAttribute('name', input.name);
 
 	hiddenFileInput.setAttribute('name', '');
@@ -61,6 +61,8 @@ function onInputChange() {
 
 	showRemoveButton();
 	showChangeButton();
+
+	updateFileNameLabel(file?.name);
 
 	changeButton.focus();
 }
@@ -79,6 +81,9 @@ function onRemoveFile() {
 	noPreviewDropzone.classList.add('d-none');
 	previewContainer.classList.add('d-none');
 	removeButton.removeEventListener('click', onRemoveFile);
+
+	previewURL = null;
+	updateFileNameLabel('');
 
 	selectButton.focus();
 }
@@ -104,6 +109,8 @@ function onSelectFile(event, onChange, setTranslationInputValue) {
 			showPreview(selectedItem);
 			showRemoveButton();
 			showChangeButton();
+
+			updateFileNameLabel(selectedItem.title || '');
 		},
 		selectEventName: `${fragmentNamespace}selectFileEntry`,
 		url: input.attributes.selectFromDocumentLibraryURL,
@@ -174,6 +181,10 @@ else {
 						showPreview(input.attributes.previewURL);
 						showChangeButton();
 						showRemoveButton();
+					}
+
+					if (input.attributes?.fileName) {
+						updateFileNameLabel(input.attributes.fileName);
 					}
 
 					const isFromDocumentLibrary =
@@ -275,6 +286,10 @@ else {
 						showRemoveButton();
 					}
 
+					if (input.attributes?.fileName) {
+						updateFileNameLabel(input.attributes.fileName);
+					}
+
 					registerUnlocalizedInput({
 						changeTextDirection: false,
 						customLocaleChangeHandler: true,
@@ -357,6 +372,8 @@ else {
 
 		showRemoveButton();
 		showChangeButton();
+
+		updateFileNameLabel(file.name);
 	});
 }
 
@@ -414,5 +431,18 @@ function showPreview(fileOrUrl) {
 		dropzone.classList.remove('d-none');
 		defaultDropzone.classList.add('d-none');
 		noPreviewDropzone.classList.remove('d-none');
+	}
+}
+
+function updateFileNameLabel(fileName) {
+	const fileNameLabel = document.getElementById(
+		`${fragmentNamespace}-drag-and-drop-upload-file-name-label`
+	);
+
+	if (previewURL) {
+		fileNameLabel.textContent = fileName;
+	}
+	else {
+		fileNameLabel.textContent = Liferay.Language.get('no-file-selected');
 	}
 }
