@@ -196,6 +196,24 @@ else {
 						defaultLanguageId,
 						onLocaleChange: ({languageId}) => {
 							currentLanguageId = languageId;
+
+							if (
+								input.attributes.previewURLI18n[
+									currentLanguageId
+								]
+							) {
+								showPreview(
+									input.attributes.previewURLI18n[
+										currentLanguageId
+									]
+								);
+
+								updateFileNameLabel(
+									input.attributes.fileNameI18n[
+										currentLanguageId
+									]
+								);
+							}
 						},
 					});
 
