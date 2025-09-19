@@ -34,9 +34,11 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.CompanyLocalService;
+import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.TransactionConfig;
@@ -74,8 +76,8 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 		String className, CompanyLocalService companyLocalService,
 		ExportImportVulcanBatchEngineTaskItemDelegate
 			exportImportVulcanBatchEngineTaskItemDelegate,
-		String itemClassName, String taskItemDelegateName,
-		UserLocalService userLocalService) {
+		GroupLocalService groupLocalService, String itemClassName,
+		String taskItemDelegateName, UserLocalService userLocalService) {
 
 		_batchEngineExportTaskExecutor = batchEngineExportTaskExecutor;
 		_batchEngineExportTaskLocalService = batchEngineExportTaskLocalService;
@@ -87,6 +89,7 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 		_companyLocalService = companyLocalService;
 		_exportImportVulcanBatchEngineTaskItemDelegate =
 			exportImportVulcanBatchEngineTaskItemDelegate;
+		_groupLocalService = groupLocalService;
 		_itemClassName = itemClassName;
 		_taskItemDelegateName = taskItemDelegateName;
 		_userLocalService = userLocalService;
@@ -216,6 +219,8 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 			PortletPreferences portletPreferences)
 		throws Exception {
 
+		_addSiteExternalReferenceCodeParameter(portletDataContext);
+
 		try (SafeCloseable safeCloseable =
 				PortletDataContextThreadLocal.
 					setPortletDataContextWithSafeCloseable(
@@ -327,6 +332,8 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 					setPortletDataContextWithSafeCloseable(
 						portletDataContext)) {
 
+			_addSiteExternalReferenceCodeParameter(portletDataContext);
+
 			BatchEngineExportTaskExecutor.Result result = _executeExportTask(
 				1, portletDataContext);
 
@@ -354,6 +361,23 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 	protected static final TransactionConfig transactionConfig =
 		TransactionConfig.Factory.create(
 			Propagation.REQUIRES_NEW, new Class<?>[] {Exception.class});
+
+	private void _addSiteExternalReferenceCodeParameter(
+		PortletDataContext portletDataContext) {
+
+		Map<String, String[]> map = portletDataContext.getParameterMap();
+
+		if (!map.containsKey("siteExternalReferenceCode")) {
+			Group group = _groupLocalService.fetchGroup(
+				portletDataContext.getScopeGroupId());
+
+			if (group != null) {
+				map.put(
+					"siteExternalReferenceCode",
+					new String[] {group.getExternalReferenceCode()});
+			}
+		}
+	}
 
 	private BatchEngineExportTaskExecutor.Result _executeExportTask(
 		int maxItems, PortletDataContext portletDataContext) {
@@ -438,6 +462,7 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 	private final ExportImportVulcanBatchEngineTaskItemDelegate<?>
 		_exportImportVulcanBatchEngineTaskItemDelegate;
 	private final String _fileName;
+	private final GroupLocalService _groupLocalService;
 	private final String _itemClassName;
 	private final String _taskItemDelegateName;
 	private final UserLocalService _userLocalService;
