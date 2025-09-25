@@ -325,7 +325,7 @@ public class StagedLayoutSetStagedModelDataHandler
 					}
 
 					@Override
-					public boolean isPersistContent() {
+					public boolean isPersist() {
 						return false;
 					}
 
