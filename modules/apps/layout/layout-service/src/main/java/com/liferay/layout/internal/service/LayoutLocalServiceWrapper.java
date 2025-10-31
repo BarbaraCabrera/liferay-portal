@@ -72,6 +72,7 @@ import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.CopyLayoutThreadLocal;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.UnicodePropertiesBuilder;
 import com.liferay.portal.kernel.util.Validator;
@@ -1088,6 +1089,60 @@ public class LayoutLocalServiceWrapper
 		return layoutStructure.toJSONObject();
 	}
 
+	private void _renamePortletPreferences(
+		Layout layout, String oldInstanceId, String newInstanceId) {
+
+		List<PortletPreferences> preferencesList =
+			_portletPreferencesLocalService.getPortletPreferencesByPlid(
+				layout.getPlid());
+
+		for (PortletPreferences portletPreferences : preferencesList) {
+			String portletId = portletPreferences.getPortletId();
+
+			if (!portletId.contains(oldInstanceId)) {
+				continue;
+			}
+
+			String newPortletId = StringUtil.replace(
+				portletId, oldInstanceId, newInstanceId);
+
+			portletPreferences.setPortletId(newPortletId);
+
+			_portletPreferencesLocalService.updatePortletPreferences(
+				portletPreferences);
+		}
+	}
+
+	private void _updateCopiedFragmentEntryLinksInstanceIds(Layout layout) {
+		List<FragmentEntryLink> fragmentEntryLinks =
+			_fragmentEntryLinkLocalService.getFragmentEntryLinksByPlid(
+				layout.getGroupId(), layout.getPlid());
+
+		for (FragmentEntryLink fragmentEntryLink : fragmentEntryLinks) {
+			JSONObject editableValuesJSONObject =
+				fragmentEntryLink.getEditableValuesJSONObject();
+
+			if (!editableValuesJSONObject.has("instanceId")) {
+				continue;
+			}
+
+			String oldInstanceId = editableValuesJSONObject.getString(
+				"instanceId");
+
+			String newInstanceId = StringUtil.randomId();
+
+			editableValuesJSONObject.put("instanceId", newInstanceId);
+
+			fragmentEntryLink.setEditableValues(
+				editableValuesJSONObject.toString());
+
+			_fragmentEntryLinkLocalService.updateFragmentEntryLink(
+				fragmentEntryLink);
+
+			_renamePortletPreferences(layout, oldInstanceId, newInstanceId);
+		}
+	}
+
 	private void _updateLayoutPageTemplateStructureData(
 			String data, Layout sourceLayout, long sourceSegmentsExperienceId,
 			Layout targetLayout, long targetSegmentsExperienceId, User user)
@@ -1239,6 +1294,8 @@ public class LayoutLocalServiceWrapper
 
 				_copyPortletPreferences(
 					portletIds, _sourceLayout, _targetLayout);
+
+				_updateCopiedFragmentEntryLinksInstanceIds(_targetLayout);
 
 				_deleteOrphanPortletPreferences(portletIds, oldPortletIds);
 			}
