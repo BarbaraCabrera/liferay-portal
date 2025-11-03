@@ -742,6 +742,72 @@ public class LayoutLocalServiceCopyLayoutContentTest {
 	}
 
 	@Test
+	public void testCopyLayoutFragmentEntryLinksEditableValues()
+		throws Exception {
+
+		LayoutPageTemplateEntry layoutPageTemplateEntry =
+			_layoutPageTemplateEntryLocalService.addLayoutPageTemplateEntry(
+				null, TestPropsValues.getUserId(), _group.getGroupId(), 0, null,
+				RandomTestUtil.randomString(),
+				LayoutPageTemplateEntryTypeConstants.MASTER_LAYOUT, 0,
+				WorkflowConstants.STATUS_APPROVED, _serviceContext);
+
+		Layout sourceLayout = _layoutLocalService.getLayout(
+			layoutPageTemplateEntry.getPlid());
+
+		Layout draftLayout = sourceLayout.fetchDraftLayout();
+
+		JSONObject processAddPortletJSONObject =
+			ContentLayoutTestUtil.addPortletToLayout(
+				draftLayout, LayoutPortletKeys.LAYOUT_TEST_PORTLET);
+
+		JSONObject fragmentEntryLinkJSONObject =
+			processAddPortletJSONObject.getJSONObject("fragmentEntryLink");
+
+		JSONObject sourceEditableValuesJSONObject =
+			fragmentEntryLinkJSONObject.getJSONObject("editableValues");
+
+		ContentLayoutTestUtil.publishLayout(draftLayout, sourceLayout);
+
+		List<FragmentEntryLink> sourceFragmentEntryLinks =
+			_fragmentEntryLinkLocalService.getFragmentEntryLinksByPlid(
+				sourceLayout.getGroupId(), sourceLayout.getPlid());
+
+		Assert.assertEquals(
+			sourceFragmentEntryLinks.toString(), 1,
+			sourceFragmentEntryLinks.size());
+
+		ServiceContextThreadLocal.pushServiceContext(_serviceContext);
+
+		Layout targetLayout = LayoutTestUtil.addTypePortletLayout(
+			_group.getGroupId(), StringPool.BLANK);
+
+		_layoutLocalService.copyLayoutContent(sourceLayout, targetLayout);
+
+		List<FragmentEntryLink> targetFragmentEntryLinks =
+			_fragmentEntryLinkLocalService.getFragmentEntryLinksByPlid(
+				targetLayout.getGroupId(), targetLayout.getPlid());
+
+		Assert.assertEquals(
+			targetFragmentEntryLinks.toString(),
+			sourceFragmentEntryLinks.size(), targetFragmentEntryLinks.size());
+
+		FragmentEntryLink targetFragmentEntryLink =
+			targetFragmentEntryLinks.get(0);
+
+		JSONObject targetEditableValuesJSONObject =
+			targetFragmentEntryLink.getEditableValuesJSONObject();
+
+		Assert.assertNotEquals(
+			sourceEditableValuesJSONObject.get("instanceId"),
+			targetEditableValuesJSONObject.get("instanceId"));
+
+		Assert.assertEquals(
+			sourceEditableValuesJSONObject.get("portletId"),
+			targetEditableValuesJSONObject.get("portletId"));
+	}
+
+	@Test
 	public void testCopyLayoutIcon() throws Exception {
 		Layout sourceLayout = LayoutTestUtil.addTypePortletLayout(
 			_group.getGroupId(), StringPool.BLANK);
