@@ -65,12 +65,15 @@ import com.liferay.petra.io.unsync.UnsyncStringWriter;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.petra.string.StringUtil;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutConstants;
 import com.liferay.portal.kernel.model.LayoutTemplate;
 import com.liferay.portal.kernel.model.LayoutTemplateConstants;
 import com.liferay.portal.kernel.model.LayoutTypePortlet;
+import com.liferay.portal.kernel.module.service.Snapshot;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.service.LayoutTemplateLocalServiceUtil;
 import com.liferay.portal.kernel.servlet.PipingServletResponse;
@@ -91,6 +94,15 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import com.liferay.portal.layoutconfiguration.util.RuntimePageUtil;
+import com.liferay.segments.criteria.Criteria;
+import com.liferay.segments.criteria.CriteriaSerializer;
+import com.liferay.segments.criteria.contributor.SegmentsCriteriaContributor;
+import com.liferay.segments.criteria.contributor.SegmentsCriteriaContributorRegistry;
+import com.liferay.segments.criteria.mapper.SegmentsCriteriaJSONObjectMapper;
+import com.liferay.segments.model.SegmentsEntry;
+import com.liferay.segments.model.SegmentsExperience;
+import com.liferay.segments.service.SegmentsEntryLocalServiceUtil;
+import com.liferay.segments.service.SegmentsExperienceLocalServiceUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -100,6 +112,7 @@ import jakarta.servlet.jsp.PageContext;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -136,6 +149,8 @@ public class LayoutStructureRenderer {
 
 	public void render() throws Exception {
 		_renderLayoutStructure();
+
+		_renderAudienceExperiences();
 
 		if (_renderActionHandler) {
 			_renderComponent(
@@ -266,6 +281,85 @@ public class LayoutStructureRenderer {
 		}
 
 		return false;
+	}
+
+	private void _renderAudienceExperiences() throws Exception {
+		if (_themeDisplay == null) {
+			return;
+		}
+
+		SegmentsCriteriaJSONObjectMapper segmentsCriteriaJSONObjectMapper =
+			_segmentsCriteriaJSONObjectMapperSnapshot.get();
+		SegmentsCriteriaContributorRegistry
+			segmentsCriteriaContributorRegistry =
+				_segmentsCriteriaContributorRegistrySnapshot.get();
+
+		if ((segmentsCriteriaJSONObjectMapper == null) ||
+			(segmentsCriteriaContributorRegistry == null)) {
+
+			return;
+		}
+
+		SegmentsCriteriaContributor contextContributor = null;
+
+		for (SegmentsCriteriaContributor contributor :
+				segmentsCriteriaContributorRegistry.
+					getSegmentsCriteriaContributors()) {
+
+			if ("context".equals(contributor.getKey())) {
+				contextContributor = contributor;
+
+				break;
+			}
+		}
+
+		if (contextContributor == null) {
+			return;
+		}
+
+		long groupId = _themeDisplay.getScopeGroupId();
+		long plid = _themeDisplay.getPlid();
+
+		List<SegmentsExperience> segmentsExperiences =
+			SegmentsExperienceLocalServiceUtil.getSegmentsExperiences(
+				groupId, plid, true);
+
+		List<Map<String, Object>> audiences = new ArrayList<>();
+		Set<Long> seenSegmentsEntryIds = new HashSet<>();
+
+		for (SegmentsExperience segmentsExperience : segmentsExperiences) {
+			SegmentsEntry segmentsEntry =
+				SegmentsEntryLocalServiceUtil.
+					fetchSegmentsEntryByExternalReferenceCode(
+						segmentsExperience.getSegmentsEntryERC(), groupId);
+
+			if ((segmentsEntry == null) ||
+				!Objects.equals(segmentsEntry.getSource(), "AUDIENCE") ||
+				!seenSegmentsEntryIds.add(segmentsEntry.getSegmentsEntryId())) {
+
+				continue;
+			}
+
+			Criteria criteria = CriteriaSerializer.deserialize(
+				segmentsEntry.getCriteria());
+
+			JSONObject jsonObject =
+				segmentsCriteriaJSONObjectMapper.toJSONObject(
+					criteria, contextContributor);
+
+			Map<String, Object> audience = _toAudience(
+				segmentsEntry, jsonObject.getJSONObject("query"));
+
+			if (audience != null) {
+				audiences.add(audience);
+			}
+		}
+
+		_renderReactComponent(
+			"{AudienceExperiences} from audience-web",
+			HashMapBuilder.<String, Object>put(
+				"audiences", audiences
+			).build());
 	}
 
 	private void _renderCol(
@@ -1950,6 +2044,103 @@ public class LayoutStructureRenderer {
 		jspWriter.write("</div>");
 	}
 
+	private Map<String, Object> _toAudience(
+		SegmentsEntry segmentsEntry, JSONObject queryJSONObject) {
+
+		if (queryJSONObject == null) {
+			return null;
+		}
+
+		String combinator = "AND";
+		List<Map<String, Object>> rules = new ArrayList<>();
+
+		if (queryJSONObject.has("items")) {
+			String conjunctionName = queryJSONObject.getString(
+				"conjunctionName");
+
+			if (Validator.isNotNull(conjunctionName)) {
+				combinator = conjunctionName.toUpperCase();
+			}
+
+			JSONArray itemsJSONArray = queryJSONObject.getJSONArray("items");
+
+			for (int i = 0; i < itemsJSONArray.length(); i++) {
+				Map<String, Object> ruleNode = _toRuleNode(
+					itemsJSONArray.getJSONObject(i));
+
+				if (ruleNode != null) {
+					rules.add(ruleNode);
+				}
+			}
+		}
+		else {
+			Map<String, Object> leaf = _toRuleNode(queryJSONObject);
+
+			if (leaf == null) {
+				return null;
+			}
+
+			rules.add(leaf);
+		}
+
+		return HashMapBuilder.<String, Object>put(
+			"combinator", combinator
+		).put(
+			"id", segmentsEntry.getSegmentsEntryKey()
+		).put(
+			"rules", rules
+		).put(
+			"type", "SESSION"
+		).build();
+	}
+
+	private Map<String, Object> _toRuleNode(JSONObject jsonObject) {
+		if (jsonObject == null) {
+			return null;
+		}
+
+		if (jsonObject.has("items")) {
+			String conjunctionName = jsonObject.getString("conjunctionName");
+
+			JSONArray itemsJSONArray = jsonObject.getJSONArray("items");
+
+			List<Map<String, Object>> rules = new ArrayList<>();
+
+			for (int i = 0; i < itemsJSONArray.length(); i++) {
+				Map<String, Object> child = _toRuleNode(
+					itemsJSONArray.getJSONObject(i));
+
+				if (child != null) {
+					rules.add(child);
+				}
+			}
+
+			return HashMapBuilder.<String, Object>put(
+				"combinator",
+				Validator.isNotNull(conjunctionName) ?
+					conjunctionName.toUpperCase() : "AND"
+			).put(
+				"rules", rules
+			).build();
+		}
+
+		if (!jsonObject.has("propertyName")) {
+			return null;
+		}
+
+		String operatorName = jsonObject.getString("operatorName");
+
+		return HashMapBuilder.<String, Object>put(
+			"attr", jsonObject.getString("propertyName")
+		).put(
+			"op",
+			Validator.isNotNull(operatorName) ?
+				StringUtil.replace(operatorName, '-', '_') : null
+		).put(
+			"val", jsonObject.get("value")
+		).build();
+	}
+
 	private void _write(
 			Map<String, String> dataAttributes,
 			FragmentEntryLink fragmentEntryLink,
@@ -2005,6 +2196,16 @@ public class LayoutStructureRenderer {
 	}
 
 	private static final String _INITIAL_UUID_PREFIX = "0000";
+
+	private static final Snapshot<SegmentsCriteriaContributorRegistry>
+		_segmentsCriteriaContributorRegistrySnapshot = new Snapshot<>(
+			LayoutStructureRenderer.class,
+			SegmentsCriteriaContributorRegistry.class);
+	private static final Snapshot<SegmentsCriteriaJSONObjectMapper>
+		_segmentsCriteriaJSONObjectMapperSnapshot = new Snapshot<>(
+			LayoutStructureRenderer.class,
+			SegmentsCriteriaJSONObjectMapper.class,
+			"(segments.criteria.mapper.key=odata)");
 
 	private final HttpServletRequest _httpServletRequest;
 	private final LayoutStructure _layoutStructure;
