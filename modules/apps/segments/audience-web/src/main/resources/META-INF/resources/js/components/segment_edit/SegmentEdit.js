@@ -39,6 +39,7 @@ function SegmentEdit({
 	formId,
 	hasUpdatePermission,
 	initialMembersCount,
+	initialRetentionType = 'session',
 	isSegmentationEnabled,
 	learnResources,
 	locale,
@@ -287,6 +288,7 @@ function SegmentEdit({
 				contributors={data.contributors}
 				editing={data.editing}
 				emptyContributors={emptyContributors}
+				initialRetentionType={initialRetentionType}
 				isSegmentationDisabledAlertDismissed={
 					data.isSegmentationDisabledAlertDismissed
 				}
@@ -298,6 +300,7 @@ function SegmentEdit({
 				onConjunctionChange={handleConjunctionChange}
 				onPreviewMembers={handlePreviewMembers}
 				onQueryChange={handleQueryChange}
+				portletNamespace={portletNamespace}
 				propertyGroups={propertyGroups}
 				renderEmptyValuesErrors={data.hasEmptyValues}
 				requestMembersCountURL={requestMembersCountURL}
@@ -534,6 +537,7 @@ SegmentEdit.propTypes = {
 	formId: PropTypes.string,
 	hasUpdatePermission: PropTypes.bool,
 	initialMembersCount: PropTypes.number,
+	initialRetentionType: PropTypes.string,
 	isSegmentationEnabled: PropTypes.bool,
 	locale: PropTypes.string.isRequired,
 	portletNamespace: PropTypes.string,

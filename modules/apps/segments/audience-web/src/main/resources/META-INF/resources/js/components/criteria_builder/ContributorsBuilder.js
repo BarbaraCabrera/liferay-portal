@@ -24,6 +24,7 @@ export default function ContributorsBuilder({
 	contributors = [],
 	editing,
 	emptyContributors,
+	initialRetentionType,
 	isSegmentationDisabledAlertDismissed,
 	isSegmentationEnabled,
 	learnResources,
@@ -33,6 +34,7 @@ export default function ContributorsBuilder({
 	onConjunctionChange = () => {},
 	onPreviewMembers = () => {},
 	onQueryChange = () => {},
+	portletNamespace,
 	propertyGroups,
 	renderEmptyValuesErrors = false,
 }) {
@@ -76,7 +78,9 @@ export default function ContributorsBuilder({
 					)}
 				>
 					<CriteriaSidebar
+						initialRetentionType={initialRetentionType}
 						onTitleClicked={_handleCriteriaEdit}
+						portletNamespace={portletNamespace}
 						propertyGroups={propertyGroups}
 						propertyKey={editingId}
 					/>
@@ -241,6 +245,7 @@ ContributorsBuilder.propTypes = {
 	contributors: PropTypes.arrayOf(contributorShape),
 	editing: PropTypes.bool.isRequired,
 	emptyContributors: PropTypes.bool.isRequired,
+	initialRetentionType: PropTypes.string,
 	isSegmentationDisabledAlertDismissed: PropTypes.bool,
 	isSegmentationEnabled: PropTypes.bool,
 	membersCount: PropTypes.number,
@@ -249,6 +254,7 @@ ContributorsBuilder.propTypes = {
 	onConjunctionChange: PropTypes.func,
 	onPreviewMembers: PropTypes.func,
 	onQueryChange: PropTypes.func,
+	portletNamespace: PropTypes.string,
 	previewMembersURL: PropTypes.string,
 	propertyGroups: PropTypes.arrayOf(propertyGroupShape),
 	renderEmptyValuesErrors: PropTypes.bool,

@@ -35,6 +35,7 @@ import com.liferay.segments.exception.SegmentsEntryCriteriaException;
 import com.liferay.segments.exception.SegmentsEntryKeyException;
 import com.liferay.segments.exception.SegmentsEntryNameException;
 import com.liferay.segments.model.SegmentsEntry;
+import com.liferay.segments.service.SegmentsEntryLocalService;
 import com.liferay.segments.service.SegmentsEntryService;
 
 import jakarta.portlet.ActionRequest;
@@ -76,6 +77,9 @@ public class UpdateSegmentsEntryMVCActionCommand extends BaseMVCActionCommand {
 			actionRequest, "description");
 		boolean active = ParamUtil.getBoolean(actionRequest, "active", true);
 
+		String retentionType = ParamUtil.getString(
+			actionRequest, "retentionType", "session");
+
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
 			SegmentsEntry.class.getName(), actionRequest);
 
@@ -92,13 +96,15 @@ public class UpdateSegmentsEntryMVCActionCommand extends BaseMVCActionCommand {
 
 			_validateCriteria(criteria, dynamic);
 
+			String source = _AUDIENCE_SOURCE_PREFIX + retentionType;
+
 			if (segmentsEntryId <= 0) {
 				serviceContext.setScopeGroupId(
 					_getGroupId(actionRequest, serviceContext));
 
 				segmentsEntry = _segmentsEntryService.addSegmentsEntry(
 					segmentsEntryKey, nameMap, descriptionMap, active,
-					CriteriaSerializer.serialize(criteria), _AUDIENCE_SOURCE,
+					CriteriaSerializer.serialize(criteria), source,
 					serviceContext);
 			}
 			else {
@@ -106,6 +112,11 @@ public class UpdateSegmentsEntryMVCActionCommand extends BaseMVCActionCommand {
 					segmentsEntryId, segmentsEntryKey, nameMap, descriptionMap,
 					active, CriteriaSerializer.serialize(criteria),
 					serviceContext);
+
+				segmentsEntry.setSource(source);
+
+				segmentsEntry = _segmentsEntryLocalService.updateSegmentsEntry(
+					segmentsEntry);
 			}
 
 			String redirect = ParamUtil.getString(actionRequest, "redirect");
@@ -206,7 +217,7 @@ public class UpdateSegmentsEntryMVCActionCommand extends BaseMVCActionCommand {
 		}
 	}
 
-	private static final String _AUDIENCE_SOURCE = "AUDIENCE";
+	private static final String _AUDIENCE_SOURCE_PREFIX = "AUDIENCE:";
 
 	@Reference
 	private CompanyLocalService _companyLocalService;
@@ -220,6 +231,9 @@ public class UpdateSegmentsEntryMVCActionCommand extends BaseMVCActionCommand {
 	@Reference
 	private SegmentsCriteriaContributorRegistry
 		_segmentsCriteriaContributorRegistry;
+
+	@Reference
+	private SegmentsEntryLocalService _segmentsEntryLocalService;
 
 	@Reference
 	private SegmentsEntryService _segmentsEntryService;

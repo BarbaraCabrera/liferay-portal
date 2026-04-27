@@ -161,6 +161,22 @@ public class EditSegmentsEntryDisplayContext {
 		return _redirect;
 	}
 
+	public String getRetentionType() throws PortalException {
+		SegmentsEntry segmentsEntry = _getSegmentsEntry();
+
+		if (segmentsEntry == null) {
+			return "session";
+		}
+
+		String source = segmentsEntry.getSource();
+
+		if ((source != null) && source.startsWith("AUDIENCE:")) {
+			return source.substring("AUDIENCE:".length());
+		}
+
+		return "session";
+	}
+
 	public long getSegmentsEntryId() {
 		if (_segmentsEntryId != null) {
 			return _segmentsEntryId;
@@ -406,6 +422,8 @@ public class EditSegmentsEntryDisplayContext {
 			"hasUpdatePermission", _hasUpdatePermission()
 		).put(
 			"initialMembersCount", _getSegmentsEntryClassPKsCount()
+		).put(
+			"initialRetentionType", getRetentionType()
 		).put(
 			"initialSegmentActive", _isInitialSegmentActive()
 		).put(

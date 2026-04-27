@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
+import {ClaySelectWithOption} from '@clayui/form';
 import PropTypes from 'prop-types';
 import React, {useState} from 'react';
 
@@ -10,12 +11,20 @@ import {propertyGroupShape} from '../../utils/types.es';
 import CriteriaSidebarCollapse from './CriteriaSidebarCollapse';
 import CriteriaSidebarSearchBar from './CriteriaSidebarSearchBar';
 
+const RETENTION_TYPE_OPTIONS = [
+	{label: Liferay.Language.get('session'), value: 'session'},
+	{label: Liferay.Language.get('page'), value: 'page'},
+];
+
 export default function CriteriaSidebar({
+	initialRetentionType = 'session',
 	onTitleClicked,
+	portletNamespace = '',
 	propertyGroups,
 	propertyKey,
 }) {
 	const [searchValue, setSearchValue] = useState('');
+	const [retentionType, setRetentionType] = useState(initialRetentionType);
 
 	return (
 		<div
@@ -35,6 +44,21 @@ export default function CriteriaSidebar({
 				/>
 			</div>
 
+			<div className="c-px-4 c-py-2">
+				<label htmlFor="retentionType">
+					{Liferay.Language.get('retention-type')}
+				</label>
+
+				<ClaySelectWithOption
+					className="form-control-sm"
+					id={`${portletNamespace}retentionType`}
+					name={`${portletNamespace}retentionType`}
+					onChange={(event) => setRetentionType(event.target.value)}
+					options={RETENTION_TYPE_OPTIONS}
+					value={retentionType}
+				/>
+			</div>
+
 			<div className="c-p-4 position-relative sidebar-collapse">
 				<CriteriaSidebarCollapse
 					onCollapseClick={onTitleClicked}
@@ -48,7 +72,9 @@ export default function CriteriaSidebar({
 }
 
 CriteriaSidebar.propTypes = {
+	initialRetentionType: PropTypes.string,
 	onTitleClicked: PropTypes.func,
+	portletNamespace: PropTypes.string,
 	propertyGroups: PropTypes.arrayOf(propertyGroupShape),
 	propertyKey: PropTypes.string,
 };
