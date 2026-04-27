@@ -142,7 +142,7 @@ public class SegmentsDisplayContext {
 					_renderResponse.createRenderURL(), "mvcRenderCommandName",
 					"/segments/edit_segments_entry");
 				dropdownItem.setLabel(
-					_language.get(_httpServletRequest, "add-new-user-segment"));
+					_language.get(_httpServletRequest, "add-new-audience"));
 			}
 		).build();
 	}
@@ -252,7 +252,7 @@ public class SegmentsDisplayContext {
 		}
 
 		SearchContainer<SegmentsEntry> searchContainer = new SearchContainer<>(
-			_renderRequest, _getPortletURL(), null, "there-are-no-segments");
+			_renderRequest, _getPortletURL(), null, "there-are-no-audiences");
 
 		searchContainer.setId("segmentsEntries");
 		searchContainer.setOrderByCol(_getOrderByCol());

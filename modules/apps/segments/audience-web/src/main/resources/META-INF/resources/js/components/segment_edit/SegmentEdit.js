@@ -359,7 +359,7 @@ function SegmentEdit({
 
 	const disabledSaveButton = data.disabledSave || !data.validTitle;
 
-	const placeholder = Liferay.Language.get('untitled-segment');
+	const placeholder = Liferay.Language.get('untitled-audience');
 
 	const showDisabledSegmentationAlert =
 		!isSegmentationEnabled && !data.isSegmentationDisabledAlertDismissed;
@@ -618,7 +618,7 @@ export default withFormik({
 		const errors = {};
 
 		if (!values.name) {
-			errors.name = Liferay.Language.get('segment-name-is-required');
+			errors.name = Liferay.Language.get('audience-name-is-required');
 		}
 
 		return errors;

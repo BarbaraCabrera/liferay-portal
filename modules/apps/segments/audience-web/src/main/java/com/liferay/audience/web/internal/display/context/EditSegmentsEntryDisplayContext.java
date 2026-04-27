@@ -105,7 +105,7 @@ public class EditSegmentsEntryDisplayContext {
 			return backURLTitle;
 		}
 
-		return LanguageUtil.get(_httpServletRequest, "segments");
+		return LanguageUtil.get(_httpServletRequest, "audiences");
 	}
 
 	public Map<String, Object> getData() {
@@ -127,7 +127,7 @@ public class EditSegmentsEntryDisplayContext {
 			hashMapWrapper.put(
 				"error",
 				LanguageUtil.get(
-					_httpServletRequest, "the-segment-is-no-longer-available"));
+					_httpServletRequest, "the-audience-is-no-longer-available"));
 		}
 
 		_data = hashMapWrapper.build();
@@ -204,7 +204,7 @@ public class EditSegmentsEntryDisplayContext {
 				locale, User.class.getName());
 
 			_title = LanguageUtil.format(
-				_httpServletRequest, "new-x-segment", type, false);
+				_httpServletRequest, "new-x-audience", type, false);
 		}
 
 		return _title;

@@ -91,7 +91,7 @@ public class SegmentsManagementToolbarDisplayContext
 					"/segments/edit_segments_entry");
 				dropdownItem.setLabel(
 					LanguageUtil.get(
-						_httpServletRequest, "add-new-user-segment"));
+						_httpServletRequest, "add-new-audience"));
 			}
 		).build();
 	}

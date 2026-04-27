@@ -66,7 +66,7 @@ public class PreviewSegmentsEntryUsersDisplayContext {
 			_renderRequest, _getPortletURL(), null,
 			LanguageUtil.get(
 				_httpServletRequest,
-				"no-users-have-been-assigned-to-this-segment"));
+				"no-users-have-been-assigned-to-this-audience"));
 
 		userSearchContainer.setId("segmentsEntryUsers");
 
