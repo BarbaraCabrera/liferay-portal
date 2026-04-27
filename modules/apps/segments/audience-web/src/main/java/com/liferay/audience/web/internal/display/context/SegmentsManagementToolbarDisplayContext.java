@@ -90,8 +90,7 @@ public class SegmentsManagementToolbarDisplayContext
 					_renderResponse.createRenderURL(), "mvcRenderCommandName",
 					"/segments/edit_segments_entry");
 				dropdownItem.setLabel(
-					LanguageUtil.get(
-						_httpServletRequest, "add-new-audience"));
+					LanguageUtil.get(_httpServletRequest, "add-new-audience"));
 			}
 		).build();
 	}

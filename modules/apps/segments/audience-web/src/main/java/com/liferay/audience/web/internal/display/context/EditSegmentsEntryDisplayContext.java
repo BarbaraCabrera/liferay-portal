@@ -127,7 +127,8 @@ public class EditSegmentsEntryDisplayContext {
 			hashMapWrapper.put(
 				"error",
 				LanguageUtil.get(
-					_httpServletRequest, "the-audience-is-no-longer-available"));
+					_httpServletRequest,
+					"the-audience-is-no-longer-available"));
 		}
 
 		_data = hashMapWrapper.build();
