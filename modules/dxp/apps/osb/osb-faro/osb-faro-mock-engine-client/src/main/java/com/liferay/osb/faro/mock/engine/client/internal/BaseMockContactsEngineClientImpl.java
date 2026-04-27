@@ -9,6 +9,7 @@ import com.liferay.osb.faro.engine.client.BaseEngineClient;
 import com.liferay.osb.faro.engine.client.ContactsEngineClient;
 import com.liferay.osb.faro.engine.client.exception.FaroEngineClientException;
 import com.liferay.osb.faro.engine.client.model.Account;
+import com.liferay.osb.faro.engine.client.model.AccountLifecycleMetric;
 import com.liferay.osb.faro.engine.client.model.Activity;
 import com.liferay.osb.faro.engine.client.model.ActivityAggregation;
 import com.liferay.osb.faro.engine.client.model.ActivityAsset;
@@ -146,11 +147,11 @@ public abstract class BaseMockContactsEngineClientImpl
 	public IndividualSegment addIndividualSegment(
 		FaroProject faroProject, long userId, String channelId,
 		String filterString, boolean includeAnonymousUsers, String name,
-		String segmentType, String status) {
+		String segmentType, boolean sequential, String status) {
 
 		return contactsEngineClient.addIndividualSegment(
 			faroProject, userId, channelId, filterString, includeAnonymousUsers,
-			name, segmentType, status);
+			name, segmentType, sequential, status);
 	}
 
 	@Override
@@ -321,6 +322,16 @@ public abstract class BaseMockContactsEngineClientImpl
 		return contactsEngineClient.getAccountIndividualSegments(
 			faroProject, accountId, channelId, query, status, cur, delta,
 			orderByFields);
+	}
+
+	@Override
+	public List<AccountLifecycleMetric> getAccountLifecycleMetrics(
+			FaroProject faroProject, String country, String id, String industry,
+			String revenue)
+		throws FaroEngineClientException {
+
+		return contactsEngineClient.getAccountLifecycleMetrics(
+			faroProject, country, id, industry, revenue);
 	}
 
 	@Override
@@ -1171,11 +1182,11 @@ public abstract class BaseMockContactsEngineClientImpl
 	public IndividualSegment updateIndividualSegment(
 		FaroProject faroProject, String id, long userId, String channelId,
 		String filterString, boolean includeAnonymousUsers, String name,
-		String segmentType) {
+		String segmentType, boolean sequential) {
 
 		return contactsEngineClient.updateIndividualSegment(
 			faroProject, id, userId, channelId, filterString,
-			includeAnonymousUsers, name, segmentType);
+			includeAnonymousUsers, name, segmentType, sequential);
 	}
 
 	@Override

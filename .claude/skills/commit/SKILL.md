@@ -1,8 +1,10 @@
 ---
+
 allowed-tools: [Bash, Glob, Grep, Read]
 argument-hint: "[optional message hint]"
 description: Create a Git commit with a Jira-prefixed message derived from the staged diff. Use when the user asks to commit, wants to commit changes, or invokes /commit.
 name: commit
+
 ---
 
 # Commit Changes
@@ -23,9 +25,12 @@ When nothing is staged, unstaged, or untracked, inform the user that there is no
 The ticket ID follows the pattern `LPD-12345`, `LCD-12345`, `LRCI-1234`, and similar forms (uppercase letters, hyphen, digits). Resolve the ticket in this order:
 
 1. **Branch Name** — extract the ticket from the current branch (e.g., branch `LPD-83847` yields ticket `LPD-83847`).
-2. **Recent Commits** — when the branch name lacks a ticket, scan the last five commit messages for a ticket prefix.
-3. **User Argument** — when `${ARGUMENTS}` supplies a ticket ID, prefer that value.
-4. **Fallback** — when no ticket surfaces, prompt the user for one.
+
+1. **Recent Commits** — when the branch name lacks a ticket, scan the last five commit messages for a ticket prefix.
+
+1. **User Argument** — when `${ARGUMENTS}` supplies a ticket ID, prefer that value.
+
+1. **Fallback** — when no ticket surfaces, prompt the user for one.
 
 ## 3. Compose the Commit Message
 
@@ -57,7 +62,7 @@ When a body is warranted:
 
 - Separate it from the title with a blank line.
 - Explain **why** the change is needed — the problem, the prior behavior, or the motivation. Do not restate the code.
-- Wrap lines at 72 characters.
+- Do not wrap lines in the body.
 - Write plain prose rather than bullet points, matching the repository convention.
 
 When `${ARGUMENTS}` carries a hint or description rather than a ticket ID, incorporate it into the message.

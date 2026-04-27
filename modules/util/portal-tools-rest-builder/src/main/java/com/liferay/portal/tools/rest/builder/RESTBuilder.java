@@ -26,6 +26,7 @@ import com.liferay.portal.tools.ArgumentsUtil;
 import com.liferay.portal.tools.rest.builder.internal.freemarker.tool.FreeMarkerTool;
 import com.liferay.portal.tools.rest.builder.internal.freemarker.tool.java.JavaMethodSignature;
 import com.liferay.portal.tools.rest.builder.internal.freemarker.tool.java.parser.util.OpenAPIParserUtil;
+import com.liferay.portal.tools.rest.builder.internal.freemarker.util.ConfigUtil;
 import com.liferay.portal.tools.rest.builder.internal.freemarker.util.FreeMarkerUtil;
 import com.liferay.portal.tools.rest.builder.internal.freemarker.util.OpenAPIUtil;
 import com.liferay.portal.tools.rest.builder.internal.typescript.TypeScriptClientUtil;
@@ -187,6 +188,11 @@ public class RESTBuilder {
 			if (forceClientVersionDescription != null) {
 				_configYAML.setForceClientVersionDescription(
 					forceClientVersionDescription);
+			}
+
+			if (_configYAML.getForceObjectMethodNameSuffix() == null) {
+				_configYAML.setForceObjectMethodNameSuffix(
+					ConfigUtil.isVersionCompatible(_configYAML, 9));
 			}
 
 			if (forcePredictableOperationId != null) {

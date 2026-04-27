@@ -115,7 +115,14 @@ public abstract class BaseSectionDisplayContext {
 
 	public Map<String, Object> getAdditionalProps() {
 		return HashMapBuilder.<String, Object>put(
-			"additionalAPIURLParameters", getAdditionalAPIURLParameters()
+			"additionalAPIURLParameters",
+			() -> {
+				if (isFolderSearchEnabled()) {
+					return getAdditionalAPIURLParameters();
+				}
+
+				return null;
+			}
 		).put(
 			"assetLibraries",
 			_sectionDisplayContextHelper.getDepotEntriesJSONArray(
@@ -123,8 +130,8 @@ public abstract class BaseSectionDisplayContext {
 		).put(
 			"autocompleteURL",
 			() -> StringBundler.concat(
-				"/o/search/v1.0/search?emptySearch=",
-				"true&entryClassNames=com.liferay.portal.kernel.model.User,",
+				"/o/search/v1.0/search?emptySearch=true&entryClassNames=",
+				"com.liferay.portal.kernel.model.User,",
 				"com.liferay.portal.kernel.model.UserGroup&nestedFields=",
 				"embedded")
 		).put(
@@ -193,14 +200,13 @@ public abstract class BaseSectionDisplayContext {
 				return collaboratorURLs;
 			}
 		).put(
-			"commentsProps",
-			CommentUtil.getCommentsProps(httpServletRequest, themeDisplay)
+			"commentsProps", CommentUtil.getCommentsProps(httpServletRequest)
 		).put(
 			"contentViewURL",
 			StringBundler.concat(
 				themeDisplay.getPortalURL(), themeDisplay.getPathMain(),
 				GroupConstants.CMS_FRIENDLY_URL,
-				"/edit_content_item?&p_l_mode=read&p_p_state=",
+				"/edit_content_item?p_l_mode=read&p_p_state=",
 				LiferayWindowState.POP_UP, "&redirect=",
 				themeDisplay.getURLCurrent(), "&objectEntryId={embedded.id}")
 		).put(
@@ -265,7 +271,11 @@ public abstract class BaseSectionDisplayContext {
 	}
 
 	public String getAPIURL() {
-		return "/o/search/v1.0/search";
+		if (isFolderSearchEnabled()) {
+			return "/o/search/v1.0/search";
+		}
+
+		return "/o/search/v1.0/search?" + getAdditionalAPIURLParameters();
 	}
 
 	public Map<String, Object> getBreadcrumbProps() throws PortalException {
@@ -338,6 +348,10 @@ public abstract class BaseSectionDisplayContext {
 
 	protected String getRootObjectEntryFolderExternalReferenceCode() {
 		return null;
+	}
+
+	protected boolean isFolderSearchEnabled() {
+		return false;
 	}
 
 	protected final DepotEntryLocalService depotEntryLocalService;

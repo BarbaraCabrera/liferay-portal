@@ -7,6 +7,7 @@ package com.liferay.osb.faro.engine.client;
 
 import com.liferay.osb.faro.engine.client.exception.FaroEngineClientException;
 import com.liferay.osb.faro.engine.client.model.Account;
+import com.liferay.osb.faro.engine.client.model.AccountLifecycleMetric;
 import com.liferay.osb.faro.engine.client.model.Activity;
 import com.liferay.osb.faro.engine.client.model.ActivityAggregation;
 import com.liferay.osb.faro.engine.client.model.ActivityAsset;
@@ -99,7 +100,7 @@ public interface ContactsEngineClient {
 	public IndividualSegment addIndividualSegment(
 		FaroProject faroProject, long userId, String channelId,
 		String filterString, boolean includeAnonymousUsers, String name,
-		String segmentType, String status);
+		String segmentType, boolean sequential, String status);
 
 	public IndividualSegmentMembership addMembership(
 		FaroProject faroProject, String individualSegmentId,
@@ -174,6 +175,11 @@ public interface ContactsEngineClient {
 		FaroProject faroProject, String accountId, String channelId,
 		String query, String status, int cur, int delta,
 		List<OrderByField> orderByFields);
+
+	public List<AccountLifecycleMetric> getAccountLifecycleMetrics(
+			FaroProject faroProject, String country, String id, String industry,
+			String revenue)
+		throws FaroEngineClientException;
 
 	public Results<Account> getAccounts(
 		FaroProject faroProject, String channelId, String filterString,
@@ -570,7 +576,7 @@ public interface ContactsEngineClient {
 	public IndividualSegment updateIndividualSegment(
 		FaroProject faroProject, String id, long userId, String channelId,
 		String filterString, boolean includeAnonymousUsers, String name,
-		String segmentType);
+		String segmentType, boolean sequential);
 
 	public SegmentActivation updateSegmentActivation(
 		FaroProject faroProject, String cronExpression, String frequencyType,
