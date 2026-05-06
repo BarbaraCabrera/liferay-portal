@@ -270,6 +270,7 @@ export default function EditVocabulary({
 						<ClayButton
 							aria-label={Liferay.Language.get('back')}
 							borderless
+							data-canonical-name={Liferay.Language.get('cancel')}
 							displayType="secondary"
 							onClick={() => navigate(backURL)}
 							outline
@@ -280,6 +281,7 @@ export default function EditVocabulary({
 
 						<ClayButton
 							className="inline-item-after"
+							data-canonical-name={Liferay.Language.get('save')}
 							disabled={shouldDisableSaveBtn}
 							displayType="primary"
 							onClick={() => {
