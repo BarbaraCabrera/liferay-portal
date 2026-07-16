@@ -10,7 +10,8 @@ import ClayLayout from '@clayui/layout';
 import ClayLink from '@clayui/link';
 import ClayToolbar from '@clayui/toolbar';
 import {ScreenReaderAnnouncerContextProvider} from '@liferay/layout-js-components-web';
-import React, {useReducer} from 'react';
+import {fetch} from 'frontend-js-web';
+import React, {useEffect, useReducer, useState} from 'react';
 import {DndProvider} from 'react-dnd';
 import {HTML5Backend} from 'react-dnd-html5-backend';
 
@@ -25,6 +26,68 @@ import {AudiencesCriteriaRulesGroup, AudiencesCriteriaType} from './types';
 import './AudienceBuilder.scss';
 
 const NAME_MAX_LENGTH = 75;
+
+const SEGMENTS_ATTRIBUTE_KEY = 'segments';
+
+const SEGMENTS_PORTLET_ID =
+	'com_liferay_segments_web_internal_portlet_SegmentsPortlet';
+
+const SEGMENTS_RESOURCE_ID = '/segments/get_individual_segments';
+
+interface IndividualSegment {
+	externalReferenceCode: string;
+	name: string;
+	segmentType: string;
+}
+
+function useSegmentsCriteriaType(): AudiencesCriteriaType | null {
+	const [segmentsCriteriaType, setSegmentsCriteriaType] =
+		useState<AudiencesCriteriaType | null>(null);
+
+	useEffect(() => {
+		const url = Liferay.Util.PortletURL.createResourceURL(
+			window.location.pathname.split('/-/')[0],
+			{
+				p_p_id: SEGMENTS_PORTLET_ID,
+				p_p_resource_id: SEGMENTS_RESOURCE_ID,
+			}
+		);
+
+		fetch(url.toString())
+			.then((response) => response.json())
+			.then((data) => {
+				const individualSegments: IndividualSegment[] =
+					data?.individualSegments ?? [];
+
+				if (!individualSegments.length) {
+					return;
+				}
+
+				setSegmentsCriteriaType({
+					audiencesCriterias: [
+						{
+							icon: 'users',
+							inputType: 'select',
+							key: SEGMENTS_ATTRIBUTE_KEY,
+							label: Liferay.Language.get('user'),
+							options: individualSegments.map(
+								(individualSegment) => ({
+									label: `${individualSegment.name} (${individualSegment.segmentType})`,
+									value: individualSegment.externalReferenceCode,
+								})
+							),
+							type: 'set',
+						},
+					],
+					key: SEGMENTS_ATTRIBUTE_KEY,
+					label: Liferay.Language.get('segments'),
+				});
+			})
+			.catch(() => {});
+	}, []);
+
+	return segmentsCriteriaType;
+}
 
 const DragAndDropProvider = DndProvider as unknown as React.FC<
 	React.PropsWithChildren<{backend: typeof HTML5Backend}>
@@ -55,6 +118,12 @@ export default function AudienceBuilder({
 		initState
 	);
 
+	const segmentsCriteriaType = useSegmentsCriteriaType();
+
+	const allAudiencesCriteriaTypes = segmentsCriteriaType
+		? [...audiencesCriteriaTypes, segmentsCriteriaType]
+		: audiencesCriteriaTypes;
+
 	return (
 		<ScreenReaderAnnouncerContextProvider>
 			<KeyboardMovementContextProvider>
@@ -72,7 +141,7 @@ export default function AudienceBuilder({
 							<div className="audience-builder-sidebar border-right d-flex flex-column flex-shrink-0 px-4">
 								<AttributesSidebar
 									audiencesCriteriaTypes={
-										audiencesCriteriaTypes
+										allAudiencesCriteriaTypes
 									}
 								/>
 							</div>
@@ -140,7 +209,7 @@ export default function AudienceBuilder({
 
 								<ConditionsPanel
 									audiencesCriteriaTypes={
-										audiencesCriteriaTypes
+										allAudiencesCriteriaTypes
 									}
 									dispatch={dispatch}
 									root={state.root}

@@ -171,6 +171,31 @@
 					"if": {
 						"properties": {
 							"attribute": {
+								"const": "segments"
+							}
+						},
+						"required": [
+							"attribute"
+						]
+					},
+					"then": {
+						"properties": {
+							"operator": {
+								"enum": [
+									"includes",
+									"not_includes"
+								]
+							},
+							"value": {
+								"type": "string"
+							}
+						}
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"attribute": {
 								"anyOf": [
 									{
 										"enum": [

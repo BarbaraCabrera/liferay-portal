@@ -24,6 +24,11 @@ const SHARED_OPERATOR_LABELS: Record<string, string> = {
 	not_includes: Liferay.Language.get('does-not-contain'),
 };
 
+const SEGMENTS_OPERATOR_LABELS: Record<string, string> = {
+	includes: Liferay.Language.get('belongs-to'),
+	not_includes: Liferay.Language.get('does-not-belong-to'),
+};
+
 const EQUALITY_OPERATORS = ['eq', 'not_eq'];
 
 const ORDERED_OPERATORS = ['eq', 'gt', 'gte', 'lt', 'lte', 'not_eq'];
@@ -32,7 +37,15 @@ const SET_OPERATORS = ['includes', 'not_includes'];
 
 const TEXT_OPERATORS = ['eq', 'includes', 'not_eq', 'not_includes'];
 
-export function getOperatorLabel(operator: string, inputType: string): string {
+export function getOperatorLabel(
+	operator: string,
+	inputType: string,
+	attribute?: string
+): string {
+	if (attribute === 'segments' && SEGMENTS_OPERATOR_LABELS[operator]) {
+		return SEGMENTS_OPERATOR_LABELS[operator];
+	}
+
 	return (
 		SHARED_OPERATOR_LABELS[operator] ||
 		(inputType === 'date'
