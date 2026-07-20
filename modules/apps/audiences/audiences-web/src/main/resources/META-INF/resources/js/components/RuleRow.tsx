@@ -215,7 +215,6 @@ export default function RuleRow({
 					items={operators.map((operator) => ({
 						label: getOperatorLabel(
 							operator,
-							inputType,
 							audiencesCriteria.key
 						),
 						value: operator,

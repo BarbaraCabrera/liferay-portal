@@ -101,7 +101,7 @@ describe('ConditionsPanel', () => {
 		renderConditionsPanel({items: RULES});
 
 		expect(screen.getByText('Age')).toBeTruthy();
-		expect(screen.getByText('is-greater-than')).toBeTruthy();
+		expect(screen.getByText('greater-than')).toBeTruthy();
 	});
 
 	it('dispatches a duplicate action with the rule path', async () => {

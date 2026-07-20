@@ -3,18 +3,11 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-const DATE_OPERATOR_LABELS: Record<string, string> = {
-	gt: Liferay.Language.get('is-after'),
-	gte: Liferay.Language.get('is-on-or-after'),
-	lt: Liferay.Language.get('is-before'),
-	lte: Liferay.Language.get('is-on-or-before'),
-};
-
-const NUMBER_OPERATOR_LABELS: Record<string, string> = {
-	gt: Liferay.Language.get('is-greater-than'),
-	gte: Liferay.Language.get('is-greater-than-or-equal-to'),
-	lt: Liferay.Language.get('is-less-than'),
-	lte: Liferay.Language.get('is-less-than-or-equal-to'),
+const RELATIONAL_OPERATOR_LABELS: Record<string, string> = {
+	gt: Liferay.Language.get('greater-than'),
+	gte: Liferay.Language.get('greater-than-or-equals'),
+	lt: Liferay.Language.get('less-than'),
+	lte: Liferay.Language.get('less-than-or-equals'),
 };
 
 const SHARED_OPERATOR_LABELS: Record<string, string> = {
@@ -31,26 +24,20 @@ const SEGMENTS_OPERATOR_LABELS: Record<string, string> = {
 
 const EQUALITY_OPERATORS = ['eq', 'not_eq'];
 
-const ORDERED_OPERATORS = ['eq', 'gt', 'gte', 'lt', 'lte', 'not_eq'];
+const ORDERED_OPERATORS = ['eq', 'not_eq', 'gt', 'lt', 'gte', 'lte'];
 
 const SET_OPERATORS = ['includes', 'not_includes'];
 
-const TEXT_OPERATORS = ['eq', 'includes', 'not_eq', 'not_includes'];
+const TEXT_OPERATORS = ['eq', 'not_eq', 'includes', 'not_includes'];
 
-export function getOperatorLabel(
-	operator: string,
-	inputType: string,
-	attribute?: string
-): string {
+export function getOperatorLabel(operator: string, attribute?: string): string {
 	if (attribute === 'segments' && SEGMENTS_OPERATOR_LABELS[operator]) {
 		return SEGMENTS_OPERATOR_LABELS[operator];
 	}
 
 	return (
 		SHARED_OPERATOR_LABELS[operator] ||
-		(inputType === 'date'
-			? DATE_OPERATOR_LABELS[operator]
-			: NUMBER_OPERATOR_LABELS[operator]) ||
+		RELATIONAL_OPERATOR_LABELS[operator] ||
 		operator
 	);
 }
