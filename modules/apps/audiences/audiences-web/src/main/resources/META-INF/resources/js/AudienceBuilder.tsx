@@ -21,11 +21,17 @@ import GeneralSettings from './components/GeneralSettings';
 import DragPreviewWrapper from './keyboard_movement/DragPreviewWrapper';
 import {KeyboardMovementContextProvider} from './keyboard_movement/KeyboardMovementContext';
 import {initState, reducer, serializeCriteria} from './reducer';
-import {AudiencesCriteriaRulesGroup, AudiencesCriteriaType} from './types';
+import {
+	AudiencesCriteria,
+	AudiencesCriteriaRulesGroup,
+	AudiencesCriteriaType,
+} from './types';
 
 import './AudienceBuilder.scss';
 
 const NAME_MAX_LENGTH = 75;
+
+const GENERAL_CRITERIA_TYPE_KEY = 'general';
 
 const SEGMENTS_ATTRIBUTE_KEY = 'segments';
 
@@ -40,9 +46,9 @@ interface IndividualSegment {
 	segmentType: string;
 }
 
-function useSegmentsCriteriaType(): AudiencesCriteriaType | null {
-	const [segmentsCriteriaType, setSegmentsCriteriaType] =
-		useState<AudiencesCriteriaType | null>(null);
+function useSegmentsCriteria(): AudiencesCriteria | null {
+	const [segmentsCriteria, setSegmentsCriteria] =
+		useState<AudiencesCriteria | null>(null);
 
 	useEffect(() => {
 		const url = Liferay.Util.PortletURL.createResourceURL(
@@ -63,30 +69,22 @@ function useSegmentsCriteriaType(): AudiencesCriteriaType | null {
 					return;
 				}
 
-				setSegmentsCriteriaType({
-					audiencesCriterias: [
-						{
-							icon: 'users',
-							inputType: 'select',
-							key: SEGMENTS_ATTRIBUTE_KEY,
-							label: Liferay.Language.get('user'),
-							options: individualSegments.map(
-								(individualSegment) => ({
-									label: `${individualSegment.name} (${individualSegment.segmentType})`,
-									value: individualSegment.externalReferenceCode,
-								})
-							),
-							type: 'set',
-						},
-					],
+				setSegmentsCriteria({
+					icon: 'users',
+					inputType: 'select',
 					key: SEGMENTS_ATTRIBUTE_KEY,
 					label: Liferay.Language.get('segments'),
+					options: individualSegments.map((individualSegment) => ({
+						label: `${individualSegment.name} (${individualSegment.segmentType})`,
+						value: individualSegment.externalReferenceCode,
+					})),
+					type: 'set',
 				});
 			})
 			.catch(() => {});
 	}, []);
 
-	return segmentsCriteriaType;
+	return segmentsCriteria;
 }
 
 const DragAndDropProvider = DndProvider as unknown as React.FC<
@@ -118,10 +116,20 @@ export default function AudienceBuilder({
 		initState
 	);
 
-	const segmentsCriteriaType = useSegmentsCriteriaType();
+	const segmentsCriteria = useSegmentsCriteria();
 
-	const allAudiencesCriteriaTypes = segmentsCriteriaType
-		? [...audiencesCriteriaTypes, segmentsCriteriaType]
+	const allAudiencesCriteriaTypes = segmentsCriteria
+		? audiencesCriteriaTypes.map((audiencesCriteriaType) =>
+				audiencesCriteriaType.key === GENERAL_CRITERIA_TYPE_KEY
+					? {
+							...audiencesCriteriaType,
+							audiencesCriterias: [
+								...audiencesCriteriaType.audiencesCriterias,
+								segmentsCriteria,
+							],
+						}
+					: audiencesCriteriaType
+			)
 		: audiencesCriteriaTypes;
 
 	return (
