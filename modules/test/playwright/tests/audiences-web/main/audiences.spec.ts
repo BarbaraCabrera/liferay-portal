@@ -6,6 +6,7 @@
 import {expect, mergeTests} from '@playwright/test';
 
 import {apiHelpersTest} from '../../../fixtures/apiHelpersTest';
+import {audiencesPagesTest} from '../../../fixtures/audiencesPagesTest';
 import {dataApiHelpersTest} from '../../../fixtures/dataApiHelpersTest';
 import {featureFlagsTest} from '../../../fixtures/featureFlagsTest';
 import {isolatedSiteTest} from '../../../fixtures/isolatedSiteTest';
@@ -17,6 +18,7 @@ import {waitForAlert} from '../../../utils/waitForAlert';
 
 const test = mergeTests(
 	apiHelpersTest,
+	audiencesPagesTest,
 	dataApiHelpersTest,
 	featureFlagsTest({
 		'LPD-85746': {enabled: true},
@@ -367,5 +369,73 @@ test(
 		await expect(
 			page.locator('tr').filter({hasText: audienceName})
 		).toHaveCount(0);
+	}
+);
+
+test(
+	'Can create an audience with a device type condition',
+	{
+		tag: '@LPD-XXX',
+	},
+	async ({audiencesPage, page}) => {
+
+		// Create an audience targeting visitors on a mobile device
+
+		const audienceName = 'Audience ' + getRandomString();
+
+		await audiencesPage.goto();
+
+		await audiencesPage.createAudience({
+			attributeName: 'Device Type',
+			name: audienceName,
+			operator: 'Contains',
+			value: 'mobile',
+		});
+
+		// The audience is listed
+
+		await expect(page.locator('tr', {hasText: audienceName})).toBeVisible();
+
+		// Clean up
+
+		await audiencesPage.deleteAudience(audienceName);
+
+		await expect(
+			page.locator('tr', {hasText: audienceName})
+		).not.toBeVisible();
+	}
+);
+
+test(
+	'Can create an audience with a local hour condition',
+	{
+		tag: '@LPD-XXX',
+	},
+	async ({audiencesPage, page}) => {
+
+		// Create an audience targeting visitors browsing at 10:00
+
+		const audienceName = 'Audience ' + getRandomString();
+
+		await audiencesPage.goto();
+
+		await audiencesPage.createAudience({
+			attributeName: 'Local Hour',
+			name: audienceName,
+			value: '10:00',
+			valueType: 'select',
+		});
+
+		// The audience is listed
+
+		await expect(page.locator('tr', {hasText: audienceName})).toBeVisible();
+
+		// Clean up
+
+		await audiencesPage.deleteAudience(audienceName);
+
+		await expect(
+			page.locator('tr', {hasText: audienceName})
+		).not.toBeVisible();
 	}
 );
