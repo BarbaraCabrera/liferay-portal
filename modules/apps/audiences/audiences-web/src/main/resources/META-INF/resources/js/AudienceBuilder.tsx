@@ -204,7 +204,10 @@ export default function AudienceBuilder({
 								<input
 									name={`${namespace}json`}
 									type="hidden"
-									value={serializeCriteria(state)}
+									value={serializeCriteria(
+										state,
+										allAudiencesCriteriaTypes
+									)}
 								/>
 
 								<ConditionsPanel
