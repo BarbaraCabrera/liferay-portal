@@ -171,13 +171,37 @@
 					"if": {
 						"properties": {
 							"attribute": {
+								"const": "segments"
+							}
+						},
+						"required": [
+							"attribute"
+						]
+					},
+					"then": {
+						"properties": {
+							"operator": {
+								"enum": [
+									"includes",
+									"not_includes"
+								]
+							},
+							"value": {
+								"type": "string"
+							}
+						}
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"attribute": {
 								"anyOf": [
 									{
 										"enum": [
 											"browser_name",
 											"browser_version",
 											"device_type",
-											"geolocation",
 											"hostname",
 											"pathname",
 											"referrer",
@@ -223,7 +247,6 @@
 								"browser_version",
 								"cookies",
 								"device_type",
-								"geolocation",
 								"hostname",
 								"language",
 								"local_date",

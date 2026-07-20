@@ -43,6 +43,9 @@ public class IndividualSegmentJSONObjectMapperTest {
 
 		Assert.assertNotNull(individualSegment);
 
+		Assert.assertEquals(
+			"0fa569fc-03d3-4a06-871b-cbe59a110c61",
+			individualSegment.getExternalReferenceCode());
 		Assert.assertEquals("324849894334623092", individualSegment.getId());
 		Assert.assertEquals("British Developers", individualSegment.getName());
 		Assert.assertEquals(8L, individualSegment.getIndividualCount());
@@ -69,6 +72,9 @@ public class IndividualSegmentJSONObjectMapperTest {
 
 		IndividualSegment individualSegment = individualSegments.get(0);
 
+		Assert.assertEquals(
+			"0fa569fc-03d3-4a06-871b-cbe59a110c61",
+			individualSegment.getExternalReferenceCode());
 		Assert.assertEquals("324849894334623092", individualSegment.getId());
 		Assert.assertEquals("British Developers", individualSegment.getName());
 		Assert.assertEquals(8L, individualSegment.getIndividualCount());

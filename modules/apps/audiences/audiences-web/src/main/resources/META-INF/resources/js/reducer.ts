@@ -6,6 +6,7 @@
 import {
 	AudiencesCriteria,
 	AudiencesCriteriaRulesGroup,
+	AudiencesCriteriaType,
 	CriteriaNode,
 	Group,
 	Rule,
@@ -164,6 +165,19 @@ export function reducer(state: State, action: Action): State {
 	}
 }
 
-export function serializeCriteria(state: State): string {
-	return JSON.stringify(serializeGroup(state.root));
+export function serializeCriteria(
+	state: State,
+	audiencesCriteriaTypes: AudiencesCriteriaType[] = []
+): string {
+	const numberAttributes = new Set<string>();
+
+	for (const audiencesCriteriaType of audiencesCriteriaTypes) {
+		for (const audiencesCriteria of audiencesCriteriaType.audiencesCriterias) {
+			if (audiencesCriteria.type === 'number') {
+				numberAttributes.add(audiencesCriteria.key);
+			}
+		}
+	}
+
+	return JSON.stringify(serializeGroup(state.root, numberAttributes));
 }

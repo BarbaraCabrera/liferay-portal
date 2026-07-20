@@ -119,17 +119,6 @@ public class AudiencesCriteriaProviderImpl
 				).setInputType(
 					AudiencesCriteria.InputType.TEXT
 				).setKey(
-					AudiencesCriteriaKeys.GEOLOCATION
-				).setLabel(
-					_language.get(locale, "geolocation")
-				).setType(
-					AudiencesCriteria.Type.STRING
-				).build(),
-				AudiencesCriteriaBuilder.setIcon(
-					"text"
-				).setInputType(
-					AudiencesCriteria.InputType.TEXT
-				).setKey(
 					AudiencesCriteriaKeys.HOSTNAME
 				).setLabel(
 					_language.get(locale, "hostname")

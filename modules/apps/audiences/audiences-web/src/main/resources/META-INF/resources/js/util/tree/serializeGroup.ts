@@ -6,16 +6,23 @@
 import {Group, SerializedGroup} from '../../types';
 import {isGroup} from './isGroup';
 
-export function serializeGroup(group: Group): SerializedGroup {
+export function serializeGroup(
+	group: Group,
+	numberAttributes: Set<string> = new Set()
+): SerializedGroup {
 	return {
 		conjunction: group.conjunction,
 		rules: group.items.map((node) =>
 			isGroup(node)
-				? serializeGroup(node)
+				? serializeGroup(node, numberAttributes)
 				: {
 						attribute: node.attribute,
 						operator: node.operator,
-						value: node.value,
+						value:
+							numberAttributes.has(node.attribute) &&
+							node.value !== ''
+								? Number(node.value)
+								: node.value,
 					}
 		),
 	};

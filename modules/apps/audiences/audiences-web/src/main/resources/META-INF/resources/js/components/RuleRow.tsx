@@ -213,7 +213,10 @@ export default function RuleRow({
 					aria-label={Liferay.Language.get('operator')}
 					className="flex-shrink-0 form-control-sm w-auto"
 					items={operators.map((operator) => ({
-						label: getOperatorLabel(operator, inputType),
+						label: getOperatorLabel(
+							operator,
+							audiencesCriteria.key
+						),
 						value: operator,
 					}))}
 					onSelectionChange={(key) =>

@@ -7,6 +7,7 @@ export const CATEGORY_ICON_COLORS: Record<string, string> = {
 	'browser-attributes': 'indigo',
 	'custom': 'orange',
 	'general': 'teal',
+	'segments': 'teal',
 };
 
 export const DEFAULT_ICON_COLOR = 'indigo';

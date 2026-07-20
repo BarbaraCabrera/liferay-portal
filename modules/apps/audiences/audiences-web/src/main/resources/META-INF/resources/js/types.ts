@@ -33,7 +33,7 @@ export interface SerializedGroup {
 export interface SerializedRule {
 	attribute: string;
 	operator: string;
-	value: string;
+	value: number | string;
 }
 
 export interface AudiencesCriteriaType {
